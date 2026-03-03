@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-branco: #F6F5EB;
+  --color-areia: #C5C29F;
+  --color-azul: #89AAA3;
+  --color-telha: #BE4A01;
+  --color-verde-claro: #777D45;
+  --color-verde: #3F3E20;
+  --color-preto: #0A0703;
+
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Merriweather", ui-serif, Georgia, serif;
+}
+
+body {
+  @apply bg-branco text-preto font-sans antialiased;
+  margin: 0;
+}
+
+*:focus-visible {
+  @apply outline-none ring-2 ring-telha ring-offset-1;
+}
