@@ -4,6 +4,7 @@ import { Button } from "../../../ui/button";
 import { meaningMapsAPI } from "../../../../services/api";
 import { useMeaningMapStore } from "../../../../stores/meaningMapStore";
 import { toast } from "sonner";
+import { GenerationOverlay } from "../../BookPage/GenerationOverlay";
 
 interface GeneratePanelProps {
   pericopeId: string;
@@ -35,9 +36,15 @@ export function GeneratePanel({ pericopeId }: GeneratePanelProps) {
       <p className="mt-1 text-xs text-verde/70">
         Uses BHSA Hebrew data + RAG methodology context to produce a draft meaning map.
       </p>
-      <Button onClick={handleGenerate} disabled={loading} className="mt-4">
-        {loading ? "Generating..." : "Generate Meaning Map"}
-      </Button>
+      {loading ? (
+        <div className="mt-4 inline-block text-left">
+          <GenerationOverlay isActive />
+        </div>
+      ) : (
+        <Button onClick={handleGenerate} className="mt-4">
+          Generate Meaning Map
+        </Button>
+      )}
     </div>
   );
 }

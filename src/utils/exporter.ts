@@ -7,7 +7,7 @@ export function buildJSON(data: MeaningMapData): string {
 export function buildProse(data: MeaningMapData): string {
   const lines: string[] = [];
 
-  lines.push("# Prose Meaning Map\n");
+  lines.push("# Bible Meaning Map\n");
   lines.push("**Method:** Tripod Method\n");
   lines.push("---\n");
 

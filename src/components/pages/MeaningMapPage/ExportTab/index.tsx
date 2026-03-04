@@ -35,6 +35,7 @@ export function ExportTab() {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+    toast.success(`Downloaded ${filename}.`);
   };
 
   return (

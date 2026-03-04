@@ -1,24 +1,31 @@
 import { useMeaningMapStore } from "../../../../stores/meaningMapStore";
-import { useAuth } from "../../../../contexts/AuthContext";
 import { meaningMapsAPI } from "../../../../services/api";
 import { Button } from "../../../ui/button";
 import { Level1Card } from "./Level1Card";
 import { SceneCard } from "./SceneCard";
 import { PropositionsCard } from "./PropositionsCard";
 import { ReviewProgressBar } from "./ProgressBar";
-import { Send, CheckCircle } from "lucide-react";
+import { Send, CheckCircle, Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 
 interface ReviewTabProps {
   readOnly: boolean;
+  actionsHidden: boolean;
+  isCrossChecker: boolean;
+  isAnalyst: boolean;
   onRefresh: () => void;
 }
 
-export function ReviewTab({ readOnly, onRefresh }: ReviewTabProps) {
-  const { user } = useAuth();
+export function ReviewTab({
+  readOnly,
+  actionsHidden,
+  isCrossChecker,
+  isAnalyst,
+  onRefresh,
+}: ReviewTabProps) {
   const currentMap = useMeaningMapStore((s) => s.currentMap);
-  const setFromBackend = useMeaningMapStore((s) => s.setFromBackend);
+  const isDirty = useMeaningMapStore((s) => s.isDirty);
   const [saving, setSaving] = useState(false);
 
   if (!currentMap) {
@@ -29,18 +36,19 @@ export function ReviewTab({ readOnly, onRefresh }: ReviewTabProps) {
     );
   }
 
-  const { data, status, locked_by } = currentMap;
-  const isOwner = locked_by === user?.id || currentMap.analyst_id === user?.id;
-  const isCrossChecker = status === "cross_check" && locked_by === user?.id;
+  const { data, status } = currentMap;
+  const dirty = isDirty();
+  const showFeedback = true;
 
   const handleSave = async () => {
     setSaving(true);
     try {
       const updated = await meaningMapsAPI.update(currentMap.id, data);
-      setFromBackend(updated);
-      toast.success("Saved.");
-    } catch {
-      toast.error("Failed to save.");
+      useMeaningMapStore.getState().setFromBackend(updated);
+      toast.success("Changes saved successfully.");
+    } catch (err) {
+      console.error("Save failed:", err);
+      toast.error("Failed to save. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -50,8 +58,8 @@ export function ReviewTab({ readOnly, onRefresh }: ReviewTabProps) {
     try {
       await handleSave();
       const updated = await meaningMapsAPI.updateStatus(currentMap.id, "cross_check");
-      setFromBackend(updated);
-      toast.success("Sent to cross-check.");
+      useMeaningMapStore.getState().setFromBackend(updated);
+      toast.success("Meaning map sent for cross-check review.");
       onRefresh();
     } catch {
       toast.error("Failed to send to cross-check.");
@@ -61,8 +69,8 @@ export function ReviewTab({ readOnly, onRefresh }: ReviewTabProps) {
   const handleApprove = async () => {
     try {
       const updated = await meaningMapsAPI.updateStatus(currentMap.id, "approved");
-      setFromBackend(updated);
-      toast.success("Approved!");
+      useMeaningMapStore.getState().setFromBackend(updated);
+      toast.success("Meaning map approved!");
       onRefresh();
     } catch {
       toast.error("Failed to approve.");
@@ -72,8 +80,8 @@ export function ReviewTab({ readOnly, onRefresh }: ReviewTabProps) {
   const handleRequestRevisions = async () => {
     try {
       const updated = await meaningMapsAPI.updateStatus(currentMap.id, "draft");
-      setFromBackend(updated);
-      toast.success("Returned to draft.");
+      useMeaningMapStore.getState().setFromBackend(updated);
+      toast.success("Revisions requested. Analyst has been notified.");
       onRefresh();
     } catch {
       toast.error("Failed to request revisions.");
@@ -82,38 +90,78 @@ export function ReviewTab({ readOnly, onRefresh }: ReviewTabProps) {
 
   return (
     <div className="space-y-6">
-      <ReviewProgressBar />
-
-      {!readOnly && (
-        <div className="flex flex-wrap gap-2 justify-end">
-          <Button size="sm" variant="outline" onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save"}
-          </Button>
-          {status === "draft" && isOwner && (
-            <Button size="sm" onClick={handleSendToCrossCheck} className="gap-1">
-              <Send className="h-3 w-3" /> Send to Cross-check
-            </Button>
-          )}
-          {status === "cross_check" && isCrossChecker && (
-            <>
-              <Button size="sm" variant="outline" onClick={handleRequestRevisions}>
-                Request Revisions
+      {!actionsHidden && (
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            {!readOnly && dirty && (
+              <span className="flex items-center gap-1 text-xs font-medium text-telha">
+                <AlertCircle className="h-3 w-3" />
+                Unsaved changes
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {!readOnly && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleSave}
+                disabled={saving || !dirty}
+                className="gap-1"
+              >
+                <Save className="h-3 w-3" />
+                {saving ? "Saving..." : "Save"}
               </Button>
-              <Button size="sm" onClick={handleApprove} className="gap-1">
-                <CheckCircle className="h-3 w-3" /> Approve
+            )}
+            {status === "draft" && isAnalyst && !readOnly && (
+              <Button size="sm" onClick={handleSendToCrossCheck} className="gap-1">
+                <Send className="h-3 w-3" /> Send to Cross-check
               </Button>
-            </>
-          )}
+            )}
+            {status === "cross_check" && isCrossChecker && (
+              <>
+                <Button size="sm" variant="outline" onClick={handleRequestRevisions}>
+                  Request Revisions
+                </Button>
+                <Button size="sm" onClick={handleApprove} className="gap-1">
+                  <CheckCircle className="h-3 w-3" /> Approve
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       )}
 
-      <Level1Card readOnly={readOnly} />
+      <ReviewProgressBar />
 
-      {data.level_2_scenes.map((scene, i) => (
-        <SceneCard key={scene.scene_number} scene={scene} index={i} readOnly={readOnly} />
+      <Level1Card
+        readOnly={readOnly}
+        mapId={currentMap.id}
+        showFeedback={showFeedback}
+        canWriteFeedback={isCrossChecker}
+        canResolveFeedback={isAnalyst}
+      />
+
+      {(data.level_2_scenes ?? []).map((scene, i) => (
+        <SceneCard
+          key={scene.scene_number}
+          scene={scene}
+          index={i}
+          readOnly={readOnly}
+          mapId={currentMap.id}
+          showFeedback={showFeedback}
+          canWriteFeedback={isCrossChecker}
+          canResolveFeedback={isAnalyst}
+        />
       ))}
 
-      <PropositionsCard readOnly={readOnly} />
+      <PropositionsCard
+        readOnly={readOnly}
+        mapId={currentMap.id}
+        showFeedback={showFeedback}
+        canWriteFeedback={isCrossChecker}
+        canResolveFeedback={isAnalyst}
+      />
     </div>
   );
 }

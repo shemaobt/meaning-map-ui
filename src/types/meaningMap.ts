@@ -67,6 +67,9 @@ export interface MeaningMap {
   approved_by: string | null;
   created_at: string;
   updated_at: string;
+  book_id?: string;
+  book_name?: string;
+  pericope_reference?: string;
 }
 
 export interface MeaningMapFeedback {

@@ -13,7 +13,9 @@ import { runChecks } from "../utils/validator";
 interface MeaningMapStore {
   currentMap: MeaningMap | null;
   reviewState: ReviewState;
+  lastSavedData: MeaningMapData | null;
 
+  isDirty: () => boolean;
   setFromBackend: (map: MeaningMap) => void;
   setData: (data: MeaningMapData) => void;
   clear: () => void;
@@ -38,10 +40,21 @@ const emptyReview: ReviewState = { reviewed: {}, warnings: [] };
 export const useMeaningMapStore = create<MeaningMapStore>((set, get) => ({
   currentMap: null,
   reviewState: emptyReview,
+  lastSavedData: null,
+
+  isDirty: () => {
+    const { currentMap, lastSavedData } = get();
+    if (!currentMap || !lastSavedData) return false;
+    return JSON.stringify(currentMap.data) !== JSON.stringify(lastSavedData);
+  },
 
   setFromBackend: (map) => {
     const warnings = runChecks(map.data);
-    set({ currentMap: map, reviewState: { reviewed: {}, warnings } });
+    set({
+      currentMap: map,
+      lastSavedData: structuredClone(map.data),
+      reviewState: { reviewed: {}, warnings },
+    });
   },
 
   setData: (data) => {
@@ -54,7 +67,7 @@ export const useMeaningMapStore = create<MeaningMapStore>((set, get) => ({
     });
   },
 
-  clear: () => set({ currentMap: null, reviewState: emptyReview }),
+  clear: () => set({ currentMap: null, reviewState: emptyReview, lastSavedData: null }),
 
   updateLevel1Arc: (arc) => {
     const { currentMap } = get();

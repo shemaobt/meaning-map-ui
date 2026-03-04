@@ -74,7 +74,7 @@ export function runChecks(data: MeaningMapData): ValidationWarning[] {
     }
   }
 
-  for (const scene of data.level_2_scenes) {
+  for (const scene of data.level_2_scenes ?? []) {
     const prefix = `scene_${scene.scene_number}`;
 
     if (!scene.people || scene.people.length === 0) {
@@ -115,7 +115,7 @@ export function runChecks(data: MeaningMapData): ValidationWarning[] {
     }
   }
 
-  for (const prop of data.level_3_propositions) {
+  for (const prop of data.level_3_propositions ?? []) {
     const prefix = `prop_${prop.proposition_number}`;
 
     if (!prop.content || prop.content.length === 0) {

@@ -36,6 +36,7 @@ export function FeedbackThread({ mapId, sectionKey, canWrite, canResolve }: Feed
       });
       setItems((prev) => [...prev, fb]);
       setNewContent("");
+      toast.success("Feedback submitted.");
     } catch {
       toast.error("Failed to add feedback.");
     } finally {
@@ -47,6 +48,7 @@ export function FeedbackThread({ mapId, sectionKey, canWrite, canResolve }: Feed
     try {
       const updated = await meaningMapsAPI.resolveFeedback(mapId, feedbackId);
       setItems((prev) => prev.map((fb) => (fb.id === feedbackId ? updated : fb)));
+      toast.success("Feedback resolved.");
     } catch {
       toast.error("Failed to resolve feedback.");
     }
@@ -64,7 +66,7 @@ export function FeedbackThread({ mapId, sectionKey, canWrite, canResolve }: Feed
           key={fb.id}
           className={cn(
             "text-xs p-2 rounded",
-            fb.resolved ? "bg-verde-claro/10 line-through opacity-60" : "bg-white"
+            fb.resolved ? "bg-verde-claro/10 line-through opacity-60" : "bg-surface"
           )}
         >
           <div className="flex justify-between">
