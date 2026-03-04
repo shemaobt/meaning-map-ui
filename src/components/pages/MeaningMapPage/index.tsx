@@ -2,13 +2,27 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { meaningMapsAPI } from "../../../services/api";
 import { useMeaningMapStore } from "../../../stores/meaningMapStore";
+import { useBHSAStore } from "../../../stores/bhsaStore";
 import { useAuth } from "../../../contexts/AuthContext";
 import { StatusBadge } from "../../common/StatusBadge";
 import { LockBadge } from "../../common/LockBadge";
 import { LoadingSpinner } from "../../common/LoadingSpinner";
 import { ReviewTab } from "./ReviewTab";
+import { BHSASidebar, BHSASidebarToggle } from "./BHSASidebar";
 import { ChevronRight, Clock, Eye, Pencil } from "lucide-react";
 import type { MeaningMapStatus } from "../../../types/bible";
+
+function parsePericopeRef(ref: string, bookName: string) {
+  // Parses "Ruth 4:1-5" or "Ruth 4:1–5" (en-dash) → { book, chapter, verseStart, verseEnd }
+  const match = ref.match(/(\d+):(\d+)[-–](\d+)$/);
+  if (!match) return null;
+  return {
+    book: bookName,
+    chapter: parseInt(match[1], 10),
+    verseStart: parseInt(match[2], 10),
+    verseEnd: parseInt(match[3], 10),
+  };
+}
 
 export function MeaningMapPage() {
   const { mapId } = useParams<{ mapId: string }>();
@@ -35,6 +49,15 @@ export function MeaningMapPage() {
     fetchMap();
     return () => useMeaningMapStore.getState().clear();
   }, [fetchMap]);
+
+  // Auto-load BHSA data for this pericope
+  useEffect(() => {
+    if (!currentMap?.pericope_reference || !currentMap?.book_name) return;
+    const parsed = parsePericopeRef(currentMap.pericope_reference, currentMap.book_name);
+    if (parsed) {
+      useBHSAStore.getState().loadPericope(parsed.book, parsed.chapter, parsed.verseStart, parsed.verseEnd);
+    }
+  }, [currentMap?.pericope_reference, currentMap?.book_name]);
 
   if (loading) return <LoadingSpinner />;
   if (!currentMap) {
@@ -70,56 +93,61 @@ export function MeaningMapPage() {
   });
 
   return (
-    <div>
-      <nav className="flex items-center gap-1 text-sm text-verde/70 mb-4">
-        <Link to="/app/books" className="hover:text-telha transition-colors">
-          Books
-        </Link>
-        <ChevronRight className="h-3 w-3" />
-        {bookId ? (
-          <Link to={`/app/books/${bookId}`} className="hover:text-telha transition-colors">
-            {bookName}
+    <div className="flex gap-6 items-start">
+      <div className="flex-1 min-w-0">
+        <nav className="flex items-center gap-1 text-sm text-verde/70 mb-4">
+          <Link to="/app/books" className="hover:text-telha transition-colors">
+            Books
           </Link>
-        ) : (
-          <span>{bookName}</span>
+          <ChevronRight className="h-3 w-3" />
+          {bookId ? (
+            <Link to={`/app/books/${bookId}`} className="hover:text-telha transition-colors">
+              {bookName}
+            </Link>
+          ) : (
+            <span>{bookName}</span>
+          )}
+          <ChevronRight className="h-3 w-3" />
+          <span className="font-medium text-preto">{pericopeRef}</span>
+        </nav>
+
+        {isLockedByMe && (
+          <RoleBanner isCrossChecker={isCrossChecker} />
         )}
-        <ChevronRight className="h-3 w-3" />
-        <span className="font-medium text-preto">{pericopeRef}</span>
-      </nav>
 
-      {isLockedByMe && (
-        <RoleBanner isCrossChecker={isCrossChecker} />
-      )}
-
-      <div className="bg-surface rounded-lg border border-areia/30 shadow-sm p-4 sm:p-6 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-preto tracking-tight">
-              {pericopeRef}
-            </h2>
-            <p className="text-sm text-verde mt-0.5">{bookName}</p>
+        <div className="bg-surface rounded-lg border border-areia/30 shadow-sm p-4 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-preto tracking-tight">
+                {pericopeRef}
+              </h2>
+              <p className="text-sm text-verde mt-0.5">{bookName}</p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <StatusBadge status={currentMap.status as MeaningMapStatus} />
+              <LockBadge lockedBy={currentMap.locked_by} lockedByName={null} />
+            </div>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <StatusBadge status={currentMap.status as MeaningMapStatus} />
-            <LockBadge lockedBy={currentMap.locked_by} lockedByName={null} />
+          <div className="flex items-center gap-4 mt-3 pt-3 border-t border-areia/20 text-xs text-verde/60">
+            <span>Version {currentMap.version}</span>
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {updatedAt}
+            </span>
           </div>
         </div>
-        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-areia/20 text-xs text-verde/60">
-          <span>Version {currentMap.version}</span>
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {updatedAt}
-          </span>
-        </div>
+
+        <ReviewTab
+          readOnly={contentReadOnly}
+          actionsHidden={actionsHidden}
+          isCrossChecker={isCrossChecker}
+          isAnalyst={isAnalyst}
+          onRefresh={fetchMap}
+        />
       </div>
 
-      <ReviewTab
-        readOnly={contentReadOnly}
-        actionsHidden={actionsHidden}
-        isCrossChecker={isCrossChecker}
-        isAnalyst={isAnalyst}
-        onRefresh={fetchMap}
-      />
+      <BHSASidebar />
+      <BHSASidebarToggle />
     </div>
   );
 }
