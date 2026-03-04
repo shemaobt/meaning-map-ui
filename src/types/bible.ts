@@ -6,6 +6,8 @@ export interface BibleBook {
   order: number;
   chapter_count: number;
   is_enabled: boolean;
+  pericope_count: number;
+  approved_count: number;
 }
 
 export interface ChapterSummary {

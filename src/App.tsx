@@ -15,7 +15,25 @@ import { NotificationsPage } from "./components/pages/NotificationsPage";
 
 function ThemedToaster() {
   const { resolvedTheme } = useTheme();
-  return <Toaster position="bottom-right" richColors theme={resolvedTheme} />;
+  return (
+    <Toaster
+      position="bottom-right"
+      theme={resolvedTheme}
+      toastOptions={{
+        classNames: {
+          toast: "!bg-surface !border-areia/30 !text-preto !shadow-lg",
+          title: "!text-preto !font-sans",
+          description: "!text-verde",
+          success: "!bg-verde-claro/10 !border-verde-claro/30 !text-verde-claro",
+          error: "!bg-red-50 !border-red-200 !text-red-700 dark:!bg-red-950/30 dark:!border-red-800/40 dark:!text-red-400",
+          warning: "!bg-amber-50 !border-amber-200 !text-amber-800 dark:!bg-amber-950/30 dark:!border-amber-800/40 dark:!text-amber-400",
+          info: "!bg-azul/10 !border-azul/30 !text-azul",
+          actionButton: "!bg-telha !text-white",
+          cancelButton: "!bg-areia/20 !text-verde",
+        },
+      }}
+    />
+  );
 }
 
 export default function App() {

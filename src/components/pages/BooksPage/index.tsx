@@ -39,7 +39,7 @@ export function BooksPage() {
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 sm:gap-3 md:gap-4">
           {otBooks.map((book) => (
-            <BookCard key={book.id} book={book} approvedCount={0} totalPericopes={0} />
+            <BookCard key={book.id} book={book} approvedCount={book.approved_count} totalPericopes={book.pericope_count} />
           ))}
         </div>
       </section>
@@ -55,7 +55,7 @@ export function BooksPage() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 sm:gap-3 md:gap-4">
           {ntBooks.map((book) => (
-            <BookCard key={book.id} book={book} approvedCount={0} totalPericopes={0} />
+            <BookCard key={book.id} book={book} approvedCount={book.approved_count} totalPericopes={book.pericope_count} />
           ))}
         </div>
       </section>
