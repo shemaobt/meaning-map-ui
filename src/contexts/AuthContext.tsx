@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import type { MyRole, User } from "../types/auth";
-import { authAPI } from "../services/api";
+import { accessRequestsAPI, authAPI } from "../services/api";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../constants/app";
 
 const MM_APP_KEY = "meaning-map-generator";
@@ -15,6 +15,7 @@ const MM_APP_KEY = "meaning-map-generator";
 interface AuthContextValue {
   user: User | null;
   appRole: string | null;
+  accessRequestStatus: "pending" | "approved" | "rejected" | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, displayName: string) => Promise<void>;
@@ -26,7 +27,24 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [appRole, setAppRole] = useState<string | null>(null);
+  const [accessRequestStatus, setAccessRequestStatus] = useState<
+    "pending" | "approved" | "rejected" | null
+  >(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const ensureAccessRequest = useCallback(async () => {
+    try {
+      const existing = await accessRequestsAPI.mine(MM_APP_KEY);
+      if (existing) {
+        setAccessRequestStatus(existing.status);
+        return;
+      }
+      const created = await accessRequestsAPI.create({ app_key: MM_APP_KEY });
+      setAccessRequestStatus(created.status);
+    } catch {
+      // If the request fails, leave status as null (fallback UI)
+    }
+  }, []);
 
   const fetchUser = useCallback(async () => {
     const token = localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -44,7 +62,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAppRole("admin");
       } else {
         const match = roles.find((r: MyRole) => r.app_key === MM_APP_KEY);
-        setAppRole(match?.role_key ?? null);
+        if (match) {
+          setAppRole(match.role_key);
+        } else {
+          setAppRole(null);
+          await ensureAccessRequest();
+        }
       }
     } catch {
       localStorage.removeItem(ACCESS_TOKEN_KEY);
@@ -52,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [ensureAccessRequest]);
 
   useEffect(() => {
     fetchUser();
@@ -69,7 +92,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       const roles = await authAPI.myRoles(MM_APP_KEY);
       const match = roles.find((r: MyRole) => r.app_key === MM_APP_KEY);
-      setAppRole(match?.role_key ?? null);
+      if (match) {
+        setAppRole(match.role_key);
+      } else {
+        setAppRole(null);
+        await ensureAccessRequest();
+      }
     }
   };
 
@@ -79,16 +107,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(REFRESH_TOKEN_KEY, res.tokens.refresh_token);
     setUser(res.user);
     setAppRole(null);
+    await ensureAccessRequest();
   };
 
   const logout = async () => {
     await authAPI.logout();
     setUser(null);
     setAppRole(null);
+    setAccessRequestStatus(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, appRole, isLoading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, appRole, accessRequestStatus, isLoading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -18,7 +18,7 @@ export function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-      navigate("/app/dashboard");
+      navigate("/app/books");
     } catch {
       setError("Invalid username or password");
     } finally {

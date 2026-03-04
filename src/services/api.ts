@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { AuthResponse, LoginRequest, MyRole, SignupRequest, TokenResponse, User } from "../types/auth";
+import type { AccessRequest, AuthResponse, LoginRequest, MyRole, SignupRequest, TokenResponse, User } from "../types/auth";
 import type { BibleBook, ChapterSummary, DashboardSummary, Pericope, PericopeCreate, PericopeWithStatus } from "../types/bible";
 import type { MeaningMap, MeaningMapData, MeaningMapFeedback } from "../types/meaningMap";
 import type { BHSAPassageData, BHSAStatus } from "../types/bhsa";
@@ -129,6 +129,15 @@ export const ragAPI = {
   query: (question: string, namespace?: string) =>
     client
       .post<{ answer: string; sources: string[] }>("/rag/query", { question, namespace })
+      .then((r) => r.data),
+};
+
+export const accessRequestsAPI = {
+  create: (data: { app_key: string; note?: string }) =>
+    client.post<AccessRequest>("/access-requests", data).then((r) => r.data),
+  mine: (appKey: string) =>
+    client
+      .get<AccessRequest | null>("/access-requests/mine", { params: { app_key: appKey } })
       .then((r) => r.data),
 };
 
