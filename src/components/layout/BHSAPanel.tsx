@@ -24,42 +24,48 @@ export function BHSAPanel() {
                 className="rounded-lg border border-areia/30 bg-branco p-3"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="default">{clause.clause_type}</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="default">{clause.clause_type}</Badge>
+                    <span className="text-xs text-verde/50">v.{clause.verse}</span>
+                    {clause.is_mainline && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-telha/10 text-telha font-medium">
+                        mainline
+                      </span>
+                    )}
+                  </div>
                   <span className="text-xs text-verde/50">#{clause.clause_id}</span>
                 </div>
                 <p
-                  className="text-lg font-serif leading-relaxed mb-3"
+                  className="text-lg font-serif leading-relaxed mb-2"
                   dir="rtl"
                   lang="he"
                 >
                   {clause.text}
                 </p>
-                {clause.phrases.map((phrase) => (
-                  <div key={phrase.phrase_id} className="ml-2 mb-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="default" className="text-[10px]">
-                        {phrase.phrase_type}
-                      </Badge>
-                      <span className="text-[10px] text-verde/50">{phrase.function}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {phrase.words.map((word) => (
-                        <div
-                          key={word.word_id}
-                          className="rounded bg-surface border border-areia/20 px-2 py-1 text-center"
-                        >
-                          <span className="block text-sm font-serif" dir="rtl" lang="he">
-                            {word.text}
-                          </span>
-                          <span className="block text-[10px] text-verde/70">{word.gloss}</span>
-                          <span className="block text-[9px] text-areia">
-                            {word.pos} · {word.lemma}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                <p className="text-sm text-verde/70 mb-2">{clause.gloss}</p>
+                {(clause.subjects.length > 0 || clause.objects.length > 0) && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {clause.subjects.map((s) => (
+                      <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-azul/10 text-azul">
+                        Subj: {s}
+                      </span>
+                    ))}
+                    {clause.objects.map((o) => (
+                      <span key={o} className="text-[10px] px-2 py-0.5 rounded-full bg-verde-claro/10 text-verde-claro">
+                        Obj: {o}
+                      </span>
+                    ))}
                   </div>
-                ))}
+                )}
+                {clause.names.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {clause.names.map((name) => (
+                      <span key={name} className="text-[10px] px-2 py-0.5 rounded-full bg-areia/30 text-preto">
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))
           )}

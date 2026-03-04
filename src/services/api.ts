@@ -121,7 +121,7 @@ export const bhsaAPI = {
   fetchPassage: (book: string, chapter: number, verseStart: number, verseEnd: number) =>
     client
       .get<BHSAPassageData>("/bhsa/passage", {
-        params: { book, chapter, verse_start: verseStart, verse_end: verseEnd },
+        params: { ref: `${book} ${chapter}:${verseStart}-${verseEnd}` },
       })
       .then((r) => r.data),
   getVerseCounts: (bookName: string) =>
