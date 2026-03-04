@@ -38,6 +38,24 @@ export interface PericopeWithStatus extends Pericope {
 
 export type MeaningMapStatus = "draft" | "cross_check" | "approved";
 
+export interface AnalystSummary {
+  name: string;
+  assigned: number;
+  draft: number;
+  cross_check: number;
+  approved: number;
+}
+
+export interface DashboardSummary {
+  total: number;
+  draft: number;
+  cross_check: number;
+  approved: number;
+  unstarted: number;
+  enabled_books: number;
+  analysts: AnalystSummary[];
+}
+
 export interface PericopeCreate {
   book_id: string;
   chapter_start: number;

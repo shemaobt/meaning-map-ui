@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { AuthResponse, LoginRequest, MyRole, SignupRequest, TokenResponse, User } from "../types/auth";
-import type { BibleBook, ChapterSummary, Pericope, PericopeCreate, PericopeWithStatus } from "../types/bible";
+import type { BibleBook, ChapterSummary, DashboardSummary, Pericope, PericopeCreate, PericopeWithStatus } from "../types/bible";
 import type { MeaningMap, MeaningMapData, MeaningMapFeedback } from "../types/meaningMap";
 import type { BHSAPassageData, BHSAStatus } from "../types/bhsa";
 import { ACCESS_TOKEN_KEY, API_BASE_URL, REFRESH_TOKEN_KEY } from "../constants/app";
@@ -66,6 +66,8 @@ export const authAPI = {
 
 export const booksAPI = {
   list: () => client.get<BibleBook[]>("/books").then((r) => r.data),
+  dashboardSummary: () =>
+    client.get<DashboardSummary>("/books/dashboard-summary").then((r) => r.data),
   getChapters: (bookId: string) =>
     client.get<ChapterSummary[]>(`/books/${bookId}/chapters`).then((r) => r.data),
   getPericopes: (bookId: string, chapter: number) =>

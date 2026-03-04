@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { booksAPI } from "../../../services/api";
-import type { BibleBook, PericopeWithStatus } from "../../../types/bible";
+import type { AnalystSummary, DashboardSummary } from "../../../types/bible";
 import { useAuth } from "../../../contexts/AuthContext";
 import { LoadingSpinner } from "../../common/LoadingSpinner";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
@@ -16,44 +15,6 @@ interface StatusCounts {
   unstarted: number;
 }
 
-interface AnalystRow {
-  name: string;
-  assigned: number;
-  draft: number;
-  cross_check: number;
-  approved: number;
-}
-
-function countStatuses(pericopes: PericopeWithStatus[]): StatusCounts {
-  const counts: StatusCounts = { total: 0, draft: 0, cross_check: 0, approved: 0, unstarted: 0 };
-  for (const p of pericopes) {
-    counts.total++;
-    if (!p.status) counts.unstarted++;
-    else if (p.status === "draft") counts.draft++;
-    else if (p.status === "cross_check") counts.cross_check++;
-    else if (p.status === "approved") counts.approved++;
-  }
-  return counts;
-}
-
-function buildAnalystTable(pericopes: PericopeWithStatus[]): AnalystRow[] {
-  const map = new Map<string, AnalystRow>();
-  for (const p of pericopes) {
-    const name = p.analyst_name ?? "Unassigned";
-    if (!p.meaning_map_id) continue;
-    let row = map.get(name);
-    if (!row) {
-      row = { name, assigned: 0, draft: 0, cross_check: 0, approved: 0 };
-      map.set(name, row);
-    }
-    row.assigned++;
-    if (p.status === "draft") row.draft++;
-    else if (p.status === "cross_check") row.cross_check++;
-    else if (p.status === "approved") row.approved++;
-  }
-  return Array.from(map.values()).sort((a, b) => b.assigned - a.assigned);
-}
-
 const STATUS_CARDS: { key: keyof StatusCounts; label: string; color: string; bgColor: string }[] = [
   { key: "total", label: "Total Pericopes", color: "text-preto", bgColor: "bg-areia/20" },
   { key: "draft", label: "Draft", color: "text-verde", bgColor: "bg-areia/30" },
@@ -62,52 +23,37 @@ const STATUS_CARDS: { key: keyof StatusCounts; label: string; color: string; bgC
 ];
 
 export function DashboardPage() {
-  const navigate = useNavigate();
-  const { user, appRole } = useAuth();
+  const { appRole } = useAuth();
   const isAdmin = appRole === "admin";
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState<StatusCounts>({ total: 0, draft: 0, cross_check: 0, approved: 0, unstarted: 0 });
-  const [analysts, setAnalysts] = useState<AnalystRow[]>([]);
-  const [enabledBooks, setEnabledBooks] = useState<BibleBook[]>([]);
+  const [analysts, setAnalysts] = useState<AnalystSummary[]>([]);
+  const [enabledBooks, setEnabledBooks] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function load() {
-      try {
-        const books = await booksAPI.list();
-        const enabled = books.filter((b) => b.is_enabled);
+    booksAPI
+      .dashboardSummary()
+      .then((data: DashboardSummary) => {
         if (cancelled) return;
-        setEnabledBooks(enabled);
-
-        const allPericopes: PericopeWithStatus[] = [];
-        const results = await Promise.all(
-          enabled.map((b) => booksAPI.getAllPericopes(b.id).catch(() => [] as PericopeWithStatus[]))
-        );
-        for (const pericopeList of results) {
-          allPericopes.push(...pericopeList);
-        }
-
-        if (cancelled) return;
-
-        // Non-admins only see their own pericopes (matched by display_name)
-        const userName = user?.display_name ?? user?.email ?? "";
-        const visible = isAdmin
-          ? allPericopes
-          : allPericopes.filter((p) => p.analyst_name === userName);
-
-        setCounts(countStatuses(visible));
-        setAnalysts(isAdmin ? buildAnalystTable(allPericopes) : []);
-      } catch {
-        // silently handle
-      } finally {
+        setCounts({
+          total: data.total,
+          draft: data.draft,
+          cross_check: data.cross_check,
+          approved: data.approved,
+          unstarted: data.unstarted,
+        });
+        setEnabledBooks(data.enabled_books);
+        if (isAdmin) setAnalysts(data.analysts);
+      })
+      .catch(() => {})
+      .finally(() => {
         if (!cancelled) setLoading(false);
-      }
-    }
+      });
 
-    load();
     return () => { cancelled = true; };
-  }, [user, isAdmin]);
+  }, [isAdmin]);
 
   if (loading) return <LoadingSpinner />;
 
@@ -142,7 +88,7 @@ export function DashboardPage() {
                 <div>
                   <p className="text-xs text-verde/60 font-medium">{card.label}</p>
                   {card.key === "total" ? (
-                    <p className="text-xs text-verde/40">{enabledBooks.length} books enabled</p>
+                    <p className="text-xs text-verde/40">{enabledBooks} books enabled</p>
                   ) : (
                     <p className="text-xs text-verde/40">
                       {counts.total > 0
@@ -221,26 +167,6 @@ export function DashboardPage() {
           </CardContent>
         </Card>
       )}
-
-      {/* Quick Links */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Quick Links</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {enabledBooks.map((book) => (
-              <button
-                key={book.id}
-                onClick={() => navigate(`/app/books/${book.id}`)}
-                className="rounded-lg border border-areia/30 px-3 py-1.5 text-sm font-medium text-verde/70 hover:border-telha/30 hover:text-telha transition-colors"
-              >
-                {book.abbreviation}
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
