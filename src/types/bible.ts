@@ -34,6 +34,7 @@ export interface PericopeWithStatus extends Pericope {
   locked_by: string | null;
   locked_by_name: string | null;
   analyst_name: string | null;
+  unresolved_feedback_count: number;
 }
 
 export type MeaningMapStatus = "draft" | "cross_check" | "approved";

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { pericopesAPI } from "../../../services/api";
+import { bhsaAPI, pericopesAPI } from "../../../services/api";
 import type { BibleBook } from "../../../types/bible";
 import { Button } from "../../ui/button";
 
@@ -17,19 +17,27 @@ export function AddPericopeForm({ book, onSuccess, onCancel }: AddPericopeFormPr
     const [verseEnd, setVerseEnd] = useState<number>(1);
     const [title, setTitle] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [verseCounts, setVerseCounts] = useState<Record<string, number>>({});
+
+    useEffect(() => {
+        bhsaAPI.getVerseCounts(book.name).then(setVerseCounts).catch(() => {});
+    }, [book.name]);
+
+    const maxVerseStart = verseCounts[String(chapterStart)] ?? 176;
+    const maxVerseEnd = verseCounts[String(chapterEnd)] ?? 176;
 
     const reference = chapterStart === chapterEnd
-        ? `${book.abbreviation} ${chapterStart}:${verseStart}–${verseEnd}`
-        : `${book.abbreviation} ${chapterStart}:${verseStart}–${chapterEnd}:${verseEnd}`;
+        ? `${book.abbreviation} ${chapterStart}:${verseStart}\u2013${verseEnd}`
+        : `${book.abbreviation} ${chapterStart}:${verseStart}\u2013${chapterEnd}:${verseEnd}`;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (chapterEnd < chapterStart) {
-            toast.error("Chapter end must be ≥ chapter start.");
+            toast.error("Chapter end must be \u2265 chapter start.");
             return;
         }
         if (chapterEnd === chapterStart && verseEnd < verseStart) {
-            toast.error("Verse end must be ≥ verse start within the same chapter.");
+            toast.error("Verse end must be \u2265 verse start within the same chapter.");
             return;
         }
         setSubmitting(true);
@@ -53,12 +61,12 @@ export function AddPericopeForm({ book, onSuccess, onCancel }: AddPericopeFormPr
     };
 
     const inputClass =
-        "w-full rounded-md border border-areia/40 bg-white px-3 py-2 text-sm text-preto placeholder:text-verde/40 focus:outline-none focus:ring-2 focus:ring-telha/30";
+        "w-full rounded-md border border-areia/40 bg-surface px-3 py-2 text-sm text-preto placeholder:text-verde/40 focus:outline-none focus:ring-2 focus:ring-telha/30";
 
     return (
         <form
             onSubmit={handleSubmit}
-            className="rounded-lg border border-telha/20 bg-white p-4 shadow-sm"
+            className="rounded-lg border border-telha/20 bg-surface p-4 shadow-sm"
         >
             <h4 className="text-sm font-semibold text-preto mb-4">Add Pericope</h4>
 
@@ -76,6 +84,8 @@ export function AddPericopeForm({ book, onSuccess, onCancel }: AddPericopeFormPr
                             if (chapterEnd < newStart) {
                                 setChapterEnd(newStart);
                             }
+                            const max = verseCounts[String(newStart)];
+                            if (max && verseStart > max) setVerseStart(max);
                         }}
                         className={inputClass}
                         required
@@ -86,6 +96,7 @@ export function AddPericopeForm({ book, onSuccess, onCancel }: AddPericopeFormPr
                     <input
                         type="number"
                         min={1}
+                        max={maxVerseStart}
                         value={verseStart}
                         onChange={(e) => setVerseStart(Number(e.target.value))}
                         className={inputClass}
@@ -101,7 +112,12 @@ export function AddPericopeForm({ book, onSuccess, onCancel }: AddPericopeFormPr
                         min={chapterStart}
                         max={book.chapter_count}
                         value={chapterEnd}
-                        onChange={(e) => setChapterEnd(Number(e.target.value))}
+                        onChange={(e) => {
+                            const newEnd = Number(e.target.value);
+                            setChapterEnd(newEnd);
+                            const max = verseCounts[String(newEnd)];
+                            if (max && verseEnd > max) setVerseEnd(max);
+                        }}
                         className={inputClass}
                         required
                     />
@@ -111,6 +127,7 @@ export function AddPericopeForm({ book, onSuccess, onCancel }: AddPericopeFormPr
                     <input
                         type="number"
                         min={1}
+                        max={maxVerseEnd}
                         value={verseEnd}
                         onChange={(e) => setVerseEnd(Number(e.target.value))}
                         className={inputClass}
@@ -140,7 +157,7 @@ export function AddPericopeForm({ book, onSuccess, onCancel }: AddPericopeFormPr
                     Cancel
                 </Button>
                 <Button type="submit" size="sm" disabled={submitting}>
-                    {submitting ? "Saving…" : "Add Pericope"}
+                    {submitting ? "Saving\u2026" : "Add Pericope"}
                 </Button>
             </div>
         </form>

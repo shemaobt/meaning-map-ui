@@ -21,8 +21,8 @@ export function BookCard({ book, approvedCount, totalPericopes }: BookCardProps)
       className={cn(
         "relative flex flex-col items-start justify-between rounded-xl p-2.5 sm:p-3 md:p-4 text-left transition-all aspect-[5/3]",
         isEnabled
-          ? "bg-white shadow-sm border border-transparent hover:shadow-md hover:border-telha/20 cursor-pointer"
-          : "bg-[#F3F2EB] border border-transparent cursor-not-allowed opacity-[0.85]"
+          ? "bg-surface shadow-sm border border-transparent hover:shadow-md hover:border-telha/20 cursor-pointer"
+          : "bg-surface-alt border border-transparent cursor-not-allowed opacity-[0.85]"
       )}
     >
       <div className="flex w-full items-start justify-between gap-1 overflow-hidden">
@@ -32,7 +32,7 @@ export function BookCard({ book, approvedCount, totalPericopes }: BookCardProps)
             {book.name}
           </span>
         </div>
-        <span className="rounded-full bg-[#EAE8D9] px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-verde/60 shrink-0">
+        <span className="rounded-full bg-areia/20 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-verde/60 shrink-0">
           {book.testament}
         </span>
       </div>
