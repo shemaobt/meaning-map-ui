@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-branco: #F6F5EB;
+  --color-areia: #C5C29F;
+  --color-azul: #89AAA3;
+  --color-telha: #BE4A01;
+  --color-verde-claro: #777D45;
+  --color-verde: #3F3E20;
+  --color-preto: #0A0703;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F3F2EB;
+
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Merriweather", ui-serif, Georgia, serif;
+}
+
+@layer base {
+  .dark {
+    --color-branco: #16150F;
+    --color-areia: #4A4635;
+    --color-azul: #A3C4BD;
+    --color-telha: #D4702E;
+    --color-verde-claro: #9AAD52;
+    --color-verde: #A3A17A;
+    --color-preto: #E8E4D9;
+    --color-surface: #1E1D17;
+    --color-surface-alt: #252419;
+    color-scheme: dark;
+  }
+}
+
+body {
+  @apply bg-branco text-preto font-sans antialiased;
+  margin: 0;
+}
+
+*:focus-visible {
+  @apply outline-none ring-2 ring-telha ring-offset-1 ring-offset-branco;
+}
