@@ -10,9 +10,9 @@ const buttonVariants = cva(
       variant: {
         default: "bg-telha text-white hover:bg-telha/90 active:scale-[0.98]",
         secondary: "bg-areia/20 text-verde hover:bg-areia/30",
-        outline: "border border-areia bg-white text-preto hover:bg-branco",
+        outline: "border border-areia bg-surface text-preto hover:bg-branco",
         ghost: "text-verde hover:bg-areia/10",
-        destructive: "bg-red-600 text-white hover:bg-red-700",
+        destructive: "bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600",
         link: "text-telha underline-offset-4 hover:underline",
       },
       size: {

@@ -46,7 +46,7 @@ export function BHSAPanel() {
                       {phrase.words.map((word) => (
                         <div
                           key={word.word_id}
-                          className="rounded bg-white border border-areia/20 px-2 py-1 text-center"
+                          className="rounded bg-surface border border-areia/20 px-2 py-1 text-center"
                         >
                           <span className="block text-sm font-serif" dir="rtl" lang="he">
                             {word.text}

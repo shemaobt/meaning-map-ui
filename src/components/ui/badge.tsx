@@ -11,10 +11,10 @@ const badgeVariants = cva(
         inReview: "bg-azul/20 text-azul",
         crossCheck: "bg-telha/10 text-telha",
         approved: "bg-verde-claro/20 text-verde-claro",
-        locked: "bg-red-100 text-red-700",
+        locked: "bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-400",
         ot: "bg-verde-claro/20 text-verde-claro",
         nt: "bg-areia/20 text-areia",
-        warning: "bg-amber-100 text-amber-800",
+        warning: "bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400",
       },
     },
     defaultVariants: {

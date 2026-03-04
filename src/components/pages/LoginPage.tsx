@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { toast } from "sonner";
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -18,6 +19,7 @@ export function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
+      toast.success("Welcome back!");
       navigate("/app/books");
     } catch {
       setError("Invalid username or password");
@@ -31,14 +33,14 @@ export function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-preto mb-2">
-            <span className="text-telha">Prose</span> MeaningMaps
+            <span className="text-telha">Bible</span> MeaningMaps
           </h1>
           <p className="text-sm text-verde/70">Welcome back! Please sign in to continue</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-500 text-center">
+            <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-500 text-center dark:bg-red-950/30 dark:border-red-800/40 dark:text-red-400">
               {error}
             </div>
           )}
@@ -49,7 +51,7 @@ export function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
-              className="bg-yellow-50/50 border-areia/40 placeholder:text-verde/50"
+              className="bg-branco border-areia/40 placeholder:text-verde/50"
               required
               autoFocus
             />
@@ -59,7 +61,7 @@ export function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="bg-yellow-50/50 border-areia/40 placeholder:text-verde/50"
+              className="bg-branco border-areia/40 placeholder:text-verde/50"
               required
             />
           </div>

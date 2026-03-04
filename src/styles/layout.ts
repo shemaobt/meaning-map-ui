@@ -6,6 +6,6 @@ export const layout = {
     chapters: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4",
     pericopes: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4",
   },
-  sidebar: "w-64 flex-shrink-0 border-r border-areia/30 bg-white",
+  sidebar: "w-64 flex-shrink-0 border-r border-areia/30 bg-surface",
   main: "flex-1 overflow-y-auto",
 } as const;
