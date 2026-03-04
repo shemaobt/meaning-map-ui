@@ -15,10 +15,7 @@ export function GenerationOverlay({ isActive }: GenerationOverlayProps) {
     const [currentStep, setCurrentStep] = useState(0);
 
     useEffect(() => {
-        if (!isActive) {
-            setCurrentStep(0);
-            return;
-        }
+        if (!isActive) return;
         const timers: ReturnType<typeof setTimeout>[] = [];
         let elapsed = 0;
         for (let i = 0; i < STEPS.length - 1; i++) {
@@ -26,7 +23,10 @@ export function GenerationOverlay({ isActive }: GenerationOverlayProps) {
             const step = i + 1;
             timers.push(setTimeout(() => setCurrentStep(step), elapsed));
         }
-        return () => timers.forEach(clearTimeout);
+        return () => {
+            timers.forEach(clearTimeout);
+            setCurrentStep(0);
+        };
     }, [isActive]);
 
     if (!isActive) return null;
