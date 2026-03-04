@@ -3,6 +3,7 @@ import type { AccessRequest, AuthResponse, LoginRequest, MyRole, SignupRequest, 
 import type { BibleBook, ChapterSummary, DashboardSummary, Pericope, PericopeCreate, PericopeWithStatus } from "../types/bible";
 import type { MeaningMap, MeaningMapData, MeaningMapFeedback } from "../types/meaningMap";
 import type { BHSAPassageData, BHSAStatus } from "../types/bhsa";
+import type { Notification, UnreadCountResponse } from "../types/notification";
 import { ACCESS_TOKEN_KEY, API_BASE_URL, REFRESH_TOKEN_KEY } from "../constants/app";
 
 const client = axios.create({ baseURL: API_BASE_URL });
@@ -123,6 +124,10 @@ export const bhsaAPI = {
         params: { book, chapter, verse_start: verseStart, verse_end: verseEnd },
       })
       .then((r) => r.data),
+  getVerseCounts: (bookName: string) =>
+    client
+      .get<Record<string, number>>(`/bhsa/books/${encodeURIComponent(bookName)}/verse-counts`)
+      .then((r) => r.data),
 };
 
 export const ragAPI = {
@@ -130,6 +135,17 @@ export const ragAPI = {
     client
       .post<{ answer: string; sources: string[] }>("/rag/query", { question, namespace })
       .then((r) => r.data),
+};
+
+export const notificationsAPI = {
+  list: (params?: { unread_only?: boolean; limit?: number }) =>
+    client.get<Notification[]>("/notifications", { params }).then((r) => r.data),
+  unreadCount: () =>
+    client.get<UnreadCountResponse>("/notifications/unread-count").then((r) => r.data),
+  markAsRead: (id: string) =>
+    client.patch<Notification>(`/notifications/${id}/read`).then((r) => r.data),
+  markAllAsRead: () =>
+    client.post<{ count: number }>("/notifications/mark-all-read").then((r) => r.data),
 };
 
 export const accessRequestsAPI = {
