@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BookOpen, Sparkles, Brain, CheckCircle, Circle, Loader2 } from "lucide-react";
+import { BookOpen, Sparkles, Brain, CheckCircle, Circle, Loader2, AlertTriangle } from "lucide-react";
 
 const STEPS = [
     { label: "Extracting Hebrew data...", icon: BookOpen, delay: 2000 },
@@ -9,9 +9,10 @@ const STEPS = [
 
 interface GenerationOverlayProps {
     isActive: boolean;
+    error?: string | null;
 }
 
-export function GenerationOverlay({ isActive }: GenerationOverlayProps) {
+export function GenerationOverlay({ isActive, error }: GenerationOverlayProps) {
     const [currentStep, setCurrentStep] = useState(0);
 
     useEffect(() => {
@@ -29,14 +30,14 @@ export function GenerationOverlay({ isActive }: GenerationOverlayProps) {
         };
     }, [isActive]);
 
-    if (!isActive) return null;
+    if (!isActive && !error) return null;
 
     return (
         <div className="space-y-2 py-1">
             {STEPS.map((step, i) => {
                 const StepIcon = step.icon;
                 const isDone = i < currentStep;
-                const isCurrent = i === currentStep;
+                const isCurrent = i === currentStep && !error;
 
                 return (
                     <div
@@ -63,6 +64,12 @@ export function GenerationOverlay({ isActive }: GenerationOverlayProps) {
                     </div>
                 );
             })}
+            {error && (
+                <div className="flex items-start gap-2 rounded-md border border-telha/30 bg-telha/10 p-2.5 mt-1">
+                    <AlertTriangle className="h-4 w-4 text-telha shrink-0 mt-0.5" />
+                    <p className="text-xs text-telha font-medium">{error}</p>
+                </div>
+            )}
         </div>
     );
 }
