@@ -7,6 +7,7 @@ import { Button } from "../../ui/button";
 import { useAuth } from "../../../contexts/AuthContext";
 import { meaningMapsAPI } from "../../../services/api";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 import { GenerationOverlay } from "./GenerationOverlay";
 import { Eye, ClipboardCheck, Pencil, MessageSquare } from "lucide-react";
 
@@ -19,6 +20,7 @@ export function PericopeCard({ pericope }: PericopeCardProps) {
     const navigate = useNavigate();
     const { user } = useAuth();
     const [generating, setGenerating] = useState(false);
+    const [genError, setGenError] = useState<string | null>(null);
 
     const isLockedByOther = pericope.locked_by !== null && pericope.locked_by !== user?.id;
     const isAnalyst = pericope.analyst_name === user?.display_name;
@@ -45,6 +47,7 @@ export function PericopeCard({ pericope }: PericopeCardProps) {
 
     const handleGenerate = async () => {
         setGenerating(true);
+        setGenError(null);
         toast.info("Generating meaning map...");
         try {
             const mm = await meaningMapsAPI.generate({
@@ -52,8 +55,12 @@ export function PericopeCard({ pericope }: PericopeCardProps) {
             });
             toast.success("Meaning map generated.");
             navigate(`/app/maps/${mm.id}`);
-        } catch {
-            toast.error("Could not generate meaning map.");
+        } catch (e) {
+            const detail =
+                e instanceof AxiosError ? e.response?.data?.detail : undefined;
+            const msg = detail || "Could not generate meaning map.";
+            toast.error(msg);
+            setGenError(msg);
             setGenerating(false);
         }
     };
@@ -88,7 +95,7 @@ export function PericopeCard({ pericope }: PericopeCardProps) {
                 </div>
             )}
 
-            <GenerationOverlay isActive={generating} />
+            <GenerationOverlay isActive={generating} error={genError} />
 
             {!generating && (
                 <div className="flex flex-wrap gap-2 mt-auto">
