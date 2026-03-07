@@ -4,7 +4,6 @@ import { Button } from "../../../ui/button";
 import { Level1Card } from "./Level1Card";
 import { SceneCard } from "./SceneCard";
 import { PropositionsCard } from "./PropositionsCard";
-import { ReviewProgressBar } from "./ProgressBar";
 import { Send, CheckCircle, Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -131,8 +130,6 @@ export function ReviewTab({
           </div>
         </div>
       )}
-
-      <ReviewProgressBar />
 
       <Level1Card
         readOnly={readOnly}

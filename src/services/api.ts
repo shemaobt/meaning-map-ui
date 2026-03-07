@@ -4,6 +4,7 @@ import type { BibleBook, ChapterSummary, DashboardSummary, Pericope, PericopeCre
 import type { MeaningMap, MeaningMapData, MeaningMapFeedback } from "../types/meaningMap";
 import type { BHSAPassageData, BHSAStatus } from "../types/bhsa";
 import type { Notification, UnreadCountResponse } from "../types/notification";
+import type { BCD, BCDFeedback, BCDGenerationLog, BCDListItem, PassageEntryBrief, StalenessResult, ValidationIssue } from "../types/bookContext";
 import { ACCESS_TOKEN_KEY, API_BASE_URL, REFRESH_TOKEN_KEY } from "../constants/app";
 
 const client = axios.create({ baseURL: API_BASE_URL });
@@ -146,6 +147,45 @@ export const notificationsAPI = {
     client.patch<Notification>(`/notifications/${id}/read`).then((r) => r.data),
   markAllAsRead: () =>
     client.post<{ count: number }>("/notifications/mark-all-read").then((r) => r.data),
+};
+
+export const bookContextAPI = {
+  list: (bookId?: string) =>
+    client.get<BCDListItem[]>("/book-context", { params: bookId ? { book_id: bookId } : undefined }).then((r) => r.data),
+  create: (bookId: string, data: { genre: string; section_label?: string; section_range_start?: number; section_range_end?: number }) =>
+    client.post<BCD>(`/book-context/${bookId}`, data).then((r) => r.data),
+  get: (bcdId: string) =>
+    client.get<BCD>(`/book-context/${bcdId}`).then((r) => r.data),
+  updateSection: (bcdId: string, sectionKey: string, data: unknown) =>
+    client.patch<BCD>(`/book-context/${bcdId}/sections/${sectionKey}`, { data }).then((r) => r.data),
+  approve: (bcdId: string) =>
+    client.post<BCD>(`/book-context/${bcdId}/approve`).then((r) => r.data),
+  requestRevision: (bcdId: string) =>
+    client.post<BCD>(`/book-context/${bcdId}/request-revision`).then((r) => r.data),
+  createNewVersion: (bcdId: string) =>
+    client.post<BCD>(`/book-context/${bcdId}/new-version`).then((r) => r.data),
+  generate: (bcdId: string, body?: { feedback?: string }) =>
+    client.post<BCD>(`/book-context/${bcdId}/generate`, body ?? null).then((r) => r.data),
+  getLogs: (bcdId: string) =>
+    client.get<BCDGenerationLog[]>(`/book-context/${bcdId}/logs`).then((r) => r.data),
+  addFeedback: (bcdId: string, data: { section_key: string; content: string }) =>
+    client.post<BCDFeedback>(`/book-context/${bcdId}/feedback`, data).then((r) => r.data),
+  listFeedback: (bcdId: string) =>
+    client.get<BCDFeedback[]>(`/book-context/${bcdId}/feedback`).then((r) => r.data),
+  resolveFeedback: (bcdId: string, feedbackId: string) =>
+    client.patch<BCDFeedback>(`/book-context/${bcdId}/feedback/${feedbackId}`).then((r) => r.data),
+  getApprovalStatus: (bcdId: string) =>
+    client.get(`/book-context/${bcdId}/approval-status`).then((r) => r.data),
+  setActive: (bcdId: string) =>
+    client.post<BCD>(`/book-context/${bcdId}/set-active`).then((r) => r.data),
+  cancelGeneration: (bcdId: string) =>
+    client.post<{ deleted: boolean; book_id: string }>(`/book-context/${bcdId}/cancel-generation`).then((r) => r.data),
+  getEntryBrief: (pericopeId: string) =>
+    client.get<PassageEntryBrief>(`/book-context/entry-brief/${pericopeId}`).then((r) => r.data),
+  checkStaleness: (meaningMapId: string) =>
+    client.get<StalenessResult>(`/book-context/staleness-check/${meaningMapId}`).then((r) => r.data),
+  validateMap: (meaningMapId: string) =>
+    client.get<ValidationIssue[]>(`/book-context/validate/${meaningMapId}`).then((r) => r.data),
 };
 
 export const accessRequestsAPI = {

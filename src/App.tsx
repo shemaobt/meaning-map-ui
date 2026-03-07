@@ -12,6 +12,7 @@ import { BooksPage } from "./components/pages/BooksPage";
 import { BookPage } from "./components/pages/BookPage";
 import { MeaningMapPage } from "./components/pages/MeaningMapPage";
 import { NotificationsPage } from "./components/pages/NotificationsPage";
+import { BCDDetailPage } from "./components/pages/BCDDetailPage";
 
 function ThemedToaster() {
   const { resolvedTheme } = useTheme();
@@ -49,6 +50,7 @@ export default function App() {
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="books" element={<BooksPage />} />
               <Route path="books/:bookId" element={<BookPage />} />
+              <Route path="book-context/:bcdId" element={<BCDDetailPage />} />
               <Route path="maps/:mapId" element={<MeaningMapPage />} />
               <Route path="notifications" element={<NotificationsPage />} />
             </Route>

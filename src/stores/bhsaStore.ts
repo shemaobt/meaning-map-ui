@@ -30,7 +30,7 @@ export const useBHSAStore = create<BHSAStore>((set, get) => ({
   panelRef: null,
   panelData: null,
 
-  isSidebarOpen: true,
+  isSidebarOpen: false,
   pericopeRef: null,
   pericopeData: null,
   pericopeLoading: false,
