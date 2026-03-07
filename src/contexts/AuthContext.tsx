@@ -14,7 +14,9 @@ const MM_APP_KEY = "meaning-map-generator";
 
 interface AuthContextValue {
   user: User | null;
+  /** @deprecated Use appRoles instead */
   appRole: string | null;
+  appRoles: string[];
   accessRequestStatus: "pending" | "approved" | "rejected" | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -24,13 +26,23 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function deriveHighestRole(roles: string[]): string | null {
+  if (roles.includes("admin")) return "admin";
+  if (roles.includes("facilitator")) return "facilitator";
+  if (roles.includes("analyst")) return "analyst";
+  if (roles.length > 0) return roles[0];
+  return null;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [appRole, setAppRole] = useState<string | null>(null);
+  const [appRoles, setAppRoles] = useState<string[]>([]);
   const [accessRequestStatus, setAccessRequestStatus] = useState<
     "pending" | "approved" | "rejected" | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const appRole = deriveHighestRole(appRoles);
 
   const ensureAccessRequest = useCallback(async () => {
     try {
@@ -46,6 +58,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const resolveRoles = useCallback(
+    async (u: User): Promise<string[]> => {
+      if (u.is_platform_admin) return ["admin"];
+      const roles = await authAPI.myRoles(MM_APP_KEY);
+      const matched = roles
+        .filter((r: MyRole) => r.app_key === MM_APP_KEY)
+        .map((r: MyRole) => r.role_key);
+      if (matched.length === 0) {
+        await ensureAccessRequest();
+      }
+      return matched;
+    },
+    [ensureAccessRequest],
+  );
+
   const fetchUser = useCallback(async () => {
     const token = localStorage.getItem(ACCESS_TOKEN_KEY);
     if (!token) {
@@ -53,29 +80,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
     try {
-      const [u, roles] = await Promise.all([
-        authAPI.me(),
-        authAPI.myRoles(MM_APP_KEY),
-      ]);
+      const u = await authAPI.me();
       setUser(u);
-      if (u.is_platform_admin) {
-        setAppRole("admin");
-      } else {
-        const match = roles.find((r: MyRole) => r.app_key === MM_APP_KEY);
-        if (match) {
-          setAppRole(match.role_key);
-        } else {
-          setAppRole(null);
-          await ensureAccessRequest();
-        }
-      }
+      const roles = await resolveRoles(u);
+      setAppRoles(roles);
     } catch {
       localStorage.removeItem(ACCESS_TOKEN_KEY);
       localStorage.removeItem(REFRESH_TOKEN_KEY);
     } finally {
       setIsLoading(false);
     }
-  }, [ensureAccessRequest]);
+  }, [resolveRoles]);
 
   useEffect(() => {
     fetchUser();
@@ -86,19 +101,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(ACCESS_TOKEN_KEY, res.tokens.access_token);
     localStorage.setItem(REFRESH_TOKEN_KEY, res.tokens.refresh_token);
     setUser(res.user);
-
-    if (res.user.is_platform_admin) {
-      setAppRole("admin");
-    } else {
-      const roles = await authAPI.myRoles(MM_APP_KEY);
-      const match = roles.find((r: MyRole) => r.app_key === MM_APP_KEY);
-      if (match) {
-        setAppRole(match.role_key);
-      } else {
-        setAppRole(null);
-        await ensureAccessRequest();
-      }
-    }
+    const roles = await resolveRoles(res.user);
+    setAppRoles(roles);
   };
 
   const signup = async (email: string, password: string, displayName: string) => {
@@ -106,19 +110,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(ACCESS_TOKEN_KEY, res.tokens.access_token);
     localStorage.setItem(REFRESH_TOKEN_KEY, res.tokens.refresh_token);
     setUser(res.user);
-    setAppRole(null);
+    setAppRoles([]);
     await ensureAccessRequest();
   };
 
   const logout = async () => {
     await authAPI.logout();
     setUser(null);
-    setAppRole(null);
+    setAppRoles([]);
     setAccessRequestStatus(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, appRole, accessRequestStatus, isLoading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, appRole, appRoles, accessRequestStatus, isLoading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
