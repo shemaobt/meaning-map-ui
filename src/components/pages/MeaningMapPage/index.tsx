@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { meaningMapsAPI } from "../../../services/api";
+import { meaningMapsAPI, bookContextAPI } from "../../../services/api";
 import { useMeaningMapStore } from "../../../stores/meaningMapStore";
 import { useBHSAStore } from "../../../stores/bhsaStore";
 import { useAuth } from "../../../contexts/AuthContext";
+import type { PassageEntryBrief, StalenessResult } from "../../../types/bookContext";
 import { StatusBadge } from "../../common/StatusBadge";
 import { LockBadge } from "../../common/LockBadge";
 import { LoadingSpinner } from "../../common/LoadingSpinner";
 import { ReviewTab } from "./ReviewTab";
 import { BHSASidebar, BHSASidebarToggle } from "./BHSASidebar";
+import { EntryBriefCard } from "./EntryBriefCard";
+import { StalenessBanner } from "./StalenessBanner";
 import { ChevronRight, Clock, Eye, Pencil } from "lucide-react";
 import type { MeaningMapStatus } from "../../../types/bible";
 
@@ -29,6 +32,8 @@ export function MeaningMapPage() {
   const { user } = useAuth();
   const currentMap = useMeaningMapStore((s) => s.currentMap);
   const [loading, setLoading] = useState(true);
+  const [entryBrief, setEntryBrief] = useState<PassageEntryBrief | null>(null);
+  const [staleness, setStaleness] = useState<StalenessResult | null>(null);
 
   const fetchMap = useCallback(async () => {
     if (!mapId) {
@@ -49,6 +54,30 @@ export function MeaningMapPage() {
     fetchMap();
     return () => useMeaningMapStore.getState().clear();
   }, [fetchMap]);
+
+  // Fetch entry brief, staleness check, and server-side validation
+  useEffect(() => {
+    if (!currentMap) return;
+    bookContextAPI.getEntryBrief(currentMap.pericope_id).then(setEntryBrief).catch(() => {});
+    if (mapId) {
+      bookContextAPI.checkStaleness(mapId).then(setStaleness).catch(() => {});
+      bookContextAPI.validateMap(mapId).then((issues) => {
+        if (issues.length > 0) {
+          const store = useMeaningMapStore.getState();
+          const existing = store.reviewState.warnings;
+          const serverWarnings = issues.map((i) => ({
+            section: i.section,
+            message: i.message,
+            severity: i.severity,
+          }));
+          const merged = [...existing, ...serverWarnings];
+          useMeaningMapStore.setState((s) => ({
+            reviewState: { ...s.reviewState, warnings: merged },
+          }));
+        }
+      }).catch(() => {});
+    }
+  }, [currentMap?.pericope_id, mapId, currentMap]);
 
   // Auto-load BHSA data for this pericope
   useEffect(() => {
@@ -136,6 +165,9 @@ export function MeaningMapPage() {
             </span>
           </div>
         </div>
+
+        {staleness && <StalenessBanner staleness={staleness} />}
+        {entryBrief && <EntryBriefCard brief={entryBrief} />}
 
         <ReviewTab
           readOnly={contentReadOnly}
