@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle, Circle, Loader2, Square, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -159,28 +159,24 @@ function StepRow({ log }: { log: { id: string; step_name: string; status: string
   );
 }
 
+function computeElapsed(startedAt: string | null): number | null {
+  if (!startedAt) return null;
+  return (Date.now() - new Date(startedAt).getTime()) / 1000;
+}
+
 function useElapsed(startedAt: string | null): number | null {
-  const [elapsed, setElapsed] = useState<number | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [elapsed, setElapsed] = useState(() => computeElapsed(startedAt));
 
   useEffect(() => {
-    if (!startedAt) {
-      setElapsed(null);
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      return;
-    }
+    if (!startedAt) return;
 
-    const start = new Date(startedAt).getTime();
-    const tick = () => setElapsed((Date.now() - start) / 1000);
-    tick();
-    intervalRef.current = setInterval(tick, 1000);
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
+    const id = setInterval(() => {
+      setElapsed(computeElapsed(startedAt));
+    }, 1000);
+    return () => clearInterval(id);
   }, [startedAt]);
 
-  return elapsed;
+  return startedAt ? elapsed : null;
 }
 
 function StepIcon({ status }: { status: string }) {
