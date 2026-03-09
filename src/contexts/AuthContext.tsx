@@ -12,23 +12,27 @@ import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../constants/app";
 
 const MM_APP_KEY = "meaning-map-generator";
 
+const SPECIALIST_ROLES = ["exegete", "biblical_language_specialist", "translation_specialist"] as const;
+
 interface AuthContextValue {
   user: User | null;
-  /** @deprecated Use appRoles instead */
   appRole: string | null;
   appRoles: string[];
+  isAdmin: boolean;
+  isAnalyst: boolean;
+  canApproveBCD: boolean;
   accessRequestStatus: "pending" | "approved" | "rejected" | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, displayName: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function deriveHighestRole(roles: string[]): string | null {
   if (roles.includes("admin")) return "admin";
-  if (roles.includes("facilitator")) return "facilitator";
   if (roles.includes("analyst")) return "analyst";
   if (roles.length > 0) return roles[0];
   return null;
@@ -43,6 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const appRole = deriveHighestRole(appRoles);
+  const isAdmin = appRole === "admin";
+  const isAnalyst = appRoles.includes("analyst") || isAdmin;
+  const canApproveBCD =
+    isAdmin || appRoles.some((r) => (SPECIALIST_ROLES as readonly string[]).includes(r));
 
   const ensureAccessRequest = useCallback(async () => {
     try {
@@ -72,6 +80,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     [ensureAccessRequest],
   );
+
+  const refreshUser = useCallback(async () => {
+    const u = await authAPI.me();
+    setUser(u);
+  }, []);
 
   const fetchUser = useCallback(async () => {
     const token = localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -122,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, appRole, appRoles, accessRequestStatus, isLoading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, appRole, appRoles, isAdmin, isAnalyst, canApproveBCD, accessRequestStatus, isLoading, login, signup, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -82,3 +82,21 @@ export interface ValidationIssue {
   message: string;
   section: string;
 }
+
+export interface BCDApprovalEntry {
+  id: string;
+  user_id: string;
+  user_name: string;
+  avatar_url: string | null;
+  role_at_approval: string;
+  roles_at_approval: string[];
+  approved_at: string | null;
+}
+
+export interface BCDApprovalStatus {
+  approvals: BCDApprovalEntry[];
+  covered_specialties: string[];
+  missing_specialties: string[];
+  distinct_reviewers: number;
+  is_complete: boolean;
+}

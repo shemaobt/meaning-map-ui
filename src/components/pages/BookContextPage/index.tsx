@@ -15,12 +15,12 @@ import { CreateBCDDialog } from "./CreateBCDDialog";
 
 export function BookContextPage() {
   const { bookId } = useParams<{ bookId: string }>();
-  const { appRole } = useAuth();
+  const { isAdmin, isAnalyst } = useAuth();
   const { list, isLoading, fetchList } = useBCDStore();
   const [book, setBook] = useState<BibleBook | null>(null);
   const [showCreate, setShowCreate] = useState(false);
 
-  const canManage = appRole === "admin" || appRole === "facilitator";
+  const canEdit = isAdmin || isAnalyst;
 
   useEffect(() => {
     if (!bookId) return;
@@ -83,7 +83,7 @@ export function BookContextPage() {
             {list.length} version{list.length !== 1 ? "s" : ""}
           </p>
         </div>
-        {canManage && (
+        {canEdit && (
           <div className="flex gap-2 self-start sm:self-auto">
             <Button
               size="sm"
@@ -103,7 +103,7 @@ export function BookContextPage() {
           {sortedList.map((bcd) => (
             <div key={bcd.id}>
               <BCDCard bcd={bcd} />
-              {canManage && bcd.status === "draft" && (
+              {canEdit && bcd.status === "draft" && (
                 <Button
                   size="sm"
                   variant="outline"
@@ -121,7 +121,7 @@ export function BookContextPage() {
         <EmptyState
           title="No Book Context Documents"
           description={
-            canManage
+            canEdit
               ? "Create the first version to get started."
               : "No context documents have been created for this book yet."
           }

@@ -55,11 +55,11 @@ const SECTIONS: SectionDef[] = [
 
 export function BCDDetailPage() {
   const { bcdId } = useParams<{ bcdId: string }>();
-  const { appRole, appRoles } = useAuth();
+  const { isAdmin, isAnalyst, canApproveBCD } = useAuth();
   const { currentBCD, isLoading, fetchBCD, clear } = useBCDStore();
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
-  const canManage = appRole === "admin" || appRole === "facilitator";
+  const canEdit = isAdmin || isAnalyst;
 
   useEffect(() => {
     if (bcdId) fetchBCD(bcdId);
@@ -89,21 +89,21 @@ export function BCDDetailPage() {
             bookId={currentBCD.book_id}
             currentVersion={currentBCD.version}
             isActive={currentBCD.is_active}
-            canManage={canManage}
+            canManage={isAdmin}
           />
         </div>
         <BCDActionBar
           bcdId={currentBCD.id}
           status={currentBCD.status}
-          canManage={canManage}
+          canEdit={canEdit}
+          canApproveBCD={canApproveBCD}
           hasContent={currentBCD.structural_outline != null || currentBCD.participant_register != null}
           isApproved={currentBCD.status === "approved"}
-          userRoles={appRoles}
         />
       </div>
 
       {(currentBCD.status === "generating" || useBCDStore.getState().generationLogs.length > 0) && (
-        <GenerationPanel bcdId={currentBCD.id} canManage={canManage} />
+        <GenerationPanel bcdId={currentBCD.id} canManage={isAdmin} />
       )}
 
       <ApprovalProgress bcdId={currentBCD.id} status={currentBCD.status} />
@@ -129,7 +129,7 @@ export function BCDDetailPage() {
             <X className="h-3 w-3" />
             Back to overview
           </button>
-          {canManage && currentBCD.status === "draft" ? (
+          {canEdit && currentBCD.status === "draft" ? (
             <EditableSection
               bcdId={currentBCD.id}
               sectionKey={activeSection}
