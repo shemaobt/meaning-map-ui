@@ -4,7 +4,7 @@ import type { BibleBook, ChapterSummary, DashboardSummary, Pericope, PericopeCre
 import type { MeaningMap, MeaningMapData, MeaningMapFeedback } from "../types/meaningMap";
 import type { BHSAPassageData, BHSAStatus } from "../types/bhsa";
 import type { Notification, UnreadCountResponse } from "../types/notification";
-import type { BCD, BCDFeedback, BCDGenerationLog, BCDListItem, PassageEntryBrief, StalenessResult, ValidationIssue } from "../types/bookContext";
+import type { BCD, BCDApprovalStatus, BCDFeedback, BCDGenerationLog, BCDListItem, PassageEntryBrief, StalenessResult, ValidationIssue } from "../types/bookContext";
 import { ACCESS_TOKEN_KEY, API_BASE_URL, REFRESH_TOKEN_KEY } from "../constants/app";
 
 const client = axios.create({ baseURL: API_BASE_URL });
@@ -64,6 +64,8 @@ export const authAPI = {
       return client.post("/auth/logout", { refresh_token: refreshToken });
     }
   },
+  updateMe: (data: { display_name?: string; avatar_url?: string | null }) =>
+    client.patch<User>("/auth/me", data).then((r) => r.data),
 };
 
 export const booksAPI = {
@@ -175,7 +177,7 @@ export const bookContextAPI = {
   resolveFeedback: (bcdId: string, feedbackId: string) =>
     client.patch<BCDFeedback>(`/book-context/${bcdId}/feedback/${feedbackId}`).then((r) => r.data),
   getApprovalStatus: (bcdId: string) =>
-    client.get(`/book-context/${bcdId}/approval-status`).then((r) => r.data),
+    client.get<BCDApprovalStatus>(`/book-context/${bcdId}/approval-status`).then((r) => r.data),
   setActive: (bcdId: string) =>
     client.post<BCD>(`/book-context/${bcdId}/set-active`).then((r) => r.data),
   cancelGeneration: (bcdId: string) =>
@@ -186,6 +188,14 @@ export const bookContextAPI = {
     client.get<StalenessResult>(`/book-context/staleness-check/${meaningMapId}`).then((r) => r.data),
   validateMap: (meaningMapId: string) =>
     client.get<ValidationIssue[]>(`/book-context/validate/${meaningMapId}`).then((r) => r.data),
+};
+
+export const uploadsAPI = {
+  image: (file: File, folder: string) => {
+    const form = new FormData();
+    form.append("file", file);
+    return client.post<{ url: string }>(`/uploads/image?folder=${encodeURIComponent(folder)}`, form);
+  },
 };
 
 export const accessRequestsAPI = {
