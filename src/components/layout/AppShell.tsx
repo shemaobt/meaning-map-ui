@@ -10,14 +10,14 @@ import { BHSAPanel } from "./BHSAPanel";
 import { AccessDeniedPage } from "../pages/AccessDeniedPage";
 
 export function AppShell() {
-  const { user, appRole, isLoading } = useAuth();
+  const { user, appRoles, isLoading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   useBHSAInit();
   useNotificationPolling();
 
   if (isLoading) return <LoadingSpinner />;
   if (!user) return <Navigate to="/login" replace />;
-  if (appRole === null) return <AccessDeniedPage />;
+  if (appRoles.length === 0) return <AccessDeniedPage />;
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-branco">

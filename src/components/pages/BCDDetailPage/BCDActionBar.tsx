@@ -8,18 +8,16 @@ import { useBCDStore } from "../../../stores/bcdStore";
 import type { BCDStatus } from "../../../types/bookContext";
 import { Button } from "../../ui/button";
 
-const SPECIALIST_ROLES = ["exegete", "biblical_language_specialist", "translation_specialist"];
-
 interface BCDActionBarProps {
   bcdId: string;
   status: BCDStatus;
-  canManage: boolean;
+  canEdit: boolean;
+  canApproveBCD: boolean;
   hasContent: boolean;
   isApproved: boolean;
-  userRoles?: string[];
 }
 
-export function BCDActionBar({ bcdId, status, canManage, hasContent, isApproved, userRoles = [] }: BCDActionBarProps) {
+export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent, isApproved }: BCDActionBarProps) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [showRegenDialog, setShowRegenDialog] = useState(false);
@@ -69,14 +67,12 @@ export function BCDActionBar({ bcdId, status, canManage, hasContent, isApproved,
     }
   };
 
-  const canApprove = canManage || userRoles.some((r) => SPECIALIST_ROLES.includes(r));
-
-  if (!canManage && !canApprove) return null;
+  if (!canEdit && !canApproveBCD) return null;
 
   return (
     <>
       <div className="flex flex-wrap gap-2">
-        {canManage && status !== "generating" && (
+        {canEdit && status !== "generating" && (
           <Button
             size="sm"
             onClick={onRegenerateClick}
@@ -88,7 +84,7 @@ export function BCDActionBar({ bcdId, status, canManage, hasContent, isApproved,
           </Button>
         )}
 
-        {canApprove && !isApproved && status !== "generating" && (
+        {canApproveBCD && !isApproved && status !== "generating" && (
           <Button
             size="sm"
             variant="outline"

@@ -23,8 +23,7 @@ const STATUS_CARDS: { key: keyof StatusCounts; label: string; color: string; bgC
 ];
 
 export function DashboardPage() {
-  const { appRole } = useAuth();
-  const isAdmin = appRole === "admin";
+  const { isAdmin } = useAuth();
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState<StatusCounts>({ total: 0, draft: 0, cross_check: 0, approved: 0, unstarted: 0 });
   const [analysts, setAnalysts] = useState<AnalystSummary[]>([]);
