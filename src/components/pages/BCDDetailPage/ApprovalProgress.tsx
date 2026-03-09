@@ -7,6 +7,7 @@ interface Approval {
   id: string;
   user_id: string;
   user_name: string;
+  avatar_url: string | null;
   roles_at_approval: string[];
 }
 
@@ -67,7 +68,7 @@ export function ApprovalProgress({ bcdId, status }: { bcdId: string; status: str
             {approvers.length > 0 ? (
               <div className="flex -space-x-1">
                 {approvers.map((a) => (
-                  <Avatar key={a.user_id} name={a.user_name} accent={spec.accent} accentBg={spec.accentBg} />
+                  <Avatar key={a.user_id} name={a.user_name} avatarUrl={a.avatar_url} accent={spec.accent} accentBg={spec.accentBg} />
                 ))}
               </div>
             ) : (
@@ -102,7 +103,7 @@ export function ApprovalProgress({ bcdId, status }: { bcdId: string; status: str
   );
 }
 
-function Avatar({ name, accent, accentBg }: { name: string; accent: string; accentBg: string }) {
+function Avatar({ name, avatarUrl, accent, accentBg }: { name: string; avatarUrl: string | null; accent: string; accentBg: string }) {
   const initials = name
     .split(/\s+/)
     .map((w) => w[0])
@@ -112,12 +113,20 @@ function Avatar({ name, accent, accentBg }: { name: string; accent: string; acce
 
   return (
     <div className="group relative">
-      <div className={cn(
-        "h-5 w-5 rounded-full border-2 border-surface flex items-center justify-center text-[8px] font-bold cursor-default transition-transform hover:scale-110 hover:z-10",
-        accentBg, accent,
-      )}>
-        {initials}
-      </div>
+      {avatarUrl ? (
+        <img
+          src={avatarUrl}
+          alt={name}
+          className="h-5 w-5 rounded-full border-2 border-surface object-cover cursor-default transition-transform hover:scale-110 hover:z-10"
+        />
+      ) : (
+        <div className={cn(
+          "h-5 w-5 rounded-full border-2 border-surface flex items-center justify-center text-[8px] font-bold cursor-default transition-transform hover:scale-110 hover:z-10",
+          accentBg, accent,
+        )}>
+          {initials}
+        </div>
+      )}
       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 rounded bg-preto text-branco text-[10px] font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-20">
         {name}
         <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-[3px] border-x-transparent border-t-[3px] border-t-preto" />
