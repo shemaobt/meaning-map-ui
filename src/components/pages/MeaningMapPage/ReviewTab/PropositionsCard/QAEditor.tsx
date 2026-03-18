@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { QAPair } from "../../../../../types/meaningMap";
 import { Button } from "../../../../ui/button";
 import { Input } from "../../../../ui/input";
@@ -10,6 +11,7 @@ interface QAEditorProps {
 }
 
 export function QAEditor({ content, onChange, readOnly = false }: QAEditorProps) {
+  const { t } = useTranslation();
   const updateQA = (i: number, field: "question" | "answer", value: string) => {
     const updated = [...content];
     updated[i] = { ...updated[i], [field]: value };
@@ -33,14 +35,14 @@ export function QAEditor({ content, onChange, readOnly = false }: QAEditorProps)
               value={qa.question}
               onChange={(e) => updateQA(i, "question", e.target.value)}
               readOnly={readOnly}
-              placeholder="Question?"
+              placeholder={t("meaningMap.questionPlaceholder")}
               className="text-xs h-8 font-medium"
             />
             <Input
               value={qa.answer}
               onChange={(e) => updateQA(i, "answer", e.target.value)}
               readOnly={readOnly}
-              placeholder="Answer"
+              placeholder={t("meaningMap.answerPlaceholder")}
               className="text-xs h-8"
             />
           </div>
@@ -53,7 +55,7 @@ export function QAEditor({ content, onChange, readOnly = false }: QAEditorProps)
       ))}
       {!readOnly && (
         <Button size="sm" variant="outline" onClick={addQA} className="gap-1">
-          <Plus className="h-3 w-3" /> Add Q&A
+          <Plus className="h-3 w-3" /> {t("meaningMap.addQA")}
         </Button>
       )}
     </div>

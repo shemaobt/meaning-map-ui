@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { bookContextAPI } from "../../../services/api";
@@ -21,6 +22,7 @@ interface CreateBCDDialogProps {
 }
 
 export function CreateBCDDialog({ bookId, onClose, onCreated }: CreateBCDDialogProps) {
+  const { t } = useTranslation();
   const [genre, setGenre] = useState("narrative");
   const [sectionLabel, setSectionLabel] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -33,10 +35,10 @@ export function CreateBCDDialog({ bookId, onClose, onCreated }: CreateBCDDialogP
         genre,
         section_label: sectionLabel || undefined,
       });
-      toast.success("Book Context Document created.");
+      toast.success(t("bookContext.createSuccess"));
       onCreated();
     } catch (err) {
-      const msg = err instanceof AxiosError ? err.response?.data?.detail : "Failed to create.";
+      const msg = err instanceof AxiosError ? err.response?.data?.detail : t("bookContext.createFailed");
       toast.error(msg);
     } finally {
       setSubmitting(false);
@@ -47,12 +49,12 @@ export function CreateBCDDialog({ bookId, onClose, onCreated }: CreateBCDDialogP
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
       <div className="bg-surface rounded-lg border border-areia/30 shadow-lg p-6 w-full max-w-md mx-4">
         <h3 className="text-lg font-bold text-preto mb-4">
-          Create Book Context Document
+          {t("bookContext.createTitle")}
         </h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-preto mb-2">
-              Genre
+              {t("bookContext.genreLabel")}
             </label>
             <select
               value={genre}
@@ -68,20 +70,20 @@ export function CreateBCDDialog({ bookId, onClose, onCreated }: CreateBCDDialogP
           </div>
           <div>
             <label className="block text-sm font-medium text-preto mb-2">
-              Section Label (optional)
+              {t("bookContext.sectionLabelLabel")}
             </label>
             <Input
               value={sectionLabel}
               onChange={(e) => setSectionLabel(e.target.value)}
-              placeholder="e.g. Chapters 1-4"
+              placeholder={t("bookContext.sectionLabelPlaceholder")}
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} disabled={submitting}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button type="submit" disabled={submitting}>
-              {submitting ? "Creating..." : "Create"}
+              {submitting ? t("common.creating") : t("common.create")}
             </Button>
           </div>
         </form>

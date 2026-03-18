@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Check, ChevronDown, Crown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -17,6 +18,7 @@ interface VersionPickerProps {
 }
 
 export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, canManage }: VersionPickerProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [versions, setVersions] = useState<BCDListItem[]>([]);
@@ -36,9 +38,9 @@ export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, 
     try {
       const updated = await bookContextAPI.setActive(currentBCDId);
       useBCDStore.setState({ currentBCD: updated });
-      toast.success("This version is now the active context for pericopes.");
+      toast.success(t("bcdDetail.setActiveSuccess"));
     } catch {
-      toast.error("Failed to set active version.");
+      toast.error(t("bcdDetail.setActiveFailed"));
     } finally {
       setActivating(false);
     }
@@ -50,14 +52,14 @@ export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, 
         {isActive && (
           <span className="flex items-center gap-1 text-[10px] font-medium text-verde-claro bg-verde-claro/10 rounded-full px-2 py-0.5">
             <Crown className="h-2.5 w-2.5" />
-            Active
+            {t("bcdDetail.active")}
           </span>
         )}
         <button
           onClick={() => setOpen(!open)}
           className="flex items-center gap-1.5 text-xs text-verde/60 hover:text-telha transition-colors rounded-md border border-areia/20 px-2.5 py-1.5 bg-surface"
         >
-          v{currentVersion}
+          {t("bcdDetail.versionPrefix", { version: currentVersion })}
           <ChevronDown className={cn("h-3 w-3 transition-transform", open && "rotate-180")} />
         </button>
         {canManage && !isActive && (
@@ -67,7 +69,7 @@ export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, 
             className="flex items-center gap-1 text-[10px] text-verde/40 hover:text-telha transition-colors disabled:opacity-50"
           >
             {activating ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Crown className="h-2.5 w-2.5" />}
-            Set active
+            {t("bcdDetail.setActive")}
           </button>
         )}
       </div>
@@ -77,7 +79,7 @@ export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, 
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-full mt-1 z-50 w-72 rounded-lg border border-areia/30 bg-surface shadow-lg overflow-hidden">
             <div className="px-3 py-2 border-b border-areia/20">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40">All Versions</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40">{t("bcdDetail.allVersions")}</p>
             </div>
             {loading ? (
               <div className="flex items-center justify-center py-6">
@@ -108,7 +110,7 @@ export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className={cn("font-medium", isCurrent ? "text-preto" : "text-verde/70")}>
-                            Version {v.version}
+                            {t("bcdDetail.versionLabel", { version: v.version })}
                           </span>
                           {v.is_active && (
                             <Crown className="h-2.5 w-2.5 text-verde-claro flex-shrink-0" />

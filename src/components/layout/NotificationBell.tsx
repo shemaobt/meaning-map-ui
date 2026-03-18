@@ -1,23 +1,32 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Bell, CheckCheck, ExternalLink } from "lucide-react";
 import { useNotificationStore } from "../../stores/notificationStore";
 import { cn } from "../../utils/cn";
 
-function timeAgo(dateStr: string): string {
-  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-  if (seconds < 60) return "just now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
-}
-
 export function NotificationBell() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  function timeAgo(dateStr: string): string {
+    const seconds = Math.floor((now - new Date(dateStr).getTime()) / 1000);
+    if (seconds < 60) return t("timeAgo.justNow");
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return t("timeAgo.minutesAgo", { count: minutes });
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return t("timeAgo.hoursAgo", { count: hours });
+    const days = Math.floor(hours / 24);
+    return t("timeAgo.daysAgo", { count: days });
+  }
   const ref = useRef<HTMLDivElement>(null);
   const { unreadCount, notifications, fetchNotifications, markAsRead, markAllAsRead } =
     useNotificationStore();
@@ -56,14 +65,14 @@ export function NotificationBell() {
       {open && (
         <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-lg border border-areia/30 bg-surface shadow-lg">
           <div className="flex items-center justify-between border-b border-areia/20 px-4 py-2.5">
-            <span className="text-sm font-semibold text-preto">Notifications</span>
+            <span className="text-sm font-semibold text-preto">{t("layout.notificationBell.title")}</span>
             {unreadCount > 0 && (
               <button
                 onClick={() => markAllAsRead()}
                 className="flex items-center gap-1 text-xs text-telha hover:text-telha/80"
               >
                 <CheckCheck className="h-3.5 w-3.5" />
-                Mark all read
+                {t("layout.notificationBell.markAllRead")}
               </button>
             )}
           </div>
@@ -71,7 +80,7 @@ export function NotificationBell() {
           <div className="max-h-80 overflow-y-auto">
             {recentNotifications.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-verde">
-                No notifications yet
+                {t("layout.notificationBell.empty")}
               </div>
             ) : (
               recentNotifications.map((n) => (
@@ -117,7 +126,7 @@ export function NotificationBell() {
               }}
               className="flex w-full items-center justify-center gap-1 text-xs font-medium text-telha hover:text-telha/80"
             >
-              View all
+              {t("layout.notificationBell.viewAll")}
               <ExternalLink className="h-3 w-3" />
             </button>
           </div>

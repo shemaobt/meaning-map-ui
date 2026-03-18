@@ -1,19 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { meaningMapsAPI, bookContextAPI } from "../../../services/api";
 import { useMeaningMapStore } from "../../../stores/meaningMapStore";
 import { useBHSAStore } from "../../../stores/bhsaStore";
 import { useAuth } from "../../../contexts/AuthContext";
 import type { PassageEntryBrief, StalenessResult } from "../../../types/bookContext";
+import type { MeaningMapData } from "../../../types/meaningMap";
 import { StatusBadge } from "../../common/StatusBadge";
 import { LockBadge } from "../../common/LockBadge";
 import { LoadingSpinner } from "../../common/LoadingSpinner";
+import { TranslatingOverlay } from "../../common/TranslatingOverlay";
 import { ReviewTab } from "./ReviewTab";
 import { BHSASidebar, BHSASidebarToggle } from "./BHSASidebar";
 import { EntryBriefCard } from "./EntryBriefCard";
 import { StalenessBanner } from "./StalenessBanner";
 import { ChevronRight, Clock, Eye, Pencil } from "lucide-react";
 import type { MeaningMapStatus } from "../../../types/bible";
+import { useBookName } from "../../../hooks/useBookName";
 
 function parsePericopeRef(ref: string, bookName: string) {
   // Parses "Ruth 4:1-5" or "Ruth 4:1–5" (en-dash) → { book, chapter, verseStart, verseEnd }
@@ -28,10 +32,13 @@ function parsePericopeRef(ref: string, bookName: string) {
 }
 
 export function MeaningMapPage() {
+  const { t, i18n } = useTranslation();
+  const translateBook = useBookName();
   const { mapId } = useParams<{ mapId: string }>();
   const { user } = useAuth();
   const currentMap = useMeaningMapStore((s) => s.currentMap);
   const [loading, setLoading] = useState(true);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [entryBrief, setEntryBrief] = useState<PassageEntryBrief | null>(null);
   const [staleness, setStaleness] = useState<StalenessResult | null>(null);
 
@@ -88,13 +95,61 @@ export function MeaningMapPage() {
     }
   }, [currentMap?.pericope_reference, currentMap?.book_name]);
 
+  // Translate AI-generated content for non-English users
+  const translatedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!currentMap || !mapId) return;
+    const locale = i18n.language;
+
+    if (locale === "en") {
+      translatedRef.current = null;
+      return;
+    }
+
+    // Already translated for this map+locale combo
+    const cacheKey = `${mapId}:${locale}`;
+    if (translatedRef.current === cacheKey) return;
+
+    // Check if cached translation exists on the document
+    const cached = currentMap.translations?.[locale] as MeaningMapData | undefined;
+    if (cached) {
+      translatedRef.current = cacheKey;
+      useMeaningMapStore.getState().setData(cached);
+      return;
+    }
+
+    // Fetch translation from backend
+    let cancelled = false;
+    setIsTranslating(true);
+    meaningMapsAPI.translate(mapId, locale).then((result) => {
+      if (!cancelled) {
+        translatedRef.current = cacheKey;
+        const translatedData = result.data as unknown as MeaningMapData;
+        const store = useMeaningMapStore.getState();
+        store.setData(translatedData);
+        if (store.currentMap) {
+          const translations = { ...store.currentMap.translations, [locale]: translatedData };
+          useMeaningMapStore.setState((s) => ({
+            currentMap: s.currentMap ? { ...s.currentMap, translations } : null,
+          }));
+        }
+      }
+    }).catch(() => {
+      // Fall back to English content on error
+    }).finally(() => {
+      if (!cancelled) setIsTranslating(false);
+    });
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentMap?.id, i18n.language]);
+
   if (loading) return <LoadingSpinner />;
   if (!currentMap) {
     return (
       <div className="text-center py-12 text-verde/50">
-        <p className="text-sm">Meaning map not found.</p>
+        <p className="text-sm">{t("meaningMap.notFound")}</p>
         <Link to="/app/books" className="text-telha text-sm hover:underline mt-2 inline-block">
-          Back to books
+          {t("nav.books")}
         </Link>
       </div>
     );
@@ -110,7 +165,8 @@ export function MeaningMapPage() {
   // Actions bar is visible for: analyst editing OR cross-checker reviewing
   const actionsHidden = !isLockedByMe || currentMap.status === "approved";
 
-  const bookName = currentMap.book_name ?? "Book";
+  const rawBookName = currentMap.book_name ?? "Book";
+  const bookName = translateBook(rawBookName);
   const pericopeRef = currentMap.pericope_reference ?? "Pericope";
   const bookId = currentMap.book_id;
   const updatedAt = new Date(currentMap.updated_at).toLocaleDateString("en-US", {
@@ -126,7 +182,7 @@ export function MeaningMapPage() {
       <div className="flex-1 min-w-0">
         <nav className="flex items-center gap-1 text-sm text-verde/70 mb-4">
           <Link to="/app/books" className="hover:text-telha transition-colors">
-            Books
+            {t("nav.books")}
           </Link>
           <ChevronRight className="h-3 w-3" />
           {bookId ? (
@@ -158,7 +214,7 @@ export function MeaningMapPage() {
             </div>
           </div>
           <div className="flex items-center gap-4 mt-3 pt-3 border-t border-areia/20 text-xs text-verde/60">
-            <span>Version {currentMap.version}</span>
+            <span>{t("meaningMap.version", { version: currentMap.version })}</span>
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {updatedAt}
@@ -180,18 +236,20 @@ export function MeaningMapPage() {
 
       <BHSASidebar />
       <BHSASidebarToggle />
+      <TranslatingOverlay isTranslating={isTranslating} />
     </div>
   );
 }
 
 function RoleBanner({ isCrossChecker }: { isCrossChecker: boolean }) {
+  const { t } = useTranslation();
+
   if (isCrossChecker) {
     return (
       <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-lg bg-azul/10 border border-azul/20 text-sm text-azul">
         <Eye className="h-4 w-4 flex-shrink-0" />
         <span>
-          <span className="font-semibold">Cross-checker mode</span> — Review the content and leave
-          feedback. You can approve or request revisions.
+          <span className="font-semibold">{t("meaningMap.crossCheckerMode")}</span> — {t("meaningMap.crossCheckerDescription")}
         </span>
       </div>
     );
@@ -201,8 +259,7 @@ function RoleBanner({ isCrossChecker }: { isCrossChecker: boolean }) {
     <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-lg bg-verde-claro/10 border border-verde-claro/20 text-sm text-verde">
       <Pencil className="h-4 w-4 flex-shrink-0" />
       <span>
-        <span className="font-semibold">Analyst mode</span> — You can edit the content and save
-        changes.
+        <span className="font-semibold">{t("meaningMap.analystMode")}</span> — {t("meaningMap.analystDescription")}
       </span>
     </div>
   );

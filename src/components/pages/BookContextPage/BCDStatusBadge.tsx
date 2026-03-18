@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "../../../utils/cn";
 import type { BCDStatus } from "../../../types/bookContext";
 
@@ -8,11 +9,11 @@ const STATUS_STYLES: Record<BCDStatus, string> = {
   approved: "bg-verde-claro/20 text-verde-claro border-verde-claro/30",
 };
 
-const STATUS_LABELS: Record<BCDStatus, string> = {
-  generating: "Generating",
-  draft: "Draft",
-  review: "In Review",
-  approved: "Approved",
+const STATUS_KEYS: Record<BCDStatus, string> = {
+  generating: "status.generating",
+  draft: "status.draft",
+  review: "status.review",
+  approved: "status.approved",
 };
 
 interface BCDStatusBadgeProps {
@@ -21,6 +22,8 @@ interface BCDStatusBadgeProps {
 }
 
 export function BCDStatusBadge({ status, className }: BCDStatusBadgeProps) {
+  const { t } = useTranslation();
+
   return (
     <span
       className={cn(
@@ -30,7 +33,7 @@ export function BCDStatusBadge({ status, className }: BCDStatusBadgeProps) {
         className
       )}
     >
-      {STATUS_LABELS[status]}
+      {t(STATUS_KEYS[status])}
     </span>
   );
 }

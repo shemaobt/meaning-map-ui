@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 import { authAPI } from "../../services/api";
@@ -20,6 +21,7 @@ interface ProfileDialogProps {
 }
 
 export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
+  const { t } = useTranslation();
   const { user, refreshUser } = useAuth();
   const [displayName, setDisplayName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -51,10 +53,10 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
 
       await authAPI.updateMe(payload);
       await refreshUser();
-      toast.success("Profile updated");
+      toast.success(t("profile.updated"));
       onOpenChange(false);
     } catch {
-      toast.error("Failed to update profile");
+      toast.error(t("profile.updateFailed"));
     } finally {
       setSaving(false);
     }
@@ -64,9 +66,9 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogTitle>{t("profile.editTitle")}</DialogTitle>
           <DialogDescription>
-            Update your display name and profile photo.
+            {t("profile.editDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -84,27 +86,27 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
 
           <div className="space-y-1.5">
             <label htmlFor="profile-display-name" className="text-sm font-medium text-preto">
-              Display Name
+              {t("profile.displayNameLabel")}
             </label>
             <input
               id="profile-display-name"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Your display name"
+              placeholder={t("profile.displayNamePlaceholder")}
               maxLength={120}
               className="flex h-10 w-full rounded-md border border-areia bg-surface px-3 py-2 text-sm focus:ring-2 focus:ring-telha focus:border-telha outline-none transition-colors"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-preto">Email</label>
+            <label className="text-sm font-medium text-preto">{t("profile.emailLabel")}</label>
             <input
               value={user?.email || ""}
               disabled
               className="flex h-10 w-full rounded-md border border-areia/50 bg-areia/10 px-3 py-2 text-sm text-verde/60 cursor-not-allowed"
             />
             <p className="text-xs text-verde/50 mt-1.5">
-              Email cannot be changed
+              {t("profile.emailCannotChange")}
             </p>
           </div>
         </div>
@@ -115,10 +117,10 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
             onClick={() => onOpenChange(false)}
             disabled={saving}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save"}
+            {saving ? t("common.saving") : t("common.save")}
           </Button>
         </DialogFooter>
       </DialogContent>

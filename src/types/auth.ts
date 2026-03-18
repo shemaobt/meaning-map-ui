@@ -5,6 +5,7 @@ export interface User {
   avatar_url: string | null;
   is_active: boolean;
   is_platform_admin: boolean;
+  locale: string | null;
 }
 
 export interface MyRole {

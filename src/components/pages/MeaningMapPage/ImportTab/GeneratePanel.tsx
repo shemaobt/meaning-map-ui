@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Sparkles } from "lucide-react";
 import { Button } from "../../../ui/button";
 import { meaningMapsAPI } from "../../../../services/api";
@@ -12,6 +13,7 @@ interface GeneratePanelProps {
 }
 
 export function GeneratePanel({ pericopeId }: GeneratePanelProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
   const setFromBackend = useMeaningMapStore((s) => s.setFromBackend);
@@ -24,11 +26,11 @@ export function GeneratePanel({ pericopeId }: GeneratePanelProps) {
         pericope_id: pericopeId,
       });
       setFromBackend(mm);
-      toast.success("Map generated successfully.");
+      toast.success(t("meaningMap.mapGenerated"));
     } catch (e) {
       const detail =
         e instanceof AxiosError ? e.response?.data?.detail : undefined;
-      const msg = detail || "Generation failed. Please try again.";
+      const msg = detail || t("meaningMap.generationFailed");
       toast.error(msg);
       setGenError(msg);
     } finally {
@@ -39,9 +41,9 @@ export function GeneratePanel({ pericopeId }: GeneratePanelProps) {
   return (
     <div className="rounded-lg border border-telha/20 bg-telha/5 p-4 sm:p-6 text-center">
       <Sparkles className="mx-auto h-8 w-8 text-telha mb-3" />
-      <h4 className="text-sm font-semibold text-preto">Generate with AI</h4>
+      <h4 className="text-sm font-semibold text-preto">{t("meaningMap.generateWithAI")}</h4>
       <p className="mt-1 text-xs text-verde/70">
-        Uses BHSA Hebrew data + RAG methodology context to produce a draft meaning map.
+        {t("meaningMap.generateDescription")}
       </p>
       {loading || genError ? (
         <div className="mt-4 inline-block text-left">
@@ -49,7 +51,7 @@ export function GeneratePanel({ pericopeId }: GeneratePanelProps) {
         </div>
       ) : (
         <Button onClick={handleGenerate} className="mt-4">
-          Generate Meaning Map
+          {t("meaningMap.generateButton")}
         </Button>
       )}
     </div>

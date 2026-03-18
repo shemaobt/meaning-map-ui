@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import type { PericopeWithStatus } from "../../../types/bible";
 import { StatusBadge } from "../../common/StatusBadge";
@@ -17,6 +18,7 @@ interface PericopeCardProps {
 }
 
 export function PericopeCard({ pericope }: PericopeCardProps) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useAuth();
     const [generating, setGenerating] = useState(false);
@@ -32,10 +34,10 @@ export function PericopeCard({ pericope }: PericopeCardProps) {
         if (!pericope.meaning_map_id) return;
         try {
             await meaningMapsAPI.lock(pericope.meaning_map_id);
-            toast.success(status === "cross_check" ? "Cross-check started." : "Locked for editing.");
+            toast.success(status === "cross_check" ? t("pericope.crossCheckStarted") : t("pericope.lockedForEditing"));
             navigate(`/app/maps/${pericope.meaning_map_id}`);
         } catch {
-            toast.error("Could not lock this pericope.");
+            toast.error(t("pericope.lockFailed"));
         }
     };
 
@@ -48,17 +50,17 @@ export function PericopeCard({ pericope }: PericopeCardProps) {
     const handleGenerate = async () => {
         setGenerating(true);
         setGenError(null);
-        toast.info("Generating meaning map...");
+        toast.info(t("pericope.generating"));
         try {
             const mm = await meaningMapsAPI.generate({
                 pericope_id: pericope.id,
             });
-            toast.success("Meaning map generated.");
+            toast.success(t("pericope.generated"));
             navigate(`/app/maps/${mm.id}`);
         } catch (e) {
             const detail =
                 e instanceof AxiosError ? e.response?.data?.detail : undefined;
-            const msg = detail || "Could not generate meaning map.";
+            const msg = detail || t("pericope.generateFailed");
             toast.error(msg);
             setGenError(msg);
             setGenerating(false);
@@ -85,13 +87,13 @@ export function PericopeCard({ pericope }: PericopeCardProps) {
             </div>
 
             {pericope.analyst_name && (
-                <p className="text-xs text-verde/60">Analyst: {pericope.analyst_name}</p>
+                <p className="text-xs text-verde/60">{t("pericope.analyst", { name: pericope.analyst_name })}</p>
             )}
 
             {needsRevision && (
                 <div className="flex items-center gap-1.5 text-xs font-medium text-telha">
                     <MessageSquare className="h-3 w-3" />
-                    Revisions requested ({pericope.unresolved_feedback_count} feedback)
+                    {t("pericope.revisionsRequested", { count: pericope.unresolved_feedback_count })}
                 </div>
             )}
 
@@ -101,23 +103,23 @@ export function PericopeCard({ pericope }: PericopeCardProps) {
                 <div className="flex flex-wrap gap-2 mt-auto">
                     {!hasMap && (
                         <Button size="sm" onClick={handleGenerate}>
-                            Generate
+                            {t("pericope.generate")}
                         </Button>
                     )}
                     {showAnalystLock && (
                         <Button size="sm" onClick={handleLockAndWork} className="gap-1">
                             <Pencil className="h-3 w-3" />
-                            {needsRevision ? "Revise & Edit" : "Lock & Edit"}
+                            {needsRevision ? t("pericope.reviseEdit") : t("pericope.lockEdit")}
                         </Button>
                     )}
                     {showCrossCheckLock && (
                         <Button size="sm" onClick={handleLockAndWork} className="gap-1">
-                            <ClipboardCheck className="h-3 w-3" /> Start Cross-check
+                            <ClipboardCheck className="h-3 w-3" /> {t("pericope.startCrossCheck")}
                         </Button>
                     )}
                     {showView && (
                         <Button size="sm" variant="outline" onClick={handleView} className="gap-1">
-                            <Eye className="h-3 w-3" /> View
+                            <Eye className="h-3 w-3" /> {t("common.view")}
                         </Button>
                     )}
                 </div>
