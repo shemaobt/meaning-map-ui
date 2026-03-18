@@ -9,6 +9,8 @@ import {
 import type { MyRole, User } from "../types/auth";
 import { accessRequestsAPI, authAPI } from "../services/api";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../constants/app";
+import i18n from "../i18n";
+import { LOCALE_STORAGE_KEY } from "../i18n";
 
 const MM_APP_KEY = "meaning-map-generator";
 
@@ -23,6 +25,7 @@ interface AuthContextValue {
   canApproveBCD: boolean;
   accessRequestStatus: "pending" | "approved" | "rejected" | null;
   isLoading: boolean;
+  needsLanguagePicker: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, displayName: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -51,6 +54,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAnalyst = appRoles.includes("analyst") || isAdmin;
   const canApproveBCD =
     isAdmin || appRoles.some((r) => (SPECIALIST_ROLES as readonly string[]).includes(r));
+  const needsLanguagePicker = user !== null && user.locale === null && appRoles.length > 0;
+
+  const syncLocale = useCallback((u: User) => {
+    if (u.locale) {
+      i18n.changeLanguage(u.locale);
+      localStorage.setItem(LOCALE_STORAGE_KEY, u.locale);
+    }
+  }, []);
 
   const ensureAccessRequest = useCallback(async () => {
     try {
@@ -84,7 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = useCallback(async () => {
     const u = await authAPI.me();
     setUser(u);
-  }, []);
+    syncLocale(u);
+  }, [syncLocale]);
 
   const fetchUser = useCallback(async () => {
     const token = localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -95,6 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const u = await authAPI.me();
       setUser(u);
+      syncLocale(u);
       const roles = await resolveRoles(u);
       setAppRoles(roles);
     } catch {
@@ -103,7 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [resolveRoles]);
+  }, [resolveRoles, syncLocale]);
 
   useEffect(() => {
     fetchUser();
@@ -114,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(ACCESS_TOKEN_KEY, res.tokens.access_token);
     localStorage.setItem(REFRESH_TOKEN_KEY, res.tokens.refresh_token);
     setUser(res.user);
+    syncLocale(res.user);
     const roles = await resolveRoles(res.user);
     setAppRoles(roles);
   };
@@ -135,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, appRole, appRoles, isAdmin, isAnalyst, canApproveBCD, accessRequestStatus, isLoading, login, signup, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, appRole, appRoles, isAdmin, isAnalyst, canApproveBCD, accessRequestStatus, isLoading, needsLanguagePicker, login, signup, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

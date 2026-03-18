@@ -64,7 +64,7 @@ export const authAPI = {
       return client.post("/auth/logout", { refresh_token: refreshToken });
     }
   },
-  updateMe: (data: { display_name?: string; avatar_url?: string | null }) =>
+  updateMe: (data: { display_name?: string; avatar_url?: string | null; locale?: string }) =>
     client.patch<User>("/auth/me", data).then((r) => r.data),
 };
 
@@ -117,6 +117,8 @@ export const meaningMapsAPI = {
         resolved: true,
       })
       .then((r) => r.data),
+  translate: (id: string, language: string) =>
+    client.post<{ language: string; data: Record<string, unknown> }>(`/meaning-maps/${id}/translate`, { language }).then((r) => r.data),
 };
 
 export const bhsaAPI = {
@@ -188,6 +190,8 @@ export const bookContextAPI = {
     client.get<StalenessResult>(`/book-context/staleness-check/${meaningMapId}`).then((r) => r.data),
   validateMap: (meaningMapId: string) =>
     client.get<ValidationIssue[]>(`/book-context/validate/${meaningMapId}`).then((r) => r.data),
+  translate: (bcdId: string, language: string) =>
+    client.post<{ language: string; data: Record<string, unknown> }>(`/book-context/${bcdId}/translate`, { language }).then((r) => r.data),
 };
 
 export const uploadsAPI = {
