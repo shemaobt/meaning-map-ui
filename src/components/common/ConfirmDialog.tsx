@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -23,11 +24,14 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   variant = "default",
   onConfirm,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
+  const resolvedConfirmLabel = confirmLabel ?? t("common.confirm");
+  const resolvedCancelLabel = cancelLabel ?? t("common.cancel");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -37,7 +41,7 @@ export function ConfirmDialog({
         </DialogHeader>
         <div className="flex justify-end gap-3 mt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {cancelLabel}
+            {resolvedCancelLabel}
           </Button>
           <Button
             variant={variant === "destructive" ? "destructive" : "default"}
@@ -46,7 +50,7 @@ export function ConfirmDialog({
               onOpenChange(false);
             }}
           >
-            {confirmLabel}
+            {resolvedConfirmLabel}
           </Button>
         </div>
       </DialogContent>

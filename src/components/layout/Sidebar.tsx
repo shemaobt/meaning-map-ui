@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { BookOpen, FolderOpen, LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { cn } from "../../utils/cn";
@@ -6,8 +7,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { ProfileDialog } from "../common/ProfileDialog";
 
 const NAV_ITEMS = [
-  { to: "/app/dashboard", label: "Dashboard", icon: FolderOpen },
-  { to: "/app/books", label: "Books", icon: BookOpen },
+  { to: "/app/dashboard", labelKey: "nav.dashboard", icon: FolderOpen },
+  { to: "/app/books", labelKey: "nav.books", icon: BookOpen },
 ];
 
 interface SidebarProps {
@@ -16,6 +17,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const userName = user?.display_name || user?.email || "U";
   const userInitials = userName.charAt(0).toUpperCase();
@@ -41,10 +43,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <nav className="flex flex-col gap-2 p-3 mt-4">
           {NAV_ITEMS.map((item) => (
             <NavLink
-              key={item.label}
+              key={item.labelKey}
               to={item.to}
               onClick={onClose}
-              title={!isExpanded ? item.label : undefined}
+              title={!isExpanded ? t(item.labelKey) : undefined}
               className={({ isActive }) =>
                 cn(
                   "flex items-center rounded-md p-2 text-sm font-medium transition-colors overflow-hidden",
@@ -56,7 +58,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               }
             >
               <item.icon className={cn("flex-shrink-0 h-5 w-5", isExpanded && "mr-3 text-telha/80")} />
-              {isExpanded && <span className="truncate whitespace-nowrap">{item.label}</span>}
+              {isExpanded && <span className="truncate whitespace-nowrap">{t(item.labelKey)}</span>}
             </NavLink>
           ))}
         </nav>
@@ -64,7 +66,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <div className="mt-auto flex flex-col items-stretch gap-2 pb-4 px-3 w-full overflow-hidden">
           {isExpanded ? (
             <div className="flex items-center gap-3 p-2 rounded-md mb-2 bg-areia/5 border border-areia/20">
-              <button onClick={() => setShowProfile(true)} title="Edit profile" className="flex-shrink-0">
+              <button onClick={() => setShowProfile(true)} title={t("layout.sidebar.editProfile")} className="flex-shrink-0">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt={userName} className="h-8 w-8 rounded-full object-cover hover:ring-2 hover:ring-telha/40 transition-all" />
                 ) : (
@@ -74,13 +76,13 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 )}
               </button>
               <span className="truncate text-sm font-medium text-preto flex-1">{userName}</span>
-              <button onClick={logout} title="Sign out" className="p-1.5 rounded-md text-verde/60 hover:bg-areia/20 hover:text-telha transition-colors">
+              <button onClick={logout} title={t("layout.sidebar.signOut")} className="p-1.5 rounded-md text-verde/60 hover:bg-areia/20 hover:text-telha transition-colors">
                 <LogOut className="h-4 w-4" />
               </button>
             </div>
           ) : (
             <>
-              <button onClick={() => setShowProfile(true)} title="Edit profile" className="mx-auto mb-2 flex-shrink-0">
+              <button onClick={() => setShowProfile(true)} title={t("layout.sidebar.editProfile")} className="mx-auto mb-2 flex-shrink-0">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt={userName} className="h-8 w-8 rounded-full object-cover hover:ring-2 hover:ring-telha/40 transition-all" />
                 ) : (
@@ -91,7 +93,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               </button>
               <button
                 onClick={logout}
-                title="Sign out"
+                title={t("layout.sidebar.signOut")}
                 className="mx-auto p-2 rounded-md text-verde/60 hover:bg-areia/10 hover:text-telha transition-colors mb-2"
               >
                 <LogOut className="h-5 w-5" />
@@ -105,11 +107,11 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               "flex items-center text-verde/60 hover:text-preto transition-colors p-2 rounded-md hover:bg-areia/10",
               isExpanded ? "justify-start px-3" : "justify-center mx-auto"
             )}
-            title={isExpanded ? "Collapse menu" : "Expand menu"}
+            title={isExpanded ? t("layout.sidebar.collapse") : undefined}
           >
             <span className="flex items-center">
               {isExpanded ? <PanelLeftClose className="h-5 w-5 flex-shrink-0" /> : <PanelLeftOpen className="h-5 w-5 flex-shrink-0" />}
-              {isExpanded && <span className="ml-3 text-sm font-medium whitespace-nowrap truncate">Collapse</span>}
+              {isExpanded && <span className="ml-3 text-sm font-medium whitespace-nowrap truncate">{t("layout.sidebar.collapseLabel")}</span>}
             </span>
           </button>
         </div>
