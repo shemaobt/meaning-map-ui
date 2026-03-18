@@ -9,8 +9,16 @@ export function NotificationBell() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const [open, setOpen] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   function timeAgo(dateStr: string): string {
-    const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+    const seconds = Math.floor((now - new Date(dateStr).getTime()) / 1000);
     if (seconds < 60) return t("timeAgo.justNow");
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return t("timeAgo.minutesAgo", { count: minutes });
@@ -19,7 +27,6 @@ export function NotificationBell() {
     const days = Math.floor(hours / 24);
     return t("timeAgo.daysAgo", { count: days });
   }
-  const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { unreadCount, notifications, fetchNotifications, markAsRead, markAllAsRead } =
     useNotificationStore();
