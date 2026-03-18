@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, Save } from "lucide-react";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
@@ -27,6 +28,7 @@ export function SectionEditor({
   readOnly,
   children,
 }: SectionEditorProps) {
+  const { t } = useTranslation();
   const currentBCD = useBCDStore((s) => s.currentBCD);
   const fetchBCD = useBCDStore((s) => s.fetchBCD);
   const [saving, setSaving] = useState(false);
@@ -51,9 +53,9 @@ export function SectionEditor({
       await bookContextAPI.updateSection(bcdId, sectionKey, localData);
       await fetchBCD(bcdId);
       setDirty(false);
-      toast.success(`${label} saved.`);
+      toast.success(t("editors.sectionSaved", { label }));
     } catch (e) {
-      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Save failed.";
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : t("editors.saveFailed");
       toast.error(msg);
     } finally {
       setSaving(false);
@@ -66,10 +68,10 @@ export function SectionEditor({
         <Icon className="h-4 w-4 text-verde/40 flex-shrink-0" />
         <span className="text-sm font-medium text-preto flex-1">{label}</span>
         {dirty && (
-          <span className="text-[10px] font-medium text-telha bg-telha/10 rounded-full px-2 py-0.5">unsaved</span>
+          <span className="text-[10px] font-medium text-telha bg-telha/10 rounded-full px-2 py-0.5">{t("editors.unsaved")}</span>
         )}
         {!hasContent && !dirty && (
-          <span className="text-[10px] text-verde/30 italic">empty</span>
+          <span className="text-[10px] text-verde/30 italic">{t("bcdDetail.empty")}</span>
         )}
         {hasContent && itemCount !== null && (
           <span className="text-[10px] text-verde/40 bg-areia/15 rounded-full px-2 py-0.5 tabular-nums">{itemCount}</span>
@@ -84,7 +86,7 @@ export function SectionEditor({
           <div className="flex justify-end mt-3">
             <Button size="sm" onClick={handleSave} disabled={saving} className="gap-1.5 h-8">
               <Save className="h-3.5 w-3.5" />
-              {saving ? "Saving..." : "Save"}
+              {saving ? t("common.saving") : t("common.save")}
             </Button>
           </div>
         )}
@@ -92,8 +94,6 @@ export function SectionEditor({
     </div>
   );
 }
-
-// ─── Text ──────────────────────────────────────────────────────────────────
 
 interface TextSectionProps {
   data: unknown;
@@ -103,11 +103,12 @@ interface TextSectionProps {
 }
 
 export function TextSection({ data, setData, readOnly, placeholder }: TextSectionProps) {
+  const { t } = useTranslation();
   const text = typeof data === "string" ? data : "";
   if (readOnly) {
     return (
       <div className={cn("text-sm text-preto leading-relaxed whitespace-pre-wrap", !text && "text-verde/40 italic")}>
-        {text || "No content yet."}
+        {text || t("editors.noContentYet")}
       </div>
     );
   }
@@ -122,8 +123,6 @@ export function TextSection({ data, setData, readOnly, placeholder }: TextSectio
   );
 }
 
-// ─── JSON (fallback) ───────────────────────────────────────────────────────
-
 interface JSONSectionProps {
   data: unknown;
   setData: (val: unknown) => void;
@@ -131,11 +130,12 @@ interface JSONSectionProps {
 }
 
 export function JSONSection({ data, setData, readOnly }: JSONSectionProps) {
+  const { t } = useTranslation();
   const [parseError, setParseError] = useState<string | null>(null);
   const jsonStr = data != null ? JSON.stringify(data, null, 2) : "";
 
   if (readOnly) {
-    if (!jsonStr) return <p className="text-sm text-verde/40 italic">No content yet.</p>;
+    if (!jsonStr) return <p className="text-sm text-verde/40 italic">{t("editors.noContentYet")}</p>;
     return <KeyValueView data={data} />;
   }
 
@@ -160,8 +160,6 @@ export function JSONSection({ data, setData, readOnly }: JSONSectionProps) {
   );
 }
 
-// ─── Structured Outline ────────────────────────────────────────────────────
-
 interface StructuredOutlineSectionProps {
   data: unknown;
   setData: (val: unknown) => void;
@@ -169,12 +167,14 @@ interface StructuredOutlineSectionProps {
 }
 
 export function StructuredOutlineSection({ data, setData, readOnly }: StructuredOutlineSectionProps) {
+  const { t } = useTranslation();
+
   if (!readOnly) {
     return <JSONSection data={data} setData={setData} readOnly={false} />;
   }
 
   if (!data || typeof data !== "object") {
-    return <p className="text-sm text-verde/40 italic">No content yet.</p>;
+    return <p className="text-sm text-verde/40 italic">{t("editors.noContentYet")}</p>;
   }
 
   const outline = data as Record<string, unknown>;
@@ -185,7 +185,7 @@ export function StructuredOutlineSection({ data, setData, readOnly }: Structured
     <div className="space-y-4">
       {bookArc && (
         <div className="rounded-md bg-surface-alt p-3">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-verde/50 mb-1.5">Book Arc</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-verde/50 mb-1.5">{t("bcdDetail.bookArc")}</p>
           <p className="text-sm text-preto leading-relaxed">{bookArc}</p>
         </div>
       )}
@@ -199,16 +199,16 @@ export function StructuredOutlineSection({ data, setData, readOnly }: Structured
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-preto">
-                  {String(ch.title ?? `Chapter ${ch.chapter ?? i + 1}`)}
+                  {String(ch.title ?? t("bcdDetail.chapterLabel", { number: ch.chapter ?? i + 1 }))}
                 </p>
                 {typeof ch.summary === "string" && (
                   <p className="text-xs text-verde/60 mt-1 leading-relaxed">{ch.summary}</p>
                 )}
                 {Array.isArray(ch.key_themes) && (
                   <div className="flex flex-wrap gap-1 mt-1.5">
-                    {(ch.key_themes as string[]).map((t, j) => (
+                    {(ch.key_themes as string[]).map((th, j) => (
                       <span key={j} className="text-[10px] px-1.5 py-0.5 rounded-full bg-azul/10 text-azul">
-                        {t}
+                        {th}
                       </span>
                     ))}
                   </div>
@@ -219,7 +219,6 @@ export function StructuredOutlineSection({ data, setData, readOnly }: Structured
         </div>
       )}
 
-      {/* Render any other top-level keys */}
       {Object.entries(outline)
         .filter(([k]) => k !== "book_arc" && k !== "chapters")
         .map(([key, val]) => (
@@ -237,8 +236,6 @@ export function StructuredOutlineSection({ data, setData, readOnly }: Structured
     </div>
   );
 }
-
-// ─── List ──────────────────────────────────────────────────────────────────
 
 interface ListSectionProps {
   data: unknown;
@@ -298,8 +295,6 @@ export function ListSection({ data, setData, readOnly, nameKey = "name" }: ListS
     </div>
   );
 }
-
-// ─── Helpers ───────────────────────────────────────────────────────────────
 
 function ItemDetailView({ item, nameKey }: { item: Record<string, unknown>; nameKey: string }) {
   const entries = Object.entries(item).filter(([k]) => k !== nameKey);

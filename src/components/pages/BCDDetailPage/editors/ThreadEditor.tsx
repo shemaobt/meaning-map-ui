@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, MessageCircle, Plus, Trash2 } from "lucide-react";
 import {
   FieldGroup,
@@ -25,6 +26,7 @@ interface ThreadEditorProps {
 }
 
 export function ThreadEditor({ data, setData }: ThreadEditorProps) {
+  const { t } = useTranslation();
   const items = Array.isArray(data) ? (data as Thread[]) : [];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
@@ -64,7 +66,7 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
 
   return (
     <div className="space-y-2">
-      {items.map((t, i) => {
+      {items.map((th, i) => {
         const isOpen = openIdx === i;
         return (
           <div key={i} className="rounded-lg border border-areia/20 overflow-hidden bg-surface">
@@ -75,14 +77,14 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
             >
               <MessageCircle className="h-4 w-4 text-verde-claro/50 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <span className="text-sm font-medium text-preto">{t.label || `Thread ${i + 1}`}</span>
-                {t.question && (
-                  <span className="text-xs text-verde/40 ml-2 truncate">{t.question}</span>
+                <span className="text-sm font-medium text-preto">{th.label || `Thread ${i + 1}`}</span>
+                {th.question && (
+                  <span className="text-xs text-verde/40 ml-2 truncate">{th.question}</span>
                 )}
               </div>
-              {t.resolved_at && (
+              {th.resolved_at && (
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-verde-claro/15 text-verde-claro">
-                  resolved
+                  {t("editors.resolved")}
                 </span>
               )}
               {isOpen ? (
@@ -94,17 +96,17 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
 
             {isOpen && (
               <div className="border-t border-areia/15 px-4 py-4 space-y-4">
-                <FieldGroup label="Label">
+                <FieldGroup label={t("fields.label")}>
                   <EditableInput
-                    value={t.label ?? ""}
+                    value={th.label ?? ""}
                     onChange={(val) => updateItem(i, "label", val)}
                     placeholder="Thread label"
                   />
                 </FieldGroup>
 
-                <FieldGroup label="Driving Question">
+                <FieldGroup label={t("fields.drivingQuestion")}>
                   <EditableTextarea
-                    value={t.question ?? ""}
+                    value={th.question ?? ""}
                     onChange={(val) => updateItem(i, "question", val)}
                     placeholder="The question this thread raises..."
                     rows={2}
@@ -112,21 +114,21 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                 </FieldGroup>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <FieldGroup label="Opened At" readOnly>
+                  <FieldGroup label={t("fields.openedAt")} readOnly>
                     <div className="flex items-center h-9">
-                      <VerseRefBadge verse={t.opened_at} />
+                      <VerseRefBadge verse={th.opened_at} />
                     </div>
                   </FieldGroup>
-                  <FieldGroup label="Resolved At" readOnly>
+                  <FieldGroup label={t("fields.resolvedAt")} readOnly>
                     <div className="flex items-center h-9">
-                      <VerseRefBadge verse={t.resolved_at} />
+                      <VerseRefBadge verse={th.resolved_at} />
                     </div>
                   </FieldGroup>
                 </div>
 
-                <FieldGroup label="Status by Episode">
+                <FieldGroup label={t("fields.statusByEpisode")}>
                   <div className="space-y-1.5">
-                    {(t.status_by_episode || []).map((ep, ei) => (
+                    {(th.status_by_episode || []).map((ep, ei) => (
                       <div key={ei} className="flex items-center gap-2">
                         <VerseRefBadge verse={ep.at} />
                         <EditableInput
@@ -142,13 +144,13 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                     ))}
                   </div>
                   <Button type="button" size="sm" variant="outline" onClick={() => addEpisode(i)} className="gap-1 h-7 text-xs mt-2">
-                    <Plus className="h-3 w-3" /> Add Episode
+                    <Plus className="h-3 w-3" /> {t("editors.addEpisode")}
                   </Button>
                 </FieldGroup>
 
                 <div className="flex justify-end pt-2 border-t border-areia/10">
                   <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
-                    <Trash2 className="h-3 w-3" /> Remove Thread
+                    <Trash2 className="h-3 w-3" /> {t("editors.removeThread")}
                   </Button>
                 </div>
               </div>
@@ -158,7 +160,7 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
       })}
 
       <Button type="button" variant="outline" onClick={addItem} className="w-full gap-1.5 h-10 border-dashed border-areia/40 text-verde/50 hover:text-telha hover:border-telha/30">
-        <Plus className="h-4 w-4" /> Add Discourse Thread
+        <Plus className="h-4 w-4" /> {t("editors.addThread")}
       </Button>
     </div>
   );

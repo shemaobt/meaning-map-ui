@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useMeaningMapStore } from "../../../../stores/meaningMapStore";
 import { meaningMapsAPI } from "../../../../services/api";
 import { Button } from "../../../ui/button";
@@ -23,6 +24,7 @@ export function ReviewTab({
   isAnalyst,
   onRefresh,
 }: ReviewTabProps) {
+  const { t } = useTranslation();
   const currentMap = useMeaningMapStore((s) => s.currentMap);
   const isDirty = useMeaningMapStore((s) => s.isDirty);
   const [saving, setSaving] = useState(false);
@@ -30,7 +32,7 @@ export function ReviewTab({
   if (!currentMap) {
     return (
       <p className="text-sm text-verde/50 text-center py-8">
-        No data to review. Import or generate a meaning map first.
+        {t("meaningMap.noData")}
       </p>
     );
   }
@@ -44,10 +46,10 @@ export function ReviewTab({
     try {
       const updated = await meaningMapsAPI.update(currentMap.id, data);
       useMeaningMapStore.getState().setFromBackend(updated);
-      toast.success("Changes saved successfully.");
+      toast.success(t("meaningMap.saveSuccess"));
     } catch (err) {
       console.error("Save failed:", err);
-      toast.error("Failed to save. Please try again.");
+      toast.error(t("meaningMap.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -58,10 +60,10 @@ export function ReviewTab({
       await handleSave();
       const updated = await meaningMapsAPI.updateStatus(currentMap.id, "cross_check");
       useMeaningMapStore.getState().setFromBackend(updated);
-      toast.success("Meaning map sent for cross-check review.");
+      toast.success(t("meaningMap.sentToCrossCheck"));
       onRefresh();
     } catch {
-      toast.error("Failed to send to cross-check.");
+      toast.error(t("meaningMap.crossCheckFailed"));
     }
   };
 
@@ -69,10 +71,10 @@ export function ReviewTab({
     try {
       const updated = await meaningMapsAPI.updateStatus(currentMap.id, "approved");
       useMeaningMapStore.getState().setFromBackend(updated);
-      toast.success("Meaning map approved!");
+      toast.success(t("meaningMap.approvedToast"));
       onRefresh();
     } catch {
-      toast.error("Failed to approve.");
+      toast.error(t("meaningMap.approveFailed"));
     }
   };
 
@@ -80,10 +82,10 @@ export function ReviewTab({
     try {
       const updated = await meaningMapsAPI.updateStatus(currentMap.id, "draft");
       useMeaningMapStore.getState().setFromBackend(updated);
-      toast.success("Revisions requested. Analyst has been notified.");
+      toast.success(t("meaningMap.revisionsRequested"));
       onRefresh();
     } catch {
-      toast.error("Failed to request revisions.");
+      toast.error(t("meaningMap.revisionsFailed"));
     }
   };
 
@@ -95,7 +97,7 @@ export function ReviewTab({
             {!readOnly && dirty && (
               <span className="flex items-center gap-1 text-xs font-medium text-telha">
                 <AlertCircle className="h-3 w-3" />
-                Unsaved changes
+                {t("meaningMap.unsavedChanges")}
               </span>
             )}
           </div>
@@ -109,21 +111,21 @@ export function ReviewTab({
                 className="gap-1"
               >
                 <Save className="h-3 w-3" />
-                {saving ? "Saving..." : "Save"}
+                {saving ? t("common.saving") : t("common.save")}
               </Button>
             )}
             {status === "draft" && isAnalyst && !readOnly && (
               <Button size="sm" onClick={handleSendToCrossCheck} className="gap-1">
-                <Send className="h-3 w-3" /> Send to Cross-check
+                <Send className="h-3 w-3" /> {t("meaningMap.sendToCrossCheck")}
               </Button>
             )}
             {status === "cross_check" && isCrossChecker && (
               <>
                 <Button size="sm" variant="outline" onClick={handleRequestRevisions}>
-                  Request Revisions
+                  {t("meaningMap.requestRevisions")}
                 </Button>
                 <Button size="sm" onClick={handleApprove} className="gap-1">
-                  <CheckCircle className="h-3 w-3" /> Approve
+                  <CheckCircle className="h-3 w-3" /> {t("common.approve")}
                 </Button>
               </>
             )}

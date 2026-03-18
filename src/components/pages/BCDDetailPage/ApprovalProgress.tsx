@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Clock } from "lucide-react";
 import { bookContextAPI } from "../../../services/api";
 import { cn } from "../../../utils/cn";
@@ -21,13 +22,14 @@ interface ApprovalStatus {
 
 type SpecKey = "exegete" | "biblical_language_specialist" | "translation_specialist";
 
-const SPECS: { key: SpecKey; label: string; accent: string; accentBg: string }[] = [
-  { key: "exegete", label: "Exegete", accent: "text-telha", accentBg: "bg-telha/15" },
-  { key: "biblical_language_specialist", label: "Biblical Lang.", accent: "text-azul", accentBg: "bg-azul/15" },
-  { key: "translation_specialist", label: "Translation", accent: "text-verde-claro", accentBg: "bg-verde-claro/15" },
+const SPECS: { key: SpecKey; labelKey: string; accent: string; accentBg: string }[] = [
+  { key: "exegete", labelKey: "roles.exegete", accent: "text-telha", accentBg: "bg-telha/15" },
+  { key: "biblical_language_specialist", labelKey: "roles.biblicalLanguageSpecialist", accent: "text-azul", accentBg: "bg-azul/15" },
+  { key: "translation_specialist", labelKey: "roles.translationSpecialist", accent: "text-verde-claro", accentBg: "bg-verde-claro/15" },
 ];
 
 export function ApprovalProgress({ bcdId, status }: { bcdId: string; status: string }) {
+  const { t } = useTranslation();
   const [data, setData] = useState<ApprovalStatus | null>(null);
 
   useEffect(() => {
@@ -64,7 +66,6 @@ export function ApprovalProgress({ bcdId, status }: { bcdId: string; status: str
                 : "bg-areia/10 border-areia/20",
             )}
           >
-            {/* Avatar or clock */}
             {approvers.length > 0 ? (
               <div className="flex -space-x-1">
                 {approvers.map((a) => (
@@ -77,12 +78,11 @@ export function ApprovalProgress({ bcdId, status }: { bcdId: string; status: str
               </span>
             )}
 
-            {/* Label */}
             <span className={cn(
               "text-[11px] font-medium",
               covered ? spec.accent : "text-verde/40",
             )}>
-              {spec.label}
+              {t(spec.labelKey)}
             </span>
 
             {covered && <Check className={cn("h-3 w-3 -ml-0.5", spec.accent)} />}
@@ -90,14 +90,13 @@ export function ApprovalProgress({ bcdId, status }: { bcdId: string; status: str
         );
       })}
 
-      {/* Counter */}
       <span className={cn(
         "text-[10px] font-medium px-2 py-0.5 rounded-full",
         data.is_complete
           ? "bg-verde-claro/15 text-verde-claro"
           : "bg-areia/15 text-verde/40",
       )}>
-        {data.covered_specialties.length}/3
+        {t("bcdDetail.approvalCounter", { approved: data.covered_specialties.length, total: 3 })}
       </span>
     </div>
   );

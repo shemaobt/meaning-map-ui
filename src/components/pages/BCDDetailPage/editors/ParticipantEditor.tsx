@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, Plus, Trash2, User } from "lucide-react";
 import {
   FieldGroup,
@@ -39,6 +40,7 @@ interface ParticipantEditorProps {
 }
 
 export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
+  const { t } = useTranslation();
   const items = Array.isArray(data) ? (data as Participant[]) : [];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
@@ -107,10 +109,10 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
             {isOpen && (
               <div className="border-t border-areia/15 px-4 py-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <FieldGroup label="Name" readOnly>
+                  <FieldGroup label={t("fields.name")} readOnly>
                     <ReadOnlyValue value={p.name ?? ""} />
                   </FieldGroup>
-                  <FieldGroup label="English Gloss">
+                  <FieldGroup label={t("fields.englishGloss")}>
                     <EditableInput
                       value={p.english_gloss ?? ""}
                       onChange={(val) => updateItem(i, "english_gloss", val)}
@@ -120,7 +122,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
-                  <FieldGroup label="Type">
+                  <FieldGroup label={t("fields.type")}>
                     <Select
                       value={p.type ?? "named"}
                       onValueChange={(val) => updateItem(i, "type", val)}
@@ -129,24 +131,24 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="named">Named</SelectItem>
-                        <SelectItem value="group">Group</SelectItem>
+                        <SelectItem value="named">{t("editors.named")}</SelectItem>
+                        <SelectItem value="group">{t("editors.group")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FieldGroup>
-                  <FieldGroup label="Entry Verse" readOnly>
+                  <FieldGroup label={t("fields.entryVerse")} readOnly>
                     <div className="flex items-center h-9">
                       <VerseRefBadge verse={p.entry_verse} />
                     </div>
                   </FieldGroup>
-                  <FieldGroup label="Exit Verse" readOnly>
+                  <FieldGroup label={t("fields.exitVerse")} readOnly>
                     <div className="flex items-center h-9">
                       <VerseRefBadge verse={p.exit_verse} />
                     </div>
                   </FieldGroup>
                 </div>
 
-                <FieldGroup label="Role in Book">
+                <FieldGroup label={t("fields.roleInBook")}>
                   <EditableInput
                     value={p.role_in_book ?? ""}
                     onChange={(val) => updateItem(i, "role_in_book", val)}
@@ -154,7 +156,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                   />
                 </FieldGroup>
 
-                <FieldGroup label="Relationships">
+                <FieldGroup label={t("fields.relationships")}>
                   <TagsInput
                     tags={Array.isArray(p.relationships) ? p.relationships : []}
                     onChange={(tags) => updateItem(i, "relationships", tags)}
@@ -162,7 +164,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                   />
                 </FieldGroup>
 
-                <FieldGroup label="What Audience Knows at Entry">
+                <FieldGroup label={t("fields.whatAudienceKnows")}>
                   <EditableTextarea
                     value={p.what_audience_knows_at_entry ?? ""}
                     onChange={(val) => updateItem(i, "what_audience_knows_at_entry", val)}
@@ -172,7 +174,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                 </FieldGroup>
 
                 {Array.isArray(p.arc) && p.arc.length > 0 && (
-                  <FieldGroup label="Character Arc">
+                  <FieldGroup label={t("fields.characterArc")}>
                     <div className="space-y-1.5">
                       {p.arc.map((a, ai) => (
                         <div key={ai} className="flex items-center gap-2">
@@ -192,10 +194,10 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                   </FieldGroup>
                 )}
                 <Button type="button" size="sm" variant="outline" onClick={() => addArcEntry(i)} className="gap-1 h-7 text-xs">
-                  <Plus className="h-3 w-3" /> Add Arc Entry
+                  <Plus className="h-3 w-3" /> {t("editors.addArcEntry")}
                 </Button>
 
-                <FieldGroup label="Status at End">
+                <FieldGroup label={t("fields.statusAtEnd")}>
                   <EditableInput
                     value={p.status_at_end ?? ""}
                     onChange={(val) => updateItem(i, "status_at_end", val)}
@@ -205,7 +207,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
 
                 <div className="flex justify-end pt-2 border-t border-areia/10">
                   <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
-                    <Trash2 className="h-3 w-3" /> Remove Participant
+                    <Trash2 className="h-3 w-3" /> {t("editors.removeParticipant")}
                   </Button>
                 </div>
               </div>
@@ -215,7 +217,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
       })}
 
       <Button type="button" variant="outline" onClick={addItem} className="w-full gap-1.5 h-10 border-dashed border-areia/40 text-verde/50 hover:text-telha hover:border-telha/30">
-        <Plus className="h-4 w-4" /> Add Participant
+        <Plus className="h-4 w-4" /> {t("editors.addParticipant")}
       </Button>
     </div>
   );

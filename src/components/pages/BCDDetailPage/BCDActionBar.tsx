@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Sparkles, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -18,6 +19,7 @@ interface BCDActionBarProps {
 }
 
 export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent, isApproved }: BCDActionBarProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [showRegenDialog, setShowRegenDialog] = useState(false);
@@ -31,13 +33,13 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
     try {
       const body = feedbackText ? { feedback: feedbackText } : undefined;
       const newBCD = await bookContextAPI.generate(bcdId, body);
-      toast.success("Generation started...");
+      toast.success(t("bcdDetail.generationStarted"));
       if (newBCD.id !== bcdId) {
         navigate(`/app/book-context/${newBCD.id}`);
       }
       startPolling(newBCD.id);
     } catch (e) {
-      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Generation failed.";
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : t("bcdDetail.generationFailed");
       toast.error(msg);
     } finally {
       setLoading(null);
@@ -50,9 +52,9 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
     try {
       await bookContextAPI.approve(bcdId);
       await fetchBCD(bcdId);
-      toast.success("Book Context approved.");
+      toast.success(t("bcdDetail.approveSuccess"));
     } catch (e) {
-      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Approval failed.";
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : t("bcdDetail.approveFailed");
       toast.error(msg);
     } finally {
       setLoading(null);
@@ -80,7 +82,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
             className="gap-1"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            {loading === "generate" ? "Starting..." : hasContent ? "Regenerate" : "Generate"}
+            {loading === "generate" ? t("common.starting") : hasContent ? t("bcdDetail.regenerate") : t("bcdDetail.generate")}
           </Button>
         )}
 
@@ -93,7 +95,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
             className="gap-1"
           >
             <Check className="h-3.5 w-3.5" />
-            {loading === "approve" ? "Approving..." : "Approve"}
+            {loading === "approve" ? t("common.approving") : t("common.approve")}
           </Button>
         )}
       </div>
@@ -108,15 +110,15 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
               <X className="h-4 w-4" />
             </button>
 
-            <h3 className="text-base font-bold text-preto mb-1">Regenerate Book Context</h3>
+            <h3 className="text-base font-bold text-preto mb-1">{t("bcdDetail.regenerateTitle")}</h3>
             <p className="text-xs text-verde/60 mb-4">
-              Optionally provide feedback to guide the AI on this regeneration.
+              {t("bcdDetail.regenerateDescription")}
             </p>
 
             <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
-              placeholder="e.g. Improve the participant arcs for Ruth and Boaz, add more detail to the theological spine..."
+              placeholder={t("bcdDetail.regenerateFeedbackPlaceholder")}
               rows={4}
               maxLength={2000}
               className="w-full rounded-md border border-areia bg-surface px-3 py-2 text-sm focus:ring-2 focus:ring-telha focus:border-telha resize-y"
@@ -129,7 +131,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
                 variant="outline"
                 onClick={() => { setShowRegenDialog(false); setFeedback(""); }}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 size="sm"
@@ -138,7 +140,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
                 className="gap-1"
               >
                 <Sparkles className="h-3.5 w-3.5" />
-                Regenerate
+                {t("bcdDetail.regenerateButton")}
               </Button>
             </div>
           </div>

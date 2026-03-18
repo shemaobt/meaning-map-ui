@@ -1,4 +1,5 @@
 import type { ChangeEvent } from "react";
+import { useTranslation } from "react-i18next";
 import type { Scene, PersonEntry, PlaceEntry, ObjectEntry } from "../../../../../types/meaningMap";
 import { useMeaningMapStore } from "../../../../../stores/meaningMapStore";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../ui/card";
@@ -19,28 +20,37 @@ interface SceneCardProps {
   canResolveFeedback: boolean;
 }
 
-const PEOPLE_FIELDS = [
-  { key: "name" as const, label: "Name" },
-  { key: "role" as const, label: "Role" },
-  { key: "relationship" as const, label: "Relationship" },
-  { key: "wants" as const, label: "Wants" },
-  { key: "carries" as const, label: "Carries" },
-];
+function usePeopleFields() {
+  const { t } = useTranslation();
+  return [
+    { key: "name" as const, label: t("fields.name") },
+    { key: "role" as const, label: t("fields.role") },
+    { key: "relationship" as const, label: t("fields.relationship") },
+    { key: "wants" as const, label: t("fields.wants") },
+    { key: "carries" as const, label: t("fields.carries") },
+  ];
+}
 
-const PLACES_FIELDS = [
-  { key: "name" as const, label: "Name" },
-  { key: "role" as const, label: "Role" },
-  { key: "type" as const, label: "Type" },
-  { key: "meaning" as const, label: "Meaning" },
-  { key: "effect_on_scene" as const, label: "Effect on scene" },
-];
+function usePlacesFields() {
+  const { t } = useTranslation();
+  return [
+    { key: "name" as const, label: t("fields.name") },
+    { key: "role" as const, label: t("fields.role") },
+    { key: "type" as const, label: t("fields.type") },
+    { key: "meaning" as const, label: t("fields.meaning") },
+    { key: "effect_on_scene" as const, label: t("fields.effectOnScene") },
+  ];
+}
 
-const OBJECTS_FIELDS = [
-  { key: "name" as const, label: "Name" },
-  { key: "what_it_is" as const, label: "What it is" },
-  { key: "function_in_scene" as const, label: "Function in scene" },
-  { key: "signals" as const, label: "Signals" },
-];
+function useObjectsFields() {
+  const { t } = useTranslation();
+  return [
+    { key: "name" as const, label: t("fields.name") },
+    { key: "what_it_is" as const, label: t("fields.whatItIs") },
+    { key: "function_in_scene" as const, label: t("fields.functionInScene") },
+    { key: "signals" as const, label: t("fields.signals") },
+  ];
+}
 
 function SectionLabel({ label }: { label: string }) {
   return (
@@ -61,6 +71,10 @@ export function SceneCard({
   canWriteFeedback,
   canResolveFeedback,
 }: SceneCardProps) {
+  const { t } = useTranslation();
+  const PEOPLE_FIELDS = usePeopleFields();
+  const PLACES_FIELDS = usePlacesFields();
+  const OBJECTS_FIELDS = useObjectsFields();
   const prefix = `scene_${scene.scene_number}`;
   const allWarnings = useMeaningMapStore((s) => s.reviewState.warnings);
   const warnings = allWarnings.filter((w) => w.section.startsWith(prefix));
@@ -92,7 +106,7 @@ export function SceneCard({
         <div className="flex items-center gap-2">
           <Film className="h-4 w-4 text-azul" />
           <CardTitle className="tracking-tight">
-            Scene {scene.scene_number} — Verses {scene.verses}
+            {t("meaningMap.sceneTitle", { number: scene.scene_number, verses: scene.verses })}
           </CardTitle>
         </div>
         <div className="mt-1">
@@ -100,14 +114,14 @@ export function SceneCard({
             value={scene.title}
             onChange={handleTitleChange}
             readOnly={readOnly}
-            placeholder="Scene title..."
+            placeholder={t("meaningMap.sceneTitlePlaceholder")}
             className="text-sm h-8"
           />
         </div>
       </CardHeader>
       <CardContent className="space-y-6 pt-5">
         <section>
-          <SectionLabel label="2A — People" />
+          <SectionLabel label={t("meaningMap.section2A")} />
           <EntryEditor<PersonEntry>
             entries={scene.people ?? []}
             fields={PEOPLE_FIELDS}
@@ -121,7 +135,7 @@ export function SceneCard({
         </section>
 
         <section>
-          <SectionLabel label="2B — Places" />
+          <SectionLabel label={t("meaningMap.section2B")} />
           <EntryEditor<PlaceEntry>
             entries={scene.places ?? []}
             fields={PLACES_FIELDS}
@@ -135,7 +149,7 @@ export function SceneCard({
         </section>
 
         <section>
-          <SectionLabel label="2C — Objects & Elements" />
+          <SectionLabel label={t("meaningMap.section2C")} />
           <EntryEditor<ObjectEntry>
             entries={scene.objects ?? []}
             fields={OBJECTS_FIELDS}
@@ -144,13 +158,13 @@ export function SceneCard({
             emptyFactory={() => ({ name: "", what_it_is: "", function_in_scene: "", signals: "" })}
           />
           <div className="mt-3">
-            <label className="text-xs font-medium text-verde">Significant Absence</label>
+            <label className="text-xs font-medium text-verde">{t("meaningMap.significantAbsence")}</label>
             <Textarea
               value={scene.significant_absence || ""}
               onChange={handleAbsenceChange}
               readOnly={readOnly}
               rows={2}
-              className="mt-1 text-xs font-serif"
+              className="mt-1 text-sm font-serif leading-relaxed"
               placeholder="Any notable absence..."
             />
           </div>
@@ -160,14 +174,14 @@ export function SceneCard({
         </section>
 
         <section>
-          <SectionLabel label="2D — What Happens" />
+          <SectionLabel label={t("meaningMap.whatHappensLabel")} />
           <Textarea
             value={scene.what_happens || ""}
             onChange={handleWhatHappensChange}
             readOnly={readOnly}
             rows={4}
             className="font-serif text-sm leading-relaxed"
-            placeholder="Narrative of what happens in this scene..."
+            placeholder={t("meaningMap.whatHappensPlaceholder")}
           />
           {showFeedback && (
             <FeedbackThread sectionKey={`${prefix}_what_happens`} {...feedbackProps} />
@@ -175,14 +189,14 @@ export function SceneCard({
         </section>
 
         <section>
-          <SectionLabel label="2E — Communicative Purpose" />
+          <SectionLabel label={t("meaningMap.communicativePurposeLabel")} />
           <Textarea
             value={scene.communicative_purpose || ""}
             onChange={handlePurposeChange}
             readOnly={readOnly}
             rows={3}
             className="font-serif text-sm leading-relaxed"
-            placeholder="Why this scene exists and what it establishes..."
+            placeholder={t("meaningMap.purposePlaceholder")}
           />
           {showFeedback && (
             <FeedbackThread sectionKey={`${prefix}_purpose`} {...feedbackProps} />

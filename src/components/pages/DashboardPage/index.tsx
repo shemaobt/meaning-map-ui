@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { booksAPI } from "../../../services/api";
 import type { AnalystSummary, DashboardSummary } from "../../../types/bible";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -15,14 +16,15 @@ interface StatusCounts {
   unstarted: number;
 }
 
-const STATUS_CARDS: { key: keyof StatusCounts; label: string; color: string; bgColor: string }[] = [
-  { key: "total", label: "Total Pericopes", color: "text-preto", bgColor: "bg-areia/20" },
-  { key: "draft", label: "Draft", color: "text-verde", bgColor: "bg-areia/30" },
-  { key: "cross_check", label: "Cross-check", color: "text-telha", bgColor: "bg-telha/10" },
-  { key: "approved", label: "Approved", color: "text-verde-claro", bgColor: "bg-verde-claro/20" },
+const STATUS_CARD_DEFS: { key: keyof StatusCounts; labelKey: string; color: string; bgColor: string }[] = [
+  { key: "total", labelKey: "dashboard.totalPericopes", color: "text-preto", bgColor: "bg-areia/20" },
+  { key: "draft", labelKey: "status.draft", color: "text-verde", bgColor: "bg-areia/30" },
+  { key: "cross_check", labelKey: "status.crossCheck", color: "text-telha", bgColor: "bg-telha/10" },
+  { key: "approved", labelKey: "status.approved", color: "text-verde-claro", bgColor: "bg-verde-claro/20" },
 ];
 
 export function DashboardPage() {
+  const { t } = useTranslation();
   const { isAdmin } = useAuth();
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState<StatusCounts>({ total: 0, draft: 0, cross_check: 0, approved: 0, unstarted: 0 });
@@ -66,18 +68,18 @@ export function DashboardPage() {
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-6 sm:h-6"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
         </div>
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-preto">Dashboard</h2>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-preto">{t("dashboard.title")}</h2>
           <p className="text-xs sm:text-sm text-verde/70">
             {isAdmin
-              ? "Overview of meaning map progress across all enabled books."
-              : "Your meaning map progress across all enabled books."}
+              ? t("dashboard.adminSubtitle")
+              : t("dashboard.userSubtitle")}
           </p>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        {STATUS_CARDS.map((card) => (
+        {STATUS_CARD_DEFS.map((card) => (
           <Card key={card.key}>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center gap-3">
@@ -85,9 +87,9 @@ export function DashboardPage() {
                   <span className={cn("text-lg font-bold", card.color)}>{counts[card.key]}</span>
                 </div>
                 <div>
-                  <p className="text-xs text-verde/60 font-medium">{card.label}</p>
+                  <p className="text-xs text-verde/60 font-medium">{t(card.labelKey)}</p>
                   {card.key === "total" ? (
-                    <p className="text-xs text-verde/40">{enabledBooks} books enabled</p>
+                    <p className="text-xs text-verde/40">{enabledBooks} {t("dashboard.booksEnabled")}</p>
                   ) : (
                     <p className="text-xs text-verde/40">
                       {counts.total > 0
@@ -106,7 +108,7 @@ export function DashboardPage() {
       <Card className="mb-6 sm:mb-8">
         <CardHeader className="pb-3">
           <CardTitle className="text-base">
-            {isAdmin ? "Overall Progress" : "Your Progress"}
+            {isAdmin ? t("dashboard.overallProgress") : t("dashboard.yourProgress")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -115,7 +117,7 @@ export function DashboardPage() {
             <span className="text-sm font-semibold text-verde/70 shrink-0">{approvedPct}%</span>
           </div>
           <p className="text-xs text-verde/50 mt-2">
-            {counts.approved} of {counts.total} pericopes approved
+            {t("dashboard.pericopesApproved", { approved: counts.approved, total: counts.total })}
           </p>
         </CardContent>
       </Card>
@@ -124,18 +126,18 @@ export function DashboardPage() {
       {isAdmin && analysts.length > 0 && (
         <Card className="mb-6 sm:mb-8">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Progress by Analyst</CardTitle>
+            <CardTitle className="text-base">{t("dashboard.analystTitle")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-areia/30">
-                    <th className="text-left py-2.5 pr-4 text-xs font-semibold text-verde/60 uppercase tracking-wider">Analyst</th>
-                    <th className="text-right py-2.5 px-3 text-xs font-semibold text-verde/60 uppercase tracking-wider">Assigned</th>
-                    <th className="text-right py-2.5 px-3 text-xs font-semibold text-verde/60 uppercase tracking-wider">Draft</th>
-                    <th className="text-right py-2.5 px-3 text-xs font-semibold text-verde/60 uppercase tracking-wider">Cross-check</th>
-                    <th className="text-right py-2.5 pl-3 text-xs font-semibold text-verde/60 uppercase tracking-wider">Approved</th>
+                    <th className="text-left py-2.5 pr-4 text-xs font-semibold text-verde/60 uppercase tracking-wider">{t("dashboard.analystColumn")}</th>
+                    <th className="text-right py-2.5 px-3 text-xs font-semibold text-verde/60 uppercase tracking-wider">{t("dashboard.assignedColumn")}</th>
+                    <th className="text-right py-2.5 px-3 text-xs font-semibold text-verde/60 uppercase tracking-wider">{t("dashboard.draftColumn")}</th>
+                    <th className="text-right py-2.5 px-3 text-xs font-semibold text-verde/60 uppercase tracking-wider">{t("dashboard.crossCheckColumn")}</th>
+                    <th className="text-right py-2.5 pl-3 text-xs font-semibold text-verde/60 uppercase tracking-wider">{t("dashboard.approvedColumn")}</th>
                   </tr>
                 </thead>
                 <tbody>

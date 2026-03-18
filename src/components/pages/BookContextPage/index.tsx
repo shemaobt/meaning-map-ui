@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { ChevronRight, Plus, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -12,8 +13,11 @@ import { EmptyState } from "../../common/EmptyState";
 import { Button } from "../../ui/button";
 import { BCDCard } from "./BCDCard";
 import { CreateBCDDialog } from "./CreateBCDDialog";
+import { useBookName } from "../../../hooks/useBookName";
 
 export function BookContextPage() {
+  const { t } = useTranslation();
+  const translateBook = useBookName();
   const { bookId } = useParams<{ bookId: string }>();
   const { isAdmin, isAnalyst } = useAuth();
   const { list, isLoading, fetchList } = useBCDStore();
@@ -47,16 +51,16 @@ export function BookContextPage() {
   const handleGenerate = async (bcdId: string) => {
     try {
       await bookContextAPI.generate(bcdId);
-      toast.success("Generation started. This may take a few minutes.");
+      toast.success(t("bookContext.generationStarted"));
       await fetchList(bookId!);
     } catch (e) {
-      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Generation failed.";
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : t("bookContext.generationFailed");
       toast.error(msg);
     }
   };
 
   if (isLoading && list.length === 0) return <LoadingSpinner />;
-  if (!book) return <EmptyState title="Book not found" />;
+  if (!book) return <EmptyState title={t("bookContext.notFound")} />;
 
   const sortedList = [...list].sort((a, b) => b.version - a.version);
 
@@ -64,23 +68,23 @@ export function BookContextPage() {
     <div className="flex flex-col h-full">
       <nav className="flex items-center gap-1 text-sm text-verde/70 mb-4">
         <Link to="/app/books" className="hover:text-telha transition-colors">
-          Books
+          {t("nav.books")}
         </Link>
         <ChevronRight className="h-3 w-3" />
         <Link to={`/app/books/${book.id}`} className="hover:text-telha transition-colors">
-          {book.name}
+          {translateBook(book.name)}
         </Link>
         <ChevronRight className="h-3 w-3" />
-        <span className="font-medium text-preto">Book Context</span>
+        <span className="font-medium text-preto">{t("bookContext.title")}</span>
       </nav>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-preto">
-            Book Context — {book.name}
+            {t("bookContext.pageTitle", { bookName: translateBook(book.name) })}
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-verde/70">
-            {list.length} version{list.length !== 1 ? "s" : ""}
+            {t("bookContext.versionCount", { count: list.length })}
           </p>
         </div>
         {canEdit && (
@@ -92,7 +96,7 @@ export function BookContextPage() {
               className="gap-1"
             >
               <Plus className="h-3.5 w-3.5" />
-              New Version
+              {t("bookContext.newVersion")}
             </Button>
           </div>
         )}
@@ -111,7 +115,7 @@ export function BookContextPage() {
                   className="mt-2 w-full gap-1 text-xs"
                 >
                   <Sparkles className="h-3 w-3" />
-                  Generate with AI
+                  {t("bookContext.generateWithAI")}
                 </Button>
               )}
             </div>
@@ -119,11 +123,11 @@ export function BookContextPage() {
         </div>
       ) : (
         <EmptyState
-          title="No Book Context Documents"
+          title={t("bookContext.noDocuments")}
           description={
             canEdit
-              ? "Create the first version to get started."
-              : "No context documents have been created for this book yet."
+              ? t("bookContext.noDocumentsCreateMessage")
+              : t("bookContext.noDocumentsViewMessage")
           }
           className="flex-1"
         />

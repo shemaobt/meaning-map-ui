@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { BCD } from "../../../types/bookContext";
 
@@ -18,8 +19,10 @@ export function SectionDetail({ bcd, sectionKey }: SectionDetailProps) {
 }
 
 function StructuredView({ data, sectionKey }: { data: unknown; sectionKey: string }) {
+  const { t } = useTranslation();
+
   if (data === null || data === undefined) {
-    return <p className="text-sm text-verde/40 italic">No content yet. Generate or edit to populate.</p>;
+    return <p className="text-sm text-verde/40 italic">{t("bcdDetail.sectionEmpty")}</p>;
   }
 
   if (sectionKey === "structural_outline") return <OutlineView data={data} />;
@@ -32,9 +35,9 @@ function StructuredView({ data, sectionKey }: { data: unknown; sectionKey: strin
   return <p className="text-sm text-preto">{String(data)}</p>;
 }
 
-// ─── Structural Outline ────────────────────────────────────────────────────
-
 function OutlineView({ data }: { data: unknown }) {
+  const { t } = useTranslation();
+
   if (typeof data !== "object" || data === null) return <TextView data={data} />;
 
   const outline = data as Record<string, unknown>;
@@ -46,7 +49,7 @@ function OutlineView({ data }: { data: unknown }) {
     <div className="space-y-4">
       {bookArc && (
         <div className="rounded-lg bg-surface-alt p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40 mb-2">Book Arc</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40 mb-2">{t("bcdDetail.bookArc")}</p>
           <p className="text-sm text-preto leading-relaxed">{bookArc}</p>
         </div>
       )}
@@ -65,9 +68,10 @@ function OutlineView({ data }: { data: unknown }) {
 }
 
 function ChapterCard({ chapter, index }: { chapter: Record<string, unknown>; index: number }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const num = String(chapter.chapter ?? index + 1);
-  const title = String(chapter.title ?? `Chapter ${num}`);
+  const title = String(chapter.title ?? t("bcdDetail.chapterLabel", { number: num }));
   const summary = typeof chapter.summary === "string" ? chapter.summary : null;
   const keyEvents = Array.isArray(chapter.key_events) ? chapter.key_events : [];
   const keyThemes = Array.isArray(chapter.key_themes) ? chapter.key_themes : [];
@@ -88,7 +92,7 @@ function ChapterCard({ chapter, index }: { chapter: Record<string, unknown>; ind
           {summary && <p className="text-sm text-preto leading-relaxed">{summary}</p>}
           {keyEvents.length > 0 && (
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40 mb-1.5">Key Events</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40 mb-1.5">{t("bcdDetail.keyEvents")}</p>
               <ul className="space-y-1">
                 {keyEvents.map((ev, i) => (
                   <li key={i} className="flex gap-2 text-xs text-preto/80">
@@ -101,10 +105,10 @@ function ChapterCard({ chapter, index }: { chapter: Record<string, unknown>; ind
           )}
           {keyThemes.length > 0 && (
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40 mb-1.5">Key Themes</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40 mb-1.5">{t("bcdDetail.keyThemes")}</p>
               <div className="flex flex-wrap gap-1">
-                {keyThemes.map((t, j) => (
-                  <span key={j} className="text-[10px] px-2 py-0.5 rounded-full bg-azul/10 text-azul">{String(t)}</span>
+                {keyThemes.map((th, j) => (
+                  <span key={j} className="text-[10px] px-2 py-0.5 rounded-full bg-azul/10 text-azul">{String(th)}</span>
                 ))}
               </div>
             </div>
@@ -117,8 +121,6 @@ function ChapterCard({ chapter, index }: { chapter: Record<string, unknown>; ind
     </div>
   );
 }
-
-// ─── List view (participants, places, threads, etc.) ───────────────────────
 
 function ListView({ items, sectionKey }: { items: unknown[]; sectionKey: string }) {
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
@@ -163,8 +165,6 @@ function ListView({ items, sectionKey }: { items: unknown[]; sectionKey: string 
   );
 }
 
-// ─── Object key-value view ─────────────────────────────────────────────────
-
 function ObjectView({ data }: { data: Record<string, unknown> }) {
   return (
     <div className="space-y-3">
@@ -175,15 +175,12 @@ function ObjectView({ data }: { data: Record<string, unknown> }) {
   );
 }
 
-// ─── Text view ─────────────────────────────────────────────────────────────
-
 function TextView({ data }: { data: unknown }) {
+  const { t } = useTranslation();
   const text = typeof data === "string" ? data : String(data ?? "");
-  if (!text) return <p className="text-sm text-verde/40 italic">No content yet.</p>;
+  if (!text) return <p className="text-sm text-verde/40 italic">{t("bcdDetail.sectionEmpty")}</p>;
   return <p className="text-sm text-preto leading-relaxed whitespace-pre-wrap">{text}</p>;
 }
-
-// ─── Reusable field block ──────────────────────────────────────────────────
 
 function FieldBlock({ label, value }: { label: string; value: unknown }) {
   const displayLabel = label.replace(/_/g, " ");
@@ -258,8 +255,6 @@ function MiniObject({ data }: { data: Record<string, unknown> }) {
     </div>
   );
 }
-
-// ─── Helpers ───────────────────────────────────────────────────────────────
 
 function getNameKey(sectionKey: string): string {
   if (sectionKey === "discourse_threads") return "label";
