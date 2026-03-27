@@ -7,7 +7,7 @@ import type { Notification, UnreadCountResponse } from "../types/notification";
 import type { BCD, BCDApprovalStatus, BCDFeedback, BCDGenerationLog, BCDListItem, PassageEntryBrief, StalenessResult, ValidationIssue } from "../types/bookContext";
 import { ACCESS_TOKEN_KEY, API_BASE_URL, REFRESH_TOKEN_KEY } from "../constants/app";
 
-const client = axios.create({ baseURL: API_BASE_URL });
+const client = axios.create({ baseURL: API_BASE_URL, timeout: 15_000 });
 
 client.interceptors.request.use((config) => {
   const token = localStorage.getItem(ACCESS_TOKEN_KEY);

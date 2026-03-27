@@ -21,6 +21,8 @@ interface BCDStore {
 }
 
 let pollingInterval: ReturnType<typeof setInterval> | null = null;
+let pollFailures = 0;
+const MAX_POLL_FAILURES = 5;
 
 export const useBCDStore = create<BCDStore>((set, get) => ({
   list: [],
@@ -62,6 +64,7 @@ export const useBCDStore = create<BCDStore>((set, get) => ({
 
   startPolling: (bcdId) => {
     get().stopPolling();
+    pollFailures = 0;
     set({ isPolling: true });
 
     pollingInterval = setInterval(async () => {
@@ -70,6 +73,7 @@ export const useBCDStore = create<BCDStore>((set, get) => ({
           bookContextAPI.get(bcdId),
           bookContextAPI.getLogs(bcdId),
         ]);
+        pollFailures = 0;
         set({ currentBCD: bcd, generationLogs: logs });
 
         if (bcd.status !== "generating") {
@@ -85,9 +89,13 @@ export const useBCDStore = create<BCDStore>((set, get) => ({
           }
         }
       } catch {
-        get().stopPolling();
+        pollFailures++;
+        if (pollFailures >= MAX_POLL_FAILURES) {
+          get().stopPolling();
+          toast.error("Lost connection to generation progress. Refresh to reconnect.");
+        }
       }
-    }, 3000);
+    }, 5000);
   },
 
   stopPolling: () => {
