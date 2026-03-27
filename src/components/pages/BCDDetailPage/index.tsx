@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   BookOpen,
@@ -13,11 +13,15 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 import { useBCDStore } from "../../../stores/bcdStore";
 import { useAuth } from "../../../contexts/AuthContext";
+import { bookContextAPI } from "../../../services/api";
 import type { BCD } from "../../../types/bookContext";
 import { LoadingSpinner } from "../../common/LoadingSpinner";
 import { EmptyState } from "../../common/EmptyState";
+import { LockBadge } from "../../common/LockBadge";
 import { BCDStatusBadge } from "../BookContextPage/BCDStatusBadge";
 import { BCDActionBar } from "./BCDActionBar";
 import { GenerationPanel } from "./GenerationPanel";
@@ -55,16 +59,47 @@ const SECTIONS: SectionDef[] = [
 
 export function BCDDetailPage() {
   const { bcdId } = useParams<{ bcdId: string }>();
-  const { isAdmin, isAnalyst, canApproveBCD } = useAuth();
+  const { user, isAdmin, isAnalyst, canApproveBCD } = useAuth();
   const { currentBCD, isLoading, fetchBCD, clear } = useBCDStore();
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
-  const canEdit = isAdmin || isAnalyst;
+  const isLockedByMe = currentBCD?.locked_by === user?.id;
+  const canEdit = (isAdmin || isAnalyst) && isLockedByMe;
+
+  const handleLock = useCallback(async () => {
+    if (!currentBCD) return;
+    try {
+      await bookContextAPI.lock(currentBCD.id);
+      await fetchBCD(currentBCD.id);
+      toast.success("Document locked for editing.");
+    } catch (e) {
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Could not lock document.";
+      toast.error(msg);
+    }
+  }, [currentBCD, fetchBCD]);
+
+  const handleUnlock = useCallback(async () => {
+    if (!currentBCD) return;
+    try {
+      await bookContextAPI.unlock(currentBCD.id);
+      await fetchBCD(currentBCD.id);
+      toast.success("Document unlocked.");
+    } catch (e) {
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Could not unlock document.";
+      toast.error(msg);
+    }
+  }, [currentBCD, fetchBCD]);
 
   useEffect(() => {
     if (bcdId) fetchBCD(bcdId);
-    return () => clear();
-  }, [bcdId, fetchBCD, clear]);
+    return () => {
+      const state = useBCDStore.getState();
+      if (state.currentBCD?.locked_by === user?.id) {
+        bookContextAPI.unlock(state.currentBCD.id).catch(() => {});
+      }
+      clear();
+    };
+  }, [bcdId, fetchBCD, clear, user?.id]);
 
   if (isLoading && !currentBCD) return <LoadingSpinner />;
   if (!currentBCD) return <EmptyState title="Document not found" />;
@@ -84,6 +119,7 @@ export function BCDDetailPage() {
           <h2 className="text-lg sm:text-xl font-bold text-preto tracking-tight">Book Context</h2>
           <BCDInfoTooltip />
           <BCDStatusBadge status={currentBCD.status} />
+          <LockBadge lockedBy={currentBCD.locked_by} lockedByName={currentBCD.locked_by_name} />
           <VersionPicker
             currentBCDId={currentBCD.id}
             bookId={currentBCD.book_id}
@@ -95,10 +131,14 @@ export function BCDDetailPage() {
         <BCDActionBar
           bcdId={currentBCD.id}
           status={currentBCD.status}
-          canEdit={canEdit}
+          canEdit={isAdmin || isAnalyst}
           canApproveBCD={canApproveBCD}
           hasContent={currentBCD.structural_outline != null || currentBCD.participant_register != null}
           isApproved={currentBCD.status === "approved"}
+          lockedBy={currentBCD.locked_by}
+          isLockedByMe={isLockedByMe}
+          onLock={handleLock}
+          onUnlock={handleUnlock}
         />
       </div>
 

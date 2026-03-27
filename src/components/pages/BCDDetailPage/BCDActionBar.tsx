@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Sparkles, X } from "lucide-react";
+import { Check, Lock, Sparkles, Unlock, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
@@ -15,9 +15,13 @@ interface BCDActionBarProps {
   canApproveBCD: boolean;
   hasContent: boolean;
   isApproved: boolean;
+  lockedBy: string | null;
+  isLockedByMe: boolean;
+  onLock: () => Promise<void>;
+  onUnlock: () => Promise<void>;
 }
 
-export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent, isApproved }: BCDActionBarProps) {
+export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent, isApproved, lockedBy, isLockedByMe, onLock, onUnlock }: BCDActionBarProps) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [showRegenDialog, setShowRegenDialog] = useState(false);
@@ -72,7 +76,33 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
   return (
     <>
       <div className="flex flex-wrap gap-2">
-        {canEdit && status !== "generating" && (
+        {canEdit && status === "draft" && !lockedBy && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onLock}
+            disabled={loading !== null}
+            className="gap-1"
+          >
+            <Lock className="h-3.5 w-3.5" />
+            Lock & Edit
+          </Button>
+        )}
+
+        {isLockedByMe && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onUnlock}
+            disabled={loading !== null}
+            className="gap-1"
+          >
+            <Unlock className="h-3.5 w-3.5" />
+            Unlock
+          </Button>
+        )}
+
+        {canEdit && isLockedByMe && status !== "generating" && (
           <Button
             size="sm"
             onClick={onRegenerateClick}
