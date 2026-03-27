@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Clock, Eye, FileText } from "lucide-react";
 import type { BCDListItem } from "../../../types/bookContext";
+import { LockBadge } from "../../common/LockBadge";
 import { BCDStatusBadge } from "./BCDStatusBadge";
 
 interface BCDCardProps {
@@ -26,7 +27,10 @@ export function BCDCard({ bcd }: BCDCardProps) {
             Version {bcd.version}
           </span>
         </div>
-        <BCDStatusBadge status={bcd.status} />
+        <div className="flex items-center gap-1.5">
+          <LockBadge lockedBy={bcd.locked_by} lockedByName={bcd.locked_by_name} />
+          <BCDStatusBadge status={bcd.status} />
+        </div>
       </div>
 
       {bcd.section_label && (
