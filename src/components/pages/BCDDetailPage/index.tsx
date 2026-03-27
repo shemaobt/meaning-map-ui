@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -14,11 +14,16 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 import { useBCDStore } from "../../../stores/bcdStore";
 import { useAuth } from "../../../contexts/AuthContext";
+import { booksAPI, bookContextAPI } from "../../../services/api";
 import type { BCD } from "../../../types/bookContext";
+import type { BibleBook } from "../../../types/bible";
 import { LoadingSpinner } from "../../common/LoadingSpinner";
 import { EmptyState } from "../../common/EmptyState";
+import { LockBadge } from "../../common/LockBadge";
 import { BCDStatusBadge } from "../BookContextPage/BCDStatusBadge";
 import { BCDActionBar } from "./BCDActionBar";
 import { GenerationPanel } from "./GenerationPanel";
@@ -32,6 +37,7 @@ import { GenreContextEditor, KeyValueEditor } from "./editors/DictEditors";
 import { VersionPicker } from "./VersionPicker";
 import { BCDInfoTooltip } from "./BCDInfoTooltip";
 import { ApprovalProgress } from "./ApprovalProgress";
+import { BCDBHSASidebar, BCDBHSASidebarToggle } from "./BCDBHSASidebar";
 import { cn } from "../../../utils/cn";
 
 type SectionDef = {
@@ -57,16 +63,60 @@ const SECTIONS: SectionDef[] = [
 export function BCDDetailPage() {
   const { t } = useTranslation();
   const { bcdId } = useParams<{ bcdId: string }>();
-  const { isAdmin, isAnalyst, canApproveBCD } = useAuth();
+  const { user, isAdmin, isAnalyst, canApproveBCD } = useAuth();
   const { currentBCD, isLoading, fetchBCD, clear } = useBCDStore();
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [book, setBook] = useState<BibleBook | null>(null);
 
-  const canEdit = isAdmin || isAnalyst;
+  const isLockedByMe = currentBCD?.locked_by === user?.id;
+  const canEdit = (isAdmin || isAnalyst) && isLockedByMe;
+
+  const handleLock = useCallback(async () => {
+    if (!currentBCD) return;
+    try {
+      await bookContextAPI.lock(currentBCD.id);
+      await fetchBCD(currentBCD.id);
+      toast.success("Document locked for editing.");
+    } catch (e) {
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Could not lock document.";
+      toast.error(msg);
+    }
+  }, [currentBCD, fetchBCD]);
+
+  const handleUnlock = useCallback(async () => {
+    if (!currentBCD) return;
+    try {
+      await bookContextAPI.unlock(currentBCD.id);
+      await fetchBCD(currentBCD.id);
+      toast.success("Document unlocked.");
+    } catch (e) {
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Could not unlock document.";
+      toast.error(msg);
+    }
+  }, [currentBCD, fetchBCD]);
 
   useEffect(() => {
-    if (bcdId) fetchBCD(bcdId);
-    return () => clear();
-  }, [bcdId, fetchBCD, clear]);
+    if (bcdId) {
+      fetchBCD(bcdId).then(() => {
+        const bcd = useBCDStore.getState().currentBCD;
+        if (bcd?.book_id) {
+          booksAPI.list().then((books) => {
+            setBook(books.find((b) => b.id === bcd.book_id) ?? null);
+          }).catch(() => {});
+        }
+      });
+    }
+    return () => {
+      const state = useBCDStore.getState();
+      if (state.currentBCD && state.currentBCD.locked_by === user?.id) {
+        bookContextAPI.unlock(state.currentBCD.id).catch(() => {});
+      }
+      clear();
+    };
+  }, [bcdId, fetchBCD, clear, user?.id]);
+
+  const bookName = book?.name ?? "";
+  const chapterCount = book?.chapter_count ?? 0;
 
   if (isLoading && !currentBCD) return <LoadingSpinner />;
   if (!currentBCD) return <EmptyState title={t("bcdDetail.notFound")} />;
@@ -76,7 +126,7 @@ export function BCDDetailPage() {
       <nav className="flex items-center gap-1 text-xs text-verde/50 mb-5">
         <Link to="/app/books" className="hover:text-telha transition-colors">{t("nav.books")}</Link>
         <ChevronRight className="h-3 w-3" />
-        <Link to={`/app/books/${currentBCD.book_id}`} className="hover:text-telha transition-colors">{t("nav.book")}</Link>
+        <Link to={`/app/books/${currentBCD.book_id}`} className="hover:text-telha transition-colors">{bookName || t("nav.book")}</Link>
         <ChevronRight className="h-3 w-3" />
         <span className="text-preto font-medium">{t("bcdDetail.contextVersion", { version: currentBCD.version })}</span>
       </nav>
@@ -86,6 +136,7 @@ export function BCDDetailPage() {
           <h2 className="text-lg sm:text-xl font-bold text-preto tracking-tight">{t("bcdDetail.title")}</h2>
           <BCDInfoTooltip />
           <BCDStatusBadge status={currentBCD.status} />
+          <LockBadge lockedBy={currentBCD.locked_by} lockedByName={currentBCD.locked_by_name} />
           <VersionPicker
             currentBCDId={currentBCD.id}
             bookId={currentBCD.book_id}
@@ -97,10 +148,14 @@ export function BCDDetailPage() {
         <BCDActionBar
           bcdId={currentBCD.id}
           status={currentBCD.status}
-          canEdit={canEdit}
+          canEdit={isAdmin || isAnalyst}
           canApproveBCD={canApproveBCD}
           hasContent={currentBCD.structural_outline != null || currentBCD.participant_register != null}
           isApproved={currentBCD.status === "approved"}
+          lockedBy={currentBCD.locked_by}
+          isLockedByMe={isLockedByMe}
+          onLock={handleLock}
+          onUnlock={handleUnlock}
         />
       </div>
 
@@ -110,37 +165,47 @@ export function BCDDetailPage() {
 
       <ApprovalProgress bcdId={currentBCD.id} status={currentBCD.status} />
 
-      {!activeSection && (
-        <div className="flex-1">
-          <TileGrid
-            bcd={currentBCD}
-            disabled={currentBCD.status === "generating"}
-            onSelect={setActiveSection}
-          />
-        </div>
-      )}
-
-      {activeSection && (
-        <div className="flex-1 overflow-y-auto min-h-0">
-          <button
-            onClick={() => setActiveSection(null)}
-            className="flex items-center gap-1.5 text-xs text-verde/50 hover:text-telha transition-colors mb-4"
-          >
-            <X className="h-3 w-3" />
-            {t("bcdDetail.backToOverview")}
-          </button>
-          {canEdit && currentBCD.status === "draft" ? (
-            <EditableSection
-              bcdId={currentBCD.id}
-              sectionKey={activeSection}
-            />
-          ) : (
-            <SectionDetail
+      <div className="flex-1 flex gap-6 items-start min-h-0">
+        <div className="flex-1 min-w-0">
+          {!activeSection && (
+            <TileGrid
               bcd={currentBCD}
-              sectionKey={activeSection}
+              disabled={currentBCD.status === "generating"}
+              onSelect={setActiveSection}
             />
           )}
+
+          {activeSection && (
+            <>
+              <button
+                onClick={() => setActiveSection(null)}
+                className="flex items-center gap-1.5 text-xs text-verde/50 hover:text-telha transition-colors mb-4"
+              >
+                <X className="h-3 w-3" />
+                {t("bcdDetail.backToOverview")}
+              </button>
+              {canEdit && currentBCD.status === "draft" ? (
+                <EditableSection
+                  bcdId={currentBCD.id}
+                  sectionKey={activeSection}
+                />
+              ) : (
+                <SectionDetail
+                  bcd={currentBCD}
+                  sectionKey={activeSection}
+                />
+              )}
+            </>
+          )}
         </div>
+
+        {bookName && chapterCount > 0 && (
+          <BCDBHSASidebar bookName={bookName} chapterCount={chapterCount} />
+        )}
+      </div>
+
+      {bookName && chapterCount > 0 && (
+        <BCDBHSASidebarToggle bookName={bookName} />
       )}
     </div>
   );

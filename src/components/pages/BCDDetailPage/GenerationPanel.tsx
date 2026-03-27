@@ -130,7 +130,7 @@ export function GenerationPanel({ bcdId, canManage }: GenerationPanelProps) {
   );
 }
 
-function StepRow({ log }: { log: { id: string; step_name: string; status: string; duration_ms: number | null; started_at: string | null } }) {
+function StepRow({ log }: { log: { id: string; step_name: string; status: string; duration_ms: number | null; started_at: string | null; output_summary: string | null } }) {
   const { t } = useTranslation();
   const elapsed = useElapsed(log.status === "running" ? log.started_at : null);
 
@@ -148,6 +148,11 @@ function StepRow({ log }: { log: { id: string; step_name: string; status: string
       >
         {STEP_LABEL_KEYS[log.step_name] ? t(STEP_LABEL_KEYS[log.step_name]) : log.step_name}
       </span>
+      {log.status === "running" && log.output_summary && (
+        <span className="text-[10px] text-verde/50 flex-shrink-0">
+          {log.output_summary}
+        </span>
+      )}
       {log.status === "running" && elapsed !== null && (
         <span className="text-telha/60 tabular-nums flex-shrink-0">
           {elapsed.toFixed(0)}s

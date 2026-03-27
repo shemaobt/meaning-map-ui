@@ -7,7 +7,7 @@ import type { Notification, UnreadCountResponse } from "../types/notification";
 import type { BCD, BCDApprovalStatus, BCDFeedback, BCDGenerationLog, BCDListItem, PassageEntryBrief, StalenessResult, ValidationIssue } from "../types/bookContext";
 import { ACCESS_TOKEN_KEY, API_BASE_URL, REFRESH_TOKEN_KEY } from "../constants/app";
 
-const client = axios.create({ baseURL: API_BASE_URL });
+const client = axios.create({ baseURL: API_BASE_URL, timeout: 15_000 });
 
 client.interceptors.request.use((config) => {
   const token = localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -182,6 +182,10 @@ export const bookContextAPI = {
     client.get<BCDApprovalStatus>(`/book-context/${bcdId}/approval-status`).then((r) => r.data),
   setActive: (bcdId: string) =>
     client.post<BCD>(`/book-context/${bcdId}/set-active`).then((r) => r.data),
+  lock: (bcdId: string) =>
+    client.post<BCD>(`/book-context/${bcdId}/lock`).then((r) => r.data),
+  unlock: (bcdId: string) =>
+    client.post<BCD>(`/book-context/${bcdId}/unlock`).then((r) => r.data),
   cancelGeneration: (bcdId: string) =>
     client.post<{ deleted: boolean; book_id: string }>(`/book-context/${bcdId}/cancel-generation`).then((r) => r.data),
   getEntryBrief: (pericopeId: string) =>

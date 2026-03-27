@@ -8,6 +8,9 @@ export interface BCDListItem {
   is_active: boolean;
   status: BCDStatus;
   prepared_by: string;
+  locked_by: string | null;
+  locked_by_name: string | null;
+  locked_at: string | null;
   created_at: string;
   updated_at: string;
 }
