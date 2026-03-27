@@ -17,8 +17,9 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { useBCDStore } from "../../../stores/bcdStore";
 import { useAuth } from "../../../contexts/AuthContext";
-import { bookContextAPI } from "../../../services/api";
+import { booksAPI, bookContextAPI } from "../../../services/api";
 import type { BCD } from "../../../types/bookContext";
+import type { BibleBook } from "../../../types/bible";
 import { LoadingSpinner } from "../../common/LoadingSpinner";
 import { EmptyState } from "../../common/EmptyState";
 import { LockBadge } from "../../common/LockBadge";
@@ -35,6 +36,7 @@ import { GenreContextEditor, KeyValueEditor } from "./editors/DictEditors";
 import { VersionPicker } from "./VersionPicker";
 import { BCDInfoTooltip } from "./BCDInfoTooltip";
 import { ApprovalProgress } from "./ApprovalProgress";
+import { BCDBHSASidebar, BCDBHSASidebarToggle } from "./BCDBHSASidebar";
 import { cn } from "../../../utils/cn";
 
 type SectionDef = {
@@ -62,6 +64,7 @@ export function BCDDetailPage() {
   const { user, isAdmin, isAnalyst, canApproveBCD } = useAuth();
   const { currentBCD, isLoading, fetchBCD, clear } = useBCDStore();
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [book, setBook] = useState<BibleBook | null>(null);
 
   const isLockedByMe = currentBCD?.locked_by === user?.id;
   const canEdit = (isAdmin || isAnalyst) && isLockedByMe;
@@ -91,7 +94,16 @@ export function BCDDetailPage() {
   }, [currentBCD, fetchBCD]);
 
   useEffect(() => {
-    if (bcdId) fetchBCD(bcdId);
+    if (bcdId) {
+      fetchBCD(bcdId).then(() => {
+        const bcd = useBCDStore.getState().currentBCD;
+        if (bcd?.book_id) {
+          booksAPI.list().then((books) => {
+            setBook(books.find((b) => b.id === bcd.book_id) ?? null);
+          }).catch(() => {});
+        }
+      });
+    }
     return () => {
       const state = useBCDStore.getState();
       if (state.currentBCD && state.currentBCD.locked_by === user?.id) {
@@ -101,6 +113,9 @@ export function BCDDetailPage() {
     };
   }, [bcdId, fetchBCD, clear, user?.id]);
 
+  const bookName = book?.name ?? "";
+  const chapterCount = book?.chapter_count ?? 0;
+
   if (isLoading && !currentBCD) return <LoadingSpinner />;
   if (!currentBCD) return <EmptyState title="Document not found" />;
 
@@ -109,7 +124,7 @@ export function BCDDetailPage() {
       <nav className="flex items-center gap-1 text-xs text-verde/50 mb-5">
         <Link to="/app/books" className="hover:text-telha transition-colors">Books</Link>
         <ChevronRight className="h-3 w-3" />
-        <Link to={`/app/books/${currentBCD.book_id}`} className="hover:text-telha transition-colors">Book</Link>
+        <Link to={`/app/books/${currentBCD.book_id}`} className="hover:text-telha transition-colors">{bookName || "Book"}</Link>
         <ChevronRight className="h-3 w-3" />
         <span className="text-preto font-medium">Context v{currentBCD.version}</span>
       </nav>
@@ -159,28 +174,37 @@ export function BCDDetailPage() {
         </div>
       )}
 
-      {/* Expanded section detail */}
+      {/* Expanded section detail with BHSA sidebar */}
       {activeSection && (
-        <div className="flex-1 overflow-y-auto min-h-0">
-          <button
-            onClick={() => setActiveSection(null)}
-            className="flex items-center gap-1.5 text-xs text-verde/50 hover:text-telha transition-colors mb-4"
-          >
-            <X className="h-3 w-3" />
-            Back to overview
-          </button>
-          {canEdit && currentBCD.status === "draft" ? (
-            <EditableSection
-              bcdId={currentBCD.id}
-              sectionKey={activeSection}
-            />
-          ) : (
-            <SectionDetail
-              bcd={currentBCD}
-              sectionKey={activeSection}
-            />
+        <div className="flex-1 flex gap-6 items-start min-h-0">
+          <div className="flex-1 overflow-y-auto min-h-0">
+            <button
+              onClick={() => setActiveSection(null)}
+              className="flex items-center gap-1.5 text-xs text-verde/50 hover:text-telha transition-colors mb-4"
+            >
+              <X className="h-3 w-3" />
+              Back to overview
+            </button>
+            {canEdit && currentBCD.status === "draft" ? (
+              <EditableSection
+                bcdId={currentBCD.id}
+                sectionKey={activeSection}
+              />
+            ) : (
+              <SectionDetail
+                bcd={currentBCD}
+                sectionKey={activeSection}
+              />
+            )}
+          </div>
+          {bookName && chapterCount > 0 && (
+            <BCDBHSASidebar bookName={bookName} chapterCount={chapterCount} />
           )}
         </div>
+      )}
+
+      {activeSection && bookName && chapterCount > 0 && (
+        <BCDBHSASidebarToggle bookName={bookName} />
       )}
     </div>
   );
