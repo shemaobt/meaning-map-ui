@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BookOpen, Sparkles, Brain, CheckCircle, Circle, Loader2, AlertTriangle } from "lucide-react";
 
-const STEPS = [
-    { label: "Extracting Hebrew data...", icon: BookOpen, delay: 2000 },
-    { label: "Querying methodology...", icon: Sparkles, delay: 3000 },
-    { label: "Generating with AI...", icon: Brain, delay: 0 },
+interface StepDef {
+    labelKey: string;
+    icon: typeof BookOpen;
+    delay: number;
+}
+
+const STEPS: StepDef[] = [
+    { labelKey: "generation.extractingHebrew", icon: BookOpen, delay: 2000 },
+    { labelKey: "generation.queryingMethodology", icon: Sparkles, delay: 3000 },
+    { labelKey: "generation.generatingAI", icon: Brain, delay: 0 },
 ];
 
 interface GenerationOverlayProps {
@@ -13,6 +20,7 @@ interface GenerationOverlayProps {
 }
 
 export function GenerationOverlay({ isActive, error }: GenerationOverlayProps) {
+    const { t } = useTranslation();
     const [currentStep, setCurrentStep] = useState(0);
 
     useEffect(() => {
@@ -41,7 +49,7 @@ export function GenerationOverlay({ isActive, error }: GenerationOverlayProps) {
 
                 return (
                     <div
-                        key={step.label}
+                        key={step.labelKey}
                         className={`flex items-center gap-2 text-xs transition-opacity duration-300 ${
                             isDone || isCurrent ? "opacity-100" : "opacity-40"
                         }`}
@@ -59,7 +67,7 @@ export function GenerationOverlay({ isActive, error }: GenerationOverlayProps) {
                         <span className={
                             isDone ? "text-verde-claro" : isCurrent ? "text-preto font-medium" : "text-verde/50"
                         }>
-                            {step.label}
+                            {t(step.labelKey)}
                         </span>
                     </div>
                 );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { BibleBook } from "../../../types/bible";
+import { useBookName, useBookAbbr } from "../../../hooks/useBookName";
 import { cn } from "../../../utils/cn";
 
 interface BookCardProps {
@@ -11,6 +12,8 @@ interface BookCardProps {
 
 export function BookCard({ book, approvedCount, totalPericopes }: BookCardProps) {
   const navigate = useNavigate();
+  const translateBook = useBookName();
+  const translateAbbr = useBookAbbr();
   const isEnabled = book.is_enabled;
   const ratio = totalPericopes > 0 ? approvedCount / totalPericopes : 0;
   const pct = Math.round(ratio * 100);
@@ -49,10 +52,10 @@ export function BookCard({ book, approvedCount, totalPericopes }: BookCardProps)
       <div className="relative z-10 flex w-full items-start justify-between gap-1 overflow-hidden">
         <div className="flex flex-col gap-0.5 min-w-0 shrink">
           <span className="text-sm sm:text-base font-bold text-preto leading-tight truncate">
-            {book.abbreviation}
+            {translateAbbr(book.abbreviation)}
           </span>
           <span className="text-[10px] sm:text-xs text-verde/60 leading-tight block truncate">
-            {book.name}
+            {translateBook(book.name)}
           </span>
         </div>
         <span className="rounded-full bg-areia/20 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-verde/60 shrink-0">

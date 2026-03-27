@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../../../ui/button";
 import { Textarea } from "../../../ui/textarea";
 import { parseMap } from "../../../../utils/parser";
@@ -11,6 +12,7 @@ interface PasteImporterProps {
 }
 
 export function PasteImporter({ mapId }: PasteImporterProps) {
+  const { t } = useTranslation();
   const [raw, setRaw] = useState("");
   const [loading, setLoading] = useState(false);
   const setFromBackend = useMeaningMapStore((s) => s.setFromBackend);
@@ -22,10 +24,10 @@ export function PasteImporter({ mapId }: PasteImporterProps) {
       const parsed = parseMap(raw);
       const updated = await meaningMapsAPI.update(mapId, parsed);
       setFromBackend(updated);
-      toast.success("Map imported and saved.");
+      toast.success(t("meaningMap.importSuccess"));
       setRaw("");
     } catch {
-      toast.error("Failed to import map.");
+      toast.error(t("meaningMap.importFailed"));
     } finally {
       setLoading(false);
     }
@@ -33,19 +35,19 @@ export function PasteImporter({ mapId }: PasteImporterProps) {
 
   return (
     <div className="space-y-3">
-      <h4 className="text-sm font-medium text-preto">Manual Import</h4>
+      <h4 className="text-sm font-medium text-preto">{t("meaningMap.manualImport")}</h4>
       <p className="text-xs text-verde/60">
-        Paste raw meaning map markdown from NotebookLM or another source.
+        {t("meaningMap.manualImportDescription")}
       </p>
       <Textarea
         value={raw}
         onChange={(e) => setRaw(e.target.value)}
-        placeholder="Paste markdown here..."
+        placeholder={t("meaningMap.pasteMarkdownPlaceholder")}
         rows={12}
         className="font-mono text-xs"
       />
       <Button onClick={handleImport} disabled={!raw.trim() || loading} size="sm">
-        {loading ? "Importing..." : "Parse & Import"}
+        {loading ? t("common.importing") : t("meaningMap.parseImport")}
       </Button>
     </div>
   );

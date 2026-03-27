@@ -1,16 +1,18 @@
+import { useTranslation } from "react-i18next";
 import { useBHSAStore } from "../../stores/bhsaStore";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { LoadingSpinner } from "../common/LoadingSpinner";
 import { Badge } from "../ui/badge";
 
 export function BHSAPanel() {
+  const { t } = useTranslation();
   const { isPanelOpen, panelRef, panelData, closePanel } = useBHSAStore();
 
   return (
     <Sheet open={isPanelOpen} onOpenChange={(open) => !open && closePanel()}>
       <SheetContent side="right" className="w-full max-w-lg overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Hebrew Analysis</SheetTitle>
+          <SheetTitle>{t("bhsa.panelTitle")}</SheetTitle>
           {panelRef && <p className="text-sm text-verde/70">{panelRef}</p>}
         </SheetHeader>
 
@@ -29,7 +31,7 @@ export function BHSAPanel() {
                     <span className="text-xs text-verde/50">v.{clause.verse}</span>
                     {clause.is_mainline && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-telha/10 text-telha font-medium">
-                        mainline
+                        {t("bhsa.mainline")}
                       </span>
                     )}
                   </div>
@@ -47,12 +49,12 @@ export function BHSAPanel() {
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {clause.subjects.map((s) => (
                       <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-azul/10 text-azul">
-                        Subj: {s}
+                        {t("bhsa.subject")} {s}
                       </span>
                     ))}
                     {clause.objects.map((o) => (
                       <span key={o} className="text-[10px] px-2 py-0.5 rounded-full bg-verde-claro/10 text-verde-claro">
-                        Obj: {o}
+                        {t("bhsa.object")} {o}
                       </span>
                     ))}
                   </div>

@@ -1,11 +1,14 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { AuthLanguageSwitcher } from "../common/AuthLanguageSwitcher";
 import { toast } from "sonner";
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -19,10 +22,10 @@ export function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-      toast.success("Welcome back!");
+      toast.success(t("auth.login.successToast"));
       navigate("/app/books");
     } catch {
-      setError("Invalid username or password");
+      setError(t("auth.login.error"));
     } finally {
       setLoading(false);
     }
@@ -30,12 +33,13 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-branco px-4">
+      <AuthLanguageSwitcher />
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-preto mb-2">
-            <span className="text-telha">Bible</span> MeaningMaps
+            <span className="text-telha">{t("app.titleBible")}</span> {t("app.titleMeaningMaps")}
           </h1>
-          <p className="text-sm text-verde/70">Welcome back! Please sign in to continue</p>
+          <p className="text-sm text-verde/70">{t("auth.login.subtitle")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -50,7 +54,7 @@ export function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email address"
+              placeholder={t("auth.login.emailPlaceholder")}
               className="bg-branco border-areia/40 placeholder:text-verde/50"
               required
               autoFocus
@@ -60,27 +64,27 @@ export function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
+              placeholder={t("auth.login.passwordPlaceholder")}
               className="bg-branco border-areia/40 placeholder:text-verde/50"
               required
             />
           </div>
 
           <Button type="submit" className="w-full bg-telha hover:bg-telha/90 text-white font-medium" disabled={loading}>
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? t("auth.login.signingIn") : t("auth.login.submit")}
           </Button>
 
           <p className="text-center text-sm text-verde/70 mt-6">
-            Don't have an account?{" "}
+            {t("auth.login.noAccount")}{" "}
             <Link to="/signup" className="font-medium text-telha hover:underline">
-              Sign up
+              {t("auth.login.signupLink")}
             </Link>
           </p>
         </form>
       </div>
 
       <div className="hidden sm:block fixed bottom-8 text-xs text-verde/40 text-center w-full">
-        Semantic Analysis of Biblical Hebrew
+        {t("app.tagline")}
       </div>
     </div>
   );

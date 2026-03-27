@@ -1,9 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, X } from "lucide-react";
 import { FieldGroup, EditableInput, EditableTextarea, TagsInput } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
-
-// ─── Genre Context Editor ────────────────────────────────────────────────────
 
 interface GenreContextEditorProps {
   data: unknown;
@@ -11,6 +10,7 @@ interface GenreContextEditorProps {
 }
 
 export function GenreContextEditor({ data, setData }: GenreContextEditorProps) {
+  const { t } = useTranslation();
   const ctx = (typeof data === "object" && data !== null ? data : {}) as Record<string, unknown>;
 
   const update = (field: string, value: unknown) => {
@@ -28,14 +28,14 @@ export function GenreContextEditor({ data, setData }: GenreContextEditorProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <FieldGroup label="Primary Genre">
+        <FieldGroup label={t("fields.primaryGenre")}>
           <EditableInput
             value={primaryGenre}
             onChange={(val) => update("primary_genre", val)}
             placeholder="e.g. narrative, poetry, prophecy"
           />
         </FieldGroup>
-        <FieldGroup label="Sub-Genre">
+        <FieldGroup label={t("fields.subGenre")}>
           <EditableInput
             value={subGenre}
             onChange={(val) => update("sub_genre", val)}
@@ -44,7 +44,7 @@ export function GenreContextEditor({ data, setData }: GenreContextEditorProps) {
         </FieldGroup>
       </div>
 
-      <FieldGroup label="Literary Features">
+      <FieldGroup label={t("fields.literaryFeatures")}>
         <TagsInput
           tags={literaryFeatures}
           onChange={(tags) => update("literary_features", tags)}
@@ -80,14 +80,13 @@ export function GenreContextEditor({ data, setData }: GenreContextEditorProps) {
   );
 }
 
-// ─── Key-Value Editor (Maintenance Notes, etc.) ──────────────────────────────
-
 interface KeyValueEditorProps {
   data: unknown;
   setData: (val: unknown) => void;
 }
 
 export function KeyValueEditor({ data, setData }: KeyValueEditorProps) {
+  const { t } = useTranslation();
   const dict = (typeof data === "object" && data !== null ? data : {}) as Record<string, unknown>;
   const [newKey, setNewKey] = useState("");
 
@@ -159,7 +158,7 @@ export function KeyValueEditor({ data, setData }: KeyValueEditorProps) {
           className="gap-1 h-9"
         >
           <Plus className="h-3.5 w-3.5" />
-          Add
+          {t("editors.addEntry")}
         </Button>
       </div>
     </div>

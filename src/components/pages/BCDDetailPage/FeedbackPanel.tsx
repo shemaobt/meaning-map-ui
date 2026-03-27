@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 import { bookContextAPI } from "../../../services/api";
@@ -12,6 +13,7 @@ interface FeedbackPanelProps {
 }
 
 export function FeedbackPanel({ bcdId, sectionKey, canManage }: FeedbackPanelProps) {
+  const { t } = useTranslation();
   const { feedback, fetchFeedback } = useBCDStore();
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -30,9 +32,9 @@ export function FeedbackPanel({ bcdId, sectionKey, canManage }: FeedbackPanelPro
       await bookContextAPI.addFeedback(bcdId, { section_key: sectionKey, content: content.trim() });
       setContent("");
       await fetchFeedback(bcdId);
-      toast.success("Note added.");
+      toast.success(t("editors.noteAdded"));
     } catch {
-      toast.error("Failed to add note.");
+      toast.error(t("editors.noteAddFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -43,7 +45,7 @@ export function FeedbackPanel({ bcdId, sectionKey, canManage }: FeedbackPanelPro
       await bookContextAPI.resolveFeedback(bcdId, feedbackId);
       await fetchFeedback(bcdId);
     } catch {
-      toast.error("Failed to resolve.");
+      toast.error(t("editors.noteResolveFailed"));
     }
   };
 
@@ -51,7 +53,7 @@ export function FeedbackPanel({ bcdId, sectionKey, canManage }: FeedbackPanelPro
     <div className="mt-4 rounded-xl border border-areia/20 bg-surface p-4">
       <div className="flex items-center gap-2 mb-3">
         <MessageSquare className="h-3.5 w-3.5 text-verde/40" />
-        <p className="text-xs font-semibold text-verde/50 uppercase tracking-wide">Notes</p>
+        <p className="text-xs font-semibold text-verde/50 uppercase tracking-wide">{t("editors.notes")}</p>
         {unresolvedCount > 0 && (
           <span className="text-[10px] font-medium text-telha bg-telha/10 rounded-full px-2 py-0.5">
             {unresolvedCount}
@@ -90,7 +92,7 @@ export function FeedbackPanel({ bcdId, sectionKey, canManage }: FeedbackPanelPro
           <input
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Add a note about this section..."
+            placeholder={t("editors.notePlaceholder")}
             className="flex-1 rounded-lg border border-areia/30 bg-surface-alt px-3 py-2 text-xs focus:ring-1 focus:ring-telha focus:border-telha"
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSubmit()}
           />
@@ -102,13 +104,13 @@ export function FeedbackPanel({ bcdId, sectionKey, canManage }: FeedbackPanelPro
             className="h-8 px-3 gap-1.5"
           >
             <Send className="h-3 w-3" />
-            Send
+            {t("common.send")}
           </Button>
         </div>
       )}
 
       {sectionFeedback.length === 0 && !canManage && (
-        <p className="text-xs text-verde/30 italic">No notes yet.</p>
+        <p className="text-xs text-verde/30 italic">{t("editors.noNotes")}</p>
       )}
     </div>
   );

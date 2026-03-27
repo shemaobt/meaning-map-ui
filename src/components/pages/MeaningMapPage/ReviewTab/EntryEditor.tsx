@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../../../ui/button";
 import { Input } from "../../../ui/input";
 import { Pencil, Plus, Trash2, Check, X } from "lucide-react";
@@ -18,6 +19,7 @@ export function EntryEditor<T extends Record<string, string>>({
   readOnly = false,
   emptyFactory,
 }: EntryEditorProps<T>) {
+  const { t } = useTranslation();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [draft, setDraft] = useState<T | null>(null);
 
@@ -85,7 +87,7 @@ export function EntryEditor<T extends Record<string, string>>({
           ) : (
             <div className="flex items-start justify-between">
               <div className="text-xs space-y-0.5">
-                <span className="font-semibold text-preto">{entry.name || "(unnamed)"}</span>
+                <span className="font-semibold text-preto">{entry.name || t("meaningMap.unnamed")}</span>
                 {fields
                   .filter((f) => f.key !== "name" && entry[f.key])
                   .map((f) => (
@@ -110,7 +112,7 @@ export function EntryEditor<T extends Record<string, string>>({
       ))}
       {!readOnly && (
         <Button size="sm" variant="outline" onClick={addEntry} className="gap-1">
-          <Plus className="h-3 w-3" /> Add
+          <Plus className="h-3 w-3" /> {t("meaningMap.addEntry")}
         </Button>
       )}
     </div>

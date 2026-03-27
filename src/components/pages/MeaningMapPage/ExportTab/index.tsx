@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMeaningMapStore } from "../../../../stores/meaningMapStore";
 import { Button } from "../../../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../ui/card";
@@ -7,6 +8,7 @@ import { Copy, Download } from "lucide-react";
 import { toast } from "sonner";
 
 export function ExportTab() {
+  const { t } = useTranslation();
   const currentMap = useMeaningMapStore((s) => s.currentMap);
   const [jsonPreview, setJsonPreview] = useState("");
   const [prosePreview, setProsePreview] = useState("");
@@ -14,7 +16,7 @@ export function ExportTab() {
   if (!currentMap || currentMap.status !== "approved") {
     return (
       <div className="text-center py-12 text-verde/50">
-        <p className="text-sm">Export is only available for approved meaning maps.</p>
+        <p className="text-sm">{t("meaningMap.exportApprovedOnly")}</p>
       </div>
     );
   }
@@ -24,7 +26,7 @@ export function ExportTab() {
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard.");
+    toast.success(t("meaningMap.copiedToClipboard"));
   };
 
   const handleDownload = (text: string, filename: string, mime: string) => {
@@ -35,19 +37,19 @@ export function ExportTab() {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`Downloaded ${filename}.`);
+    toast.success(t("meaningMap.downloaded", { filename }));
   };
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>JSON Export</CardTitle>
+          <CardTitle>{t("meaningMap.jsonExport")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={handlePreviewJSON}>
-              Preview
+              {t("meaningMap.preview")}
             </Button>
             {jsonPreview && (
               <>
@@ -57,14 +59,14 @@ export function ExportTab() {
                   onClick={() => handleCopy(jsonPreview)}
                   className="gap-1"
                 >
-                  <Copy className="h-3 w-3" /> Copy
+                  <Copy className="h-3 w-3" /> {t("meaningMap.copy")}
                 </Button>
                 <Button
                   size="sm"
                   onClick={() => handleDownload(jsonPreview, "meaning-map.json", "application/json")}
                   className="gap-1"
                 >
-                  <Download className="h-3 w-3" /> Download
+                  <Download className="h-3 w-3" /> {t("meaningMap.download")}
                 </Button>
               </>
             )}
@@ -79,12 +81,12 @@ export function ExportTab() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Prose Export</CardTitle>
+          <CardTitle>{t("meaningMap.proseExport")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={handlePreviewProse}>
-              Preview
+              {t("meaningMap.preview")}
             </Button>
             {prosePreview && (
               <>
@@ -94,7 +96,7 @@ export function ExportTab() {
                   onClick={() => handleCopy(prosePreview)}
                   className="gap-1"
                 >
-                  <Copy className="h-3 w-3" /> Copy
+                  <Copy className="h-3 w-3" /> {t("meaningMap.copy")}
                 </Button>
                 <Button
                   size="sm"
@@ -103,7 +105,7 @@ export function ExportTab() {
                   }
                   className="gap-1"
                 >
-                  <Download className="h-3 w-3" /> Download
+                  <Download className="h-3 w-3" /> {t("meaningMap.download")}
                 </Button>
               </>
             )}

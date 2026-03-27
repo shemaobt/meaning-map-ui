@@ -8,9 +8,10 @@ import { AppHeader } from "./AppHeader";
 import { Sidebar } from "./Sidebar";
 import { BHSAPanel } from "./BHSAPanel";
 import { AccessDeniedPage } from "../pages/AccessDeniedPage";
+import { LanguagePickerDialog } from "../common/LanguagePickerDialog";
 
 export function AppShell() {
-  const { user, appRoles, isLoading } = useAuth();
+  const { user, appRoles, isLoading, needsLanguagePicker } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   useBHSAInit();
   useNotificationPolling();
@@ -29,6 +30,7 @@ export function AppShell() {
         </main>
         <BHSAPanel />
       </div>
+      {needsLanguagePicker && <LanguagePickerDialog />}
     </div>
   );
 }

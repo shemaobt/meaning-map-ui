@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Clock, Eye, FileText } from "lucide-react";
 import type { BCDListItem } from "../../../types/bookContext";
@@ -9,6 +10,7 @@ interface BCDCardProps {
 }
 
 export function BCDCard({ bcd }: BCDCardProps) {
+  const { t } = useTranslation();
   const updatedAt = new Date(bcd.updated_at).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -24,7 +26,7 @@ export function BCDCard({ bcd }: BCDCardProps) {
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4 text-verde/50 flex-shrink-0" />
           <span className="text-sm font-semibold text-preto">
-            Version {bcd.version}
+            {t("bookContext.version", { version: bcd.version })}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -44,7 +46,7 @@ export function BCDCard({ bcd }: BCDCardProps) {
         </span>
         <span className="flex items-center gap-1">
           <Eye className="h-3 w-3" />
-          View
+          {t("common.view")}
         </span>
       </div>
     </Link>

@@ -1,6 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 
 export function AccessDeniedPage() {
+    const { t } = useTranslation();
     const { user, accessRequestStatus, logout } = useAuth();
 
     const handleLogout = async () => {
@@ -46,18 +48,18 @@ export function AccessDeniedPage() {
                         )}
                     </div>
                     <h1 className="text-xl sm:text-2xl font-bold text-preto mb-2">
-                        {isPending ? "Access Pending" : "Access Restricted"}
+                        {isPending ? t("auth.accessDenied.pendingTitle") : t("auth.accessDenied.restrictedTitle")}
                     </h1>
                     <p className="text-verde/70 text-sm leading-relaxed">
                         {isPending
-                            ? "Your access request has been submitted and is awaiting admin approval. You'll be able to use the app once approved."
-                            : "Your account doesn't have access to the Meaning Map application. Please contact support to request access."}
+                            ? t("auth.accessDenied.pendingMessage")
+                            : t("auth.accessDenied.restrictedMessage")}
                     </p>
                 </div>
 
                 {user && (
                     <div className="bg-areia/20 rounded-lg p-4 mb-6 text-left">
-                        <p className="text-xs text-verde/60 mb-1">Signed in as</p>
+                        <p className="text-xs text-verde/60 mb-1">{t("auth.accessDenied.signedInAs")}</p>
                         <p className="text-sm font-medium text-preto">{user.email}</p>
                     </div>
                 )}
@@ -67,7 +69,7 @@ export function AccessDeniedPage() {
                         onClick={handleLogout}
                         className="block w-full rounded-md border border-areia/40 px-4 py-2.5 text-sm font-medium text-preto hover:bg-areia/10 transition-colors"
                     >
-                        Sign out
+                        {t("auth.accessDenied.signOut")}
                     </button>
                 </div>
             </div>

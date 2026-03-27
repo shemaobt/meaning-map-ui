@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { GeneratePanel } from "./GeneratePanel";
 import { PasteImporter } from "./PasteImporter";
 
@@ -7,6 +8,8 @@ interface ImportTabProps {
 }
 
 export function ImportTab({ mapId, pericopeId }: ImportTabProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <GeneratePanel pericopeId={pericopeId} />
@@ -15,7 +18,7 @@ export function ImportTab({ mapId, pericopeId }: ImportTabProps) {
           <span className="w-full border-t border-areia/30" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-branco px-2 text-verde/50">or import manually</span>
+          <span className="bg-branco px-2 text-verde/50">{t("meaningMap.orImportManually")}</span>
         </div>
       </div>
       <PasteImporter mapId={mapId} />

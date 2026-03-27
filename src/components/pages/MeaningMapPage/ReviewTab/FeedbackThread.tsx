@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { MeaningMapFeedback } from "../../../../types/meaningMap";
 import { meaningMapsAPI } from "../../../../services/api";
 import { Button } from "../../../ui/button";
@@ -15,6 +16,7 @@ interface FeedbackThreadProps {
 }
 
 export function FeedbackThread({ mapId, sectionKey, canWrite, canResolve }: FeedbackThreadProps) {
+  const { t } = useTranslation();
   const [items, setItems] = useState<MeaningMapFeedback[]>([]);
   const [newContent, setNewContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -36,9 +38,9 @@ export function FeedbackThread({ mapId, sectionKey, canWrite, canResolve }: Feed
       });
       setItems((prev) => [...prev, fb]);
       setNewContent("");
-      toast.success("Feedback submitted.");
+      toast.success(t("meaningMap.feedbackSubmitted"));
     } catch {
-      toast.error("Failed to add feedback.");
+      toast.error(t("meaningMap.feedbackFailed"));
     } finally {
       setLoading(false);
     }
@@ -48,9 +50,9 @@ export function FeedbackThread({ mapId, sectionKey, canWrite, canResolve }: Feed
     try {
       const updated = await meaningMapsAPI.resolveFeedback(mapId, feedbackId);
       setItems((prev) => prev.map((fb) => (fb.id === feedbackId ? updated : fb)));
-      toast.success("Feedback resolved.");
+      toast.success(t("meaningMap.feedbackResolved"));
     } catch {
-      toast.error("Failed to resolve feedback.");
+      toast.error(t("meaningMap.resolveFeedbackFailed"));
     }
   };
 
@@ -59,7 +61,7 @@ export function FeedbackThread({ mapId, sectionKey, canWrite, canResolve }: Feed
   return (
     <div className="mt-3 rounded-lg border border-azul/20 bg-azul/5 p-3 space-y-2">
       <div className="flex items-center gap-1 text-xs font-medium text-azul">
-        <MessageSquare className="h-3 w-3" /> Feedback
+        <MessageSquare className="h-3 w-3" /> {t("meaningMap.feedback")}
       </div>
       {items.map((fb) => (
         <div
@@ -70,7 +72,7 @@ export function FeedbackThread({ mapId, sectionKey, canWrite, canResolve }: Feed
           )}
         >
           <div className="flex justify-between">
-            <span className="font-medium">{fb.author_name || "Reviewer"}</span>
+            <span className="font-medium">{fb.author_name || t("meaningMap.reviewer")}</span>
             {canResolve && !fb.resolved && (
               <Button size="sm" variant="ghost" onClick={() => handleResolve(fb.id)}>
                 <Check className="h-3 w-3" />
@@ -87,10 +89,10 @@ export function FeedbackThread({ mapId, sectionKey, canWrite, canResolve }: Feed
             onChange={(e) => setNewContent(e.target.value)}
             rows={2}
             className="text-xs flex-1"
-            placeholder="Add feedback..."
+            placeholder={t("meaningMap.feedbackPlaceholder")}
           />
           <Button size="sm" onClick={handleSubmit} disabled={loading} className="self-end sm:self-start">
-            Send
+            {t("common.send")}
           </Button>
         </div>
       )}

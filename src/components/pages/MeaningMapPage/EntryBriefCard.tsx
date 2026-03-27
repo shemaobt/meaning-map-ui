@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, Users, MessageCircle, Building2, MapPin, Package } from "lucide-react";
 import type { PassageEntryBrief } from "../../../types/bookContext";
 import { cn } from "../../../utils/cn";
@@ -8,14 +9,15 @@ interface EntryBriefCardProps {
 }
 
 export function EntryBriefCard({ brief }: EntryBriefCardProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
   const counts = [
-    brief.participants.length > 0 && `${brief.participants.length} participant${brief.participants.length !== 1 ? "s" : ""}`,
-    brief.active_threads.length > 0 && `${brief.active_threads.length} thread${brief.active_threads.length !== 1 ? "s" : ""}`,
-    brief.places.length > 0 && `${brief.places.length} place${brief.places.length !== 1 ? "s" : ""}`,
-    brief.objects.length > 0 && `${brief.objects.length} object${brief.objects.length !== 1 ? "s" : ""}`,
-    brief.institutions.length > 0 && `${brief.institutions.length} institution${brief.institutions.length !== 1 ? "s" : ""}`,
+    brief.participants.length > 0 && t("meaningMap.participantsCount", { count: brief.participants.length }),
+    brief.active_threads.length > 0 && t("meaningMap.threadsCount", { count: brief.active_threads.length }),
+    brief.places.length > 0 && t("meaningMap.placesCount", { count: brief.places.length }),
+    brief.objects.length > 0 && t("meaningMap.objectsCount", { count: brief.objects.length }),
+    brief.institutions.length > 0 && t("meaningMap.institutionsCount", { count: brief.institutions.length }),
   ].filter(Boolean);
 
   return (
@@ -31,10 +33,10 @@ export function EntryBriefCard({ brief }: EntryBriefCardProps) {
             <ChevronRight className="h-4 w-4 text-azul" />
           )}
           <span className="text-sm font-semibold text-preto">
-            {brief.is_first_pericope ? "Opening Pericope" : "Already Established"}
+            {brief.is_first_pericope ? t("meaningMap.openingPericope") : t("meaningMap.alreadyEstablished")}
           </span>
           <span className="text-xs text-verde/50">
-            BCD v{brief.bcd_version}
+            {t("meaningMap.bcdVersion", { version: brief.bcd_version })}
           </span>
         </div>
         {counts.length > 0 && (
@@ -49,7 +51,7 @@ export function EntryBriefCard({ brief }: EntryBriefCardProps) {
           {brief.established_items.length > 0 && (
             <div className="mt-3">
               <h4 className="text-xs font-semibold text-verde/70 uppercase tracking-wide mb-2">
-                Established Items
+                {t("meaningMap.establishedItems")}
               </h4>
               <div className="flex flex-wrap gap-1.5">
                 {brief.established_items.map((item, i) => (
@@ -62,7 +64,7 @@ export function EntryBriefCard({ brief }: EntryBriefCardProps) {
           {brief.participants.length > 0 && (
             <BriefSection
               icon={<Users className="h-3.5 w-3.5" />}
-              title="Known Participants"
+              title={t("meaningMap.knownParticipants")}
               items={brief.participants}
               nameKey="name"
             />
@@ -71,7 +73,7 @@ export function EntryBriefCard({ brief }: EntryBriefCardProps) {
           {brief.active_threads.length > 0 && (
             <BriefSection
               icon={<MessageCircle className="h-3.5 w-3.5" />}
-              title="Active Discourse Threads"
+              title={t("meaningMap.activeThreads")}
               items={brief.active_threads}
               nameKey="label"
             />
@@ -80,7 +82,7 @@ export function EntryBriefCard({ brief }: EntryBriefCardProps) {
           {brief.places.length > 0 && (
             <BriefSection
               icon={<MapPin className="h-3.5 w-3.5" />}
-              title="Known Places"
+              title={t("meaningMap.knownPlaces")}
               items={brief.places}
               nameKey="name"
             />
@@ -89,7 +91,7 @@ export function EntryBriefCard({ brief }: EntryBriefCardProps) {
           {brief.objects.length > 0 && (
             <BriefSection
               icon={<Package className="h-3.5 w-3.5" />}
-              title="Known Objects"
+              title={t("meaningMap.knownObjects")}
               items={brief.objects}
               nameKey="name"
             />
@@ -98,7 +100,7 @@ export function EntryBriefCard({ brief }: EntryBriefCardProps) {
           {brief.institutions.length > 0 && (
             <BriefSection
               icon={<Building2 className="h-3.5 w-3.5" />}
-              title="Known Institutions"
+              title={t("meaningMap.knownInstitutions")}
               items={brief.institutions}
               nameKey="name"
             />

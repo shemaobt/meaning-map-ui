@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import {
   BookOpen,
@@ -41,25 +42,26 @@ import { cn } from "../../../utils/cn";
 
 type SectionDef = {
   key: string;
-  label: string;
+  labelKey: string;
   icon: React.ElementType;
   color: string;
   span?: "wide";
 };
 
 const SECTIONS: SectionDef[] = [
-  { key: "structural_outline", label: "Structural Outline", icon: Layers, color: "bg-telha/15 text-telha", span: "wide" },
-  { key: "participant_register", label: "Participants", icon: Users, color: "bg-azul/15 text-azul" },
-  { key: "discourse_threads", label: "Discourse Threads", icon: MessageCircle, color: "bg-verde-claro/15 text-verde-claro" },
-  { key: "theological_spine", label: "Theological Spine", icon: BookOpen, color: "bg-telha/10 text-telha" },
-  { key: "places", label: "Places", icon: MapPin, color: "bg-azul/10 text-azul" },
-  { key: "objects", label: "Objects", icon: Package, color: "bg-areia/30 text-verde" },
-  { key: "institutions", label: "Cultural Practices", icon: Building2, color: "bg-verde-claro/10 text-verde-claro" },
-  { key: "genre_context", label: "Genre Context", icon: Tag, color: "bg-verde/10 text-verde" },
-  { key: "maintenance_notes", label: "Maintenance Notes", icon: StickyNote, color: "bg-areia/20 text-verde" },
+  { key: "structural_outline", labelKey: "bcdDetail.sectionOutline", icon: Layers, color: "bg-telha/15 text-telha", span: "wide" },
+  { key: "participant_register", labelKey: "bcdDetail.sectionParticipants", icon: Users, color: "bg-azul/15 text-azul" },
+  { key: "discourse_threads", labelKey: "bcdDetail.sectionThreads", icon: MessageCircle, color: "bg-verde-claro/15 text-verde-claro" },
+  { key: "theological_spine", labelKey: "bcdDetail.sectionTheologicalSpine", icon: BookOpen, color: "bg-telha/10 text-telha" },
+  { key: "places", labelKey: "bcdDetail.sectionPlaces", icon: MapPin, color: "bg-azul/10 text-azul" },
+  { key: "objects", labelKey: "bcdDetail.sectionObjects", icon: Package, color: "bg-areia/30 text-verde" },
+  { key: "institutions", labelKey: "bcdDetail.sectionInstitutions", icon: Building2, color: "bg-verde-claro/10 text-verde-claro" },
+  { key: "genre_context", labelKey: "bcdDetail.sectionGenreContext", icon: Tag, color: "bg-verde/10 text-verde" },
+  { key: "maintenance_notes", labelKey: "bcdDetail.sectionMaintenanceNotes", icon: StickyNote, color: "bg-areia/20 text-verde" },
 ];
 
 export function BCDDetailPage() {
+  const { t } = useTranslation();
   const { bcdId } = useParams<{ bcdId: string }>();
   const { user, isAdmin, isAnalyst, canApproveBCD } = useAuth();
   const { currentBCD, isLoading, fetchBCD, clear } = useBCDStore();
@@ -117,21 +119,21 @@ export function BCDDetailPage() {
   const chapterCount = book?.chapter_count ?? 0;
 
   if (isLoading && !currentBCD) return <LoadingSpinner />;
-  if (!currentBCD) return <EmptyState title="Document not found" />;
+  if (!currentBCD) return <EmptyState title={t("bcdDetail.notFound")} />;
 
   return (
     <div className="flex flex-col h-full">
       <nav className="flex items-center gap-1 text-xs text-verde/50 mb-5">
-        <Link to="/app/books" className="hover:text-telha transition-colors">Books</Link>
+        <Link to="/app/books" className="hover:text-telha transition-colors">{t("nav.books")}</Link>
         <ChevronRight className="h-3 w-3" />
-        <Link to={`/app/books/${currentBCD.book_id}`} className="hover:text-telha transition-colors">{bookName || "Book"}</Link>
+        <Link to={`/app/books/${currentBCD.book_id}`} className="hover:text-telha transition-colors">{bookName || t("nav.book")}</Link>
         <ChevronRight className="h-3 w-3" />
-        <span className="text-preto font-medium">Context v{currentBCD.version}</span>
+        <span className="text-preto font-medium">{t("bcdDetail.contextVersion", { version: currentBCD.version })}</span>
       </nav>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg sm:text-xl font-bold text-preto tracking-tight">Book Context</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-preto tracking-tight">{t("bcdDetail.title")}</h2>
           <BCDInfoTooltip />
           <BCDStatusBadge status={currentBCD.status} />
           <LockBadge lockedBy={currentBCD.locked_by} lockedByName={currentBCD.locked_by_name} />
@@ -165,7 +167,6 @@ export function BCDDetailPage() {
 
       <div className="flex-1 flex gap-6 items-start min-h-0">
         <div className="flex-1 min-w-0">
-          {/* Metro tile grid */}
           {!activeSection && (
             <TileGrid
               bcd={currentBCD}
@@ -174,7 +175,6 @@ export function BCDDetailPage() {
             />
           )}
 
-          {/* Expanded section detail */}
           {activeSection && (
             <>
               <button
@@ -182,7 +182,7 @@ export function BCDDetailPage() {
                 className="flex items-center gap-1.5 text-xs text-verde/50 hover:text-telha transition-colors mb-4"
               >
                 <X className="h-3 w-3" />
-                Back to overview
+                {t("bcdDetail.backToOverview")}
               </button>
               {canEdit && currentBCD.status === "draft" ? (
                 <EditableSection
@@ -212,6 +212,8 @@ export function BCDDetailPage() {
 }
 
 function TileGrid({ bcd, disabled, onSelect }: { bcd: BCD; disabled?: boolean; onSelect: (key: string) => void }) {
+  const { t } = useTranslation();
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
       {SECTIONS.map((section) => {
@@ -237,12 +239,12 @@ function TileGrid({ bcd, disabled, onSelect }: { bcd: BCD; disabled?: boolean; o
           >
             <section.icon className="h-6 w-6 mb-3 opacity-70" />
             <div>
-              <p className="text-xs font-bold leading-tight">{section.label}</p>
+              <p className="text-xs font-bold leading-tight">{t(section.labelKey)}</p>
               {count !== null && (
-                <p className="text-[10px] opacity-60 mt-0.5">{count} entries</p>
+                <p className="text-[10px] opacity-60 mt-0.5">{count} {t("bcdDetail.entries")}</p>
               )}
               {!hasContent && (
-                <p className="text-[10px] opacity-50 italic mt-0.5">empty</p>
+                <p className="text-[10px] opacity-50 italic mt-0.5">{t("bcdDetail.empty")}</p>
               )}
               {preview && !count && (
                 <p className="text-[10px] opacity-60 mt-0.5 line-clamp-2">{preview}</p>
@@ -276,6 +278,7 @@ const BHSA_SECTIONS = new Set([
 ]);
 
 function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: string }) {
+  const { t } = useTranslation();
   const sectionDef = SECTIONS.find((s) => s.key === sectionKey);
   if (!sectionDef) return null;
 
@@ -287,7 +290,7 @@ function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: str
     <SectionEditor
       bcdId={bcdId}
       sectionKey={sectionKey}
-      label={sectionDef.label}
+      label={t(sectionDef.labelKey)}
       icon={sectionDef.icon}
       readOnly={false}
     >
@@ -295,7 +298,7 @@ function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: str
         <>
           {hasBHSAFields && (
             <div className="mb-3 rounded-md bg-areia/15 border border-areia/30 px-3 py-2 text-xs text-verde/70">
-              Fields marked <span className="font-semibold text-verde/50">BHSA</span> are sourced from linguistic data and should not be modified.
+              {t("bcdDetail.bhsaWarning")}
             </div>
           )}
           {isTextSection ? (

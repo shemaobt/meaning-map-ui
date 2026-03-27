@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, GripVertical, Plus, Trash2 } from "lucide-react";
 import { FieldGroup, EditableInput, EditableTextarea, TagsInput } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
@@ -18,6 +19,7 @@ type Chapter = {
 };
 
 export function OutlineEditor({ data, setData }: OutlineEditorProps) {
+  const { t } = useTranslation();
   const outline = (typeof data === "object" && data !== null ? data : {}) as Record<string, unknown>;
   const bookArc = typeof outline.book_arc === "string" ? outline.book_arc : "";
   const chapters = Array.isArray(outline.chapters) ? (outline.chapters as Chapter[]) : [];
@@ -42,7 +44,7 @@ export function OutlineEditor({ data, setData }: OutlineEditorProps) {
 
   return (
     <div className="space-y-5">
-      <FieldGroup label="Book Arc">
+      <FieldGroup label={t("bcdDetail.bookArc")}>
         <EditableTextarea
           value={bookArc}
           onChange={(val) => update("book_arc", val)}
@@ -54,10 +56,10 @@ export function OutlineEditor({ data, setData }: OutlineEditorProps) {
       <div>
         <div className="flex items-center justify-between mb-2">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-verde/50">
-            Chapters ({chapters.length})
+            {t("fields.chapters")} ({chapters.length})
           </p>
           <Button type="button" size="sm" variant="outline" onClick={addChapter} className="gap-1 h-7 text-xs">
-            <Plus className="h-3 w-3" /> Add Chapter
+            <Plus className="h-3 w-3" /> {t("editors.addChapter")}
           </Button>
         </div>
         <div className="space-y-2">
@@ -87,6 +89,7 @@ function ChapterCard({
   onUpdate: (field: string, value: unknown) => void;
   onRemove: () => void;
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const num = chapter.chapter ?? index + 1;
 
@@ -102,7 +105,7 @@ function ChapterCard({
           {num}
         </span>
         <span className="flex-1 text-sm font-medium text-preto truncate">
-          {chapter.title || `Chapter ${num}`}
+          {chapter.title || t("bcdDetail.chapterLabel", { number: num })}
         </span>
         {open ? (
           <ChevronDown className="h-3.5 w-3.5 text-verde/30 flex-shrink-0" />
@@ -113,7 +116,7 @@ function ChapterCard({
 
       {open && (
         <div className="border-t border-areia/15 px-4 py-4 space-y-4">
-          <FieldGroup label="Title">
+          <FieldGroup label={t("fields.title")}>
             <EditableInput
               value={chapter.title ?? ""}
               onChange={(val) => onUpdate("title", val)}
@@ -121,7 +124,7 @@ function ChapterCard({
             />
           </FieldGroup>
 
-          <FieldGroup label="Summary">
+          <FieldGroup label={t("fields.summary")}>
             <EditableTextarea
               value={chapter.summary ?? ""}
               onChange={(val) => onUpdate("summary", val)}
@@ -130,7 +133,7 @@ function ChapterCard({
             />
           </FieldGroup>
 
-          <FieldGroup label="Key Events">
+          <FieldGroup label={t("bcdDetail.keyEvents")}>
             <TagsInput
               tags={Array.isArray(chapter.key_events) ? chapter.key_events : []}
               onChange={(tags) => onUpdate("key_events", tags)}
@@ -138,7 +141,7 @@ function ChapterCard({
             />
           </FieldGroup>
 
-          <FieldGroup label="Key Themes">
+          <FieldGroup label={t("bcdDetail.keyThemes")}>
             <TagsInput
               tags={Array.isArray(chapter.key_themes) ? chapter.key_themes : []}
               onChange={(tags) => onUpdate("key_themes", tags)}
@@ -148,7 +151,7 @@ function ChapterCard({
 
           <div className="flex justify-end pt-2 border-t border-areia/10">
             <Button type="button" size="sm" variant="outline" onClick={onRemove} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
-              <Trash2 className="h-3 w-3" /> Remove Chapter
+              <Trash2 className="h-3 w-3" /> {t("editors.removeChapter")}
             </Button>
           </div>
         </div>

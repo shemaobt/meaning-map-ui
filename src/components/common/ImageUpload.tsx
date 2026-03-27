@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { uploadsAPI } from "../../services/api";
@@ -30,6 +31,7 @@ export function ImageUpload({
   placeholder,
   className,
 }: ImageUploadProps) {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -39,11 +41,11 @@ export function ImageUpload({
 
     const allowed = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
     if (!allowed.includes(file.type)) {
-      toast.error("Please upload a JPG, PNG, WebP, or SVG image");
+      toast.error(t("imageUpload.invalidFormat"));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be under 5 MB");
+      toast.error(t("imageUpload.tooLarge"));
       return;
     }
 
@@ -51,11 +53,11 @@ export function ImageUpload({
     try {
       const { data } = await uploadsAPI.image(file, folder);
       onChange(data.url);
-      toast.success("Image uploaded");
+      toast.success(t("imageUpload.success"));
     } catch (err: unknown) {
       const detail = (err as { response?: { data?: { detail?: string } } })
         ?.response?.data?.detail;
-      toast.error(detail || "Failed to upload image");
+      toast.error(detail || t("imageUpload.failed"));
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -104,7 +106,7 @@ export function ImageUpload({
           disabled={uploading}
           className="text-xs"
         >
-          {uploading ? "Uploading..." : value ? "Change" : "Upload"}
+          {uploading ? t("imageUpload.uploading") : value ? t("imageUpload.change") : t("imageUpload.upload")}
         </Button>
         {value && (
           <Button
@@ -116,7 +118,7 @@ export function ImageUpload({
             className="text-xs text-red-500 hover:text-red-600 gap-1"
           >
             <X className="h-3 w-3" />
-            Remove
+            {t("common.remove")}
           </Button>
         )}
       </div>

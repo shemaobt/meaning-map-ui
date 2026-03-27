@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CheckCircle, Circle, Loader2, Square, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -11,12 +12,12 @@ import { cn } from "../../../utils/cn";
 
 const TOTAL_STEPS = 5;
 
-const STEP_LABELS: Record<string, string> = {
-  collect_bhsa: "Collect BHSA data",
-  structural_outline: "Structural outline",
-  participants: "Participant register",
-  discourse: "Discourse threads",
-  context_sections: "Context sections",
+const STEP_LABEL_KEYS: Record<string, string> = {
+  collect_bhsa: "generation.collectBHSA",
+  structural_outline: "generation.structuralOutline",
+  participants: "generation.participants",
+  discourse: "generation.discourse",
+  context_sections: "generation.contextSections",
 };
 
 interface GenerationPanelProps {
@@ -25,6 +26,7 @@ interface GenerationPanelProps {
 }
 
 export function GenerationPanel({ bcdId, canManage }: GenerationPanelProps) {
+  const { t } = useTranslation();
   const { generationLogs, isPolling, fetchLogs, startPolling, stopPolling } = useBCDStore();
   const currentBCD = useBCDStore((s) => s.currentBCD);
   const navigate = useNavigate();
@@ -46,10 +48,10 @@ export function GenerationPanel({ bcdId, canManage }: GenerationPanelProps) {
     try {
       stopPolling();
       const result = await bookContextAPI.cancelGeneration(bcdId);
-      toast.success("Generation cancelled. Version deleted.");
+      toast.success(t("bcdDetail.generationCancelled"));
       navigate(`/app/books/${result.book_id}`);
     } catch (e) {
-      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Failed to cancel generation.";
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : t("bcdDetail.cancelFailed");
       toast.error(msg);
       setIsCancelling(false);
     }
@@ -71,11 +73,11 @@ export function GenerationPanel({ bcdId, canManage }: GenerationPanelProps) {
         <div className="flex items-center justify-between mb-3">
           <p className="text-xs font-semibold text-verde/60 flex items-center gap-2">
             {isPolling && <Loader2 className="h-3.5 w-3.5 animate-spin text-telha" />}
-            Generation
+            {t("bcdDetail.generationTitle")}
           </p>
           <div className="flex items-center gap-3">
             <span className="text-xs text-verde/40 tabular-nums">
-              {completedCount}/{TOTAL_STEPS} steps
+              {t("bcdDetail.generationProgress", { completed: completedCount, total: TOTAL_STEPS })}
             </span>
             {isGenerating && canManage && (
               <Button
@@ -86,7 +88,7 @@ export function GenerationPanel({ bcdId, canManage }: GenerationPanelProps) {
                 className="h-6 px-2 text-[10px] gap-1 text-red-600 border-red-200 hover:bg-red-600/10 hover:border-red-300"
               >
                 <Square className="h-2.5 w-2.5 fill-current" />
-                {isCancelling ? "Stopping..." : "Stop"}
+                {isCancelling ? t("common.stopping") : t("bcdDetail.stopGeneration")}
               </Button>
             )}
           </div>
@@ -118,9 +120,9 @@ export function GenerationPanel({ bcdId, canManage }: GenerationPanelProps) {
       <ConfirmDialog
         open={showStopDialog}
         onOpenChange={setShowStopDialog}
-        title="Stop generation?"
-        description="This will cancel the current generation and delete this version entirely. This action cannot be undone."
-        confirmLabel="Stop & Delete"
+        title={t("bcdDetail.stopGenerationTitle")}
+        description={t("bcdDetail.stopGenerationWarning")}
+        confirmLabel={t("bcdDetail.stopAndDelete")}
         variant="destructive"
         onConfirm={handleCancel}
       />
@@ -129,6 +131,7 @@ export function GenerationPanel({ bcdId, canManage }: GenerationPanelProps) {
 }
 
 function StepRow({ log }: { log: { id: string; step_name: string; status: string; duration_ms: number | null; started_at: string | null; output_summary: string | null } }) {
+  const { t } = useTranslation();
   const elapsed = useElapsed(log.status === "running" ? log.started_at : null);
 
   return (
@@ -143,7 +146,7 @@ function StepRow({ log }: { log: { id: string; step_name: string; status: string
           log.status === "pending" && "text-verde/30",
         )}
       >
-        {STEP_LABELS[log.step_name] || log.step_name}
+        {STEP_LABEL_KEYS[log.step_name] ? t(STEP_LABEL_KEYS[log.step_name]) : log.step_name}
       </span>
       {log.status === "running" && log.output_summary && (
         <span className="text-[10px] text-verde/50 flex-shrink-0">

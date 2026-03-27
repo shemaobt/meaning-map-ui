@@ -61,6 +61,7 @@ export interface MeaningMap {
   status: "draft" | "cross_check" | "approved";
   version: number;
   data: MeaningMapData;
+  translations?: Record<string, MeaningMapData> | null;
   locked_by: string | null;
   locked_at: string | null;
   date_approved: string | null;

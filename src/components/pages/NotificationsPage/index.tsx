@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Bell,
   CheckCheck,
@@ -40,6 +41,7 @@ function NotificationCard({
   onRead: (id: string) => void;
   onNavigate: (mapId: string) => void;
 }) {
+  const { t } = useTranslation();
   const Icon = EVENT_ICONS[notification.event_type] || Bell;
 
   return (
@@ -87,7 +89,7 @@ function NotificationCard({
               onClick={() => onNavigate(notification.related_map_id!)}
               className="text-xs font-medium text-telha hover:text-telha/80"
             >
-              View map
+              {t("notifications.viewMap")}
             </button>
           )}
           {!notification.is_read && (
@@ -95,7 +97,7 @@ function NotificationCard({
               onClick={() => onRead(notification.id)}
               className="text-xs text-verde hover:text-preto"
             >
-              Mark as read
+              {t("notifications.markAsRead")}
             </button>
           )}
         </div>
@@ -107,6 +109,7 @@ function NotificationCard({
 type FilterMode = "all" | "unread";
 
 export function NotificationsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [filter, setFilter] = useState<FilterMode>("all");
   const {
@@ -131,11 +134,11 @@ export function NotificationsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-montserrat text-2xl font-bold tracking-tight text-preto">
-            Notifications
+            {t("notifications.title")}
           </h1>
           {unreadCount > 0 && (
             <p className="mt-0.5 text-sm text-verde">
-              {unreadCount} unread notification{unreadCount !== 1 && "s"}
+              {t("notifications.unreadCount", { count: unreadCount })}
             </p>
           )}
         </div>
@@ -148,7 +151,7 @@ export function NotificationsPage() {
             className="gap-1.5 border-areia text-verde hover:border-telha/30 hover:text-preto"
           >
             <CheckCheck className="h-4 w-4" />
-            Mark all as read
+            {t("notifications.markAllRead")}
           </Button>
         )}
       </div>
@@ -165,7 +168,7 @@ export function NotificationsPage() {
                 : "text-verde hover:bg-areia/10 hover:text-preto"
             )}
           >
-            {mode === "all" ? "All" : "Unread"}
+            {mode === "all" ? t("notifications.filterAll") : t("notifications.filterUnread")}
           </button>
         ))}
       </div>
@@ -178,12 +181,12 @@ export function NotificationsPage() {
         <div className="flex flex-col items-center justify-center rounded-lg border border-areia/30 bg-surface py-16">
           <Bell className="mb-3 h-10 w-10 text-areia" />
           <p className="text-sm font-medium text-preto">
-            {filter === "unread" ? "No unread notifications" : "No notifications yet"}
+            {filter === "unread" ? t("notifications.noUnread") : t("notifications.empty")}
           </p>
           <p className="mt-1 text-xs text-verde">
             {filter === "unread"
-              ? "You're all caught up!"
-              : "Notifications will appear here when your maps are reviewed."}
+              ? t("notifications.allCaughtUp")
+              : t("notifications.futureMessage")}
           </p>
         </div>
       ) : (
