@@ -135,7 +135,7 @@ function ListView({ items, sectionKey }: { items: unknown[]; sectionKey: string 
         const englishGloss = typeof obj.english_gloss === "string" && obj.english_gloss ? obj.english_gloss : null;
         const subtitle = getSubtitle(obj, nameKey);
         const isOpen = expandedIdx === i;
-        const detailKeys = Object.keys(obj).filter((k) => k !== nameKey);
+        const detailKeys = Object.keys(obj).filter((k) => k !== nameKey && k !== "english_gloss");
 
         return (
           <div key={i} className="rounded-lg border border-areia/15 overflow-hidden">
@@ -223,11 +223,20 @@ function FieldBlock({ label, value }: { label: string; value: unknown }) {
           </div>
         ) : (
           <div className="space-y-1">
-            {value.map((v, i) => (
-              <div key={i} className="rounded-md bg-surface-alt px-2.5 py-1.5 text-xs text-preto">
-                {typeof v === "string" ? v : typeof v === "object" && v !== null ? <MiniObject data={v as Record<string, unknown>} /> : String(v)}
-              </div>
-            ))}
+            {value.map((v, i) => {
+              if (typeof v === "string") {
+                return <div key={i} className="rounded-md bg-surface-alt px-2.5 py-1.5 text-xs text-preto">{v}</div>;
+              }
+              if (typeof v === "object" && v !== null) {
+                const obj = v as Record<string, unknown>;
+                return (
+                  <div key={i} className="rounded-md bg-surface-alt px-2.5 py-1.5 text-xs text-preto">
+                    <MiniObject data={obj} />
+                  </div>
+                );
+              }
+              return <div key={i} className="rounded-md bg-surface-alt px-2.5 py-1.5 text-xs text-preto">{String(v)}</div>;
+            })}
           </div>
         )}
       </div>
@@ -249,14 +258,26 @@ function FieldBlock({ label, value }: { label: string; value: unknown }) {
 }
 
 function MiniObject({ data }: { data: Record<string, unknown> }) {
+  const name = typeof data.name === "string" ? data.name : null;
+  const gloss = typeof data.english_gloss === "string" && data.english_gloss ? data.english_gloss : null;
+  const skipKeys = new Set(name && gloss ? ["name", "english_gloss"] : []);
+
   return (
     <div className="space-y-1">
-      {Object.entries(data).map(([k, v]) => (
-        <div key={k} className="flex gap-2 text-xs">
-          <span className="text-verde/40 flex-shrink-0">{k.replace(/_/g, " ")}:</span>
-          <span className="text-preto">{typeof v === "string" || typeof v === "number" ? String(v) : JSON.stringify(v)}</span>
+      {name && (
+        <div className="flex gap-2 text-xs">
+          <span className="text-verde/40 flex-shrink-0">name:</span>
+          <span className="text-preto font-medium">{name}{gloss && <span className="font-normal text-verde/60 ml-1">({gloss})</span>}</span>
         </div>
-      ))}
+      )}
+      {Object.entries(data)
+        .filter(([k]) => !skipKeys.has(k) && (name ? k !== "name" : true))
+        .map(([k, v]) => (
+          <div key={k} className="flex gap-2 text-xs">
+            <span className="text-verde/40 flex-shrink-0">{k.replace(/_/g, " ")}:</span>
+            <span className="text-preto">{typeof v === "string" || typeof v === "number" ? String(v) : JSON.stringify(v)}</span>
+          </div>
+        ))}
     </div>
   );
 }
