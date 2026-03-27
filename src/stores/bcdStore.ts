@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { create } from "zustand";
 import type { BCD, BCDFeedback, BCDGenerationLog, BCDListItem } from "../types/bookContext";
 import { bookContextAPI } from "../services/api";
@@ -73,7 +74,15 @@ export const useBCDStore = create<BCDStore>((set, get) => ({
 
         if (bcd.status !== "generating") {
           get().stopPolling();
-          set({ generationLogs: [] });
+          const hasFailed = logs.some((l) => l.status === "failed");
+          if (hasFailed) {
+            const failedStep = logs.find((l) => l.status === "failed");
+            toast.error(
+              failedStep?.error_detail || "Generation failed. Check the logs for details.",
+            );
+          } else {
+            set({ generationLogs: [] });
+          }
         }
       } catch {
         get().stopPolling();
