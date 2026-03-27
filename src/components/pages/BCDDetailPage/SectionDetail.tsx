@@ -145,8 +145,8 @@ function ListView({ items, sectionKey }: { items: unknown[]; sectionKey: string 
             >
               <span className="flex-shrink-0 w-6 h-6 rounded-md bg-areia/10 flex items-center justify-center text-[10px] font-bold text-verde/40">{i + 1}</span>
               <div className="flex-1 min-w-0">
-                <span className="text-sm font-medium text-preto">{name}</span>
-                {englishGloss && <span className="text-sm text-verde/60 ml-1.5">({englishGloss})</span>}
+                <span className="text-[15px] font-serif text-preto" dir="rtl" lang="he">{name}</span>
+                {englishGloss && <span className="text-sm text-verde/70 ml-2">{englishGloss}</span>}
                 {subtitle && !isOpen && <span className="text-xs text-verde/40 ml-2 truncate">{subtitle}</span>}
               </div>
               {isOpen ? <ChevronDown className="h-3 w-3 text-verde/30" /> : <ChevronRight className="h-3 w-3 text-verde/30" />}
@@ -265,9 +265,9 @@ function MiniObject({ data }: { data: Record<string, unknown> }) {
   return (
     <div className="space-y-1">
       {name && (
-        <div className="flex gap-2 text-xs">
-          <span className="text-verde/40 flex-shrink-0">name:</span>
-          <span className="text-preto font-medium">{name}{gloss && <span className="font-normal text-verde/60 ml-1">({gloss})</span>}</span>
+        <div className="flex items-baseline gap-2 text-xs">
+          <span className="text-[13px] font-serif text-preto" dir="rtl" lang="he">{name}</span>
+          {gloss && <span className="text-verde/70">{gloss}</span>}
         </div>
       )}
       {Object.entries(data)
