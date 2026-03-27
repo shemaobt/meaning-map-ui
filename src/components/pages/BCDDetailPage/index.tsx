@@ -163,47 +163,48 @@ export function BCDDetailPage() {
 
       <ApprovalProgress bcdId={currentBCD.id} status={currentBCD.status} />
 
-      {/* Metro tile grid — fills remaining height */}
-      {!activeSection && (
-        <div className="flex-1">
-          <TileGrid
-            bcd={currentBCD}
-            disabled={currentBCD.status === "generating"}
-            onSelect={setActiveSection}
-          />
-        </div>
-      )}
+      <div className="flex-1 flex gap-6 items-start min-h-0">
+        <div className="flex-1 min-w-0">
+          {/* Metro tile grid */}
+          {!activeSection && (
+            <TileGrid
+              bcd={currentBCD}
+              disabled={currentBCD.status === "generating"}
+              onSelect={setActiveSection}
+            />
+          )}
 
-      {/* Expanded section detail with BHSA sidebar */}
-      {activeSection && (
-        <div className="flex-1 flex gap-6 items-start min-h-0">
-          <div className="flex-1 overflow-y-auto min-h-0">
-            <button
-              onClick={() => setActiveSection(null)}
-              className="flex items-center gap-1.5 text-xs text-verde/50 hover:text-telha transition-colors mb-4"
-            >
-              <X className="h-3 w-3" />
-              Back to overview
-            </button>
-            {canEdit && currentBCD.status === "draft" ? (
-              <EditableSection
-                bcdId={currentBCD.id}
-                sectionKey={activeSection}
-              />
-            ) : (
-              <SectionDetail
-                bcd={currentBCD}
-                sectionKey={activeSection}
-              />
-            )}
-          </div>
-          {bookName && chapterCount > 0 && (
-            <BCDBHSASidebar bookName={bookName} chapterCount={chapterCount} />
+          {/* Expanded section detail */}
+          {activeSection && (
+            <>
+              <button
+                onClick={() => setActiveSection(null)}
+                className="flex items-center gap-1.5 text-xs text-verde/50 hover:text-telha transition-colors mb-4"
+              >
+                <X className="h-3 w-3" />
+                Back to overview
+              </button>
+              {canEdit && currentBCD.status === "draft" ? (
+                <EditableSection
+                  bcdId={currentBCD.id}
+                  sectionKey={activeSection}
+                />
+              ) : (
+                <SectionDetail
+                  bcd={currentBCD}
+                  sectionKey={activeSection}
+                />
+              )}
+            </>
           )}
         </div>
-      )}
 
-      {activeSection && bookName && chapterCount > 0 && (
+        {bookName && chapterCount > 0 && (
+          <BCDBHSASidebar bookName={bookName} chapterCount={chapterCount} />
+        )}
+      </div>
+
+      {bookName && chapterCount > 0 && (
         <BCDBHSASidebarToggle bookName={bookName} />
       )}
     </div>
