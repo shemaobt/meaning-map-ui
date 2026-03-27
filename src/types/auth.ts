@@ -46,3 +46,17 @@ export interface AccessRequest {
   reviewed_at: string | null;
   review_reason: string | null;
 }
+
+export interface ForgotPasswordRequest {
+  email: string;
+  app_key: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+export interface PasswordResetResponse {
+  message: string;
+}

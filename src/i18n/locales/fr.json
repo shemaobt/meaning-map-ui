@@ -56,19 +56,48 @@
       "successToast": "Bon retour !",
       "error": "Identifiant ou mot de passe incorrect",
       "noAccount": "Vous n'avez pas de compte ?",
-      "signupLink": "S'inscrire"
+      "signupLink": "S'inscrire",
+      "forgotPassword": "Mot de passe oublié ?",
+      "statusPending": "Votre compte est en attente d'approbation par un administrateur. Vous pourrez vous connecter une fois approuvé.",
+      "statusApproved": "Votre compte a été approuvé ! Vous pouvez maintenant vous connecter.",
+      "statusRejected": "Votre compte a été rejeté. Veuillez contacter le support.",
+      "statusPasswordReset": "Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe."
     },
     "signup": {
       "subtitle": "Créez votre compte pour commencer",
       "namePlaceholder": "Nom complet",
       "emailPlaceholder": "Adresse e-mail",
       "passwordPlaceholder": "Créer un mot de passe",
+      "confirmPasswordPlaceholder": "Confirmer votre mot de passe",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
       "creating": "Création du compte...",
       "submit": "Créer un compte",
       "successToast": "Compte créé ! Bienvenue.",
       "error": "Impossible de créer le compte. Veuillez réessayer.",
       "hasAccount": "Vous avez déjà un compte ?",
       "signinLink": "Se connecter"
+    },
+    "forgotPassword": {
+      "title": "Réinitialiser votre mot de passe",
+      "subtitle": "Entrez votre e-mail et nous vous enverrons un lien de réinitialisation",
+      "emailPlaceholder": "Adresse e-mail",
+      "submit": "Envoyer le lien",
+      "sending": "Envoi...",
+      "successMessage": "Si un compte avec cet e-mail existe, nous avons envoyé un lien de réinitialisation. Vérifiez votre boîte de réception.",
+      "backToLogin": "Retour à la connexion"
+    },
+    "resetPassword": {
+      "title": "Définir un nouveau mot de passe",
+      "subtitle": "Entrez votre nouveau mot de passe ci-dessous",
+      "passwordPlaceholder": "Nouveau mot de passe",
+      "confirmPasswordPlaceholder": "Confirmer le nouveau mot de passe",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "submit": "Réinitialiser le mot de passe",
+      "resetting": "Réinitialisation...",
+      "success": "Mot de passe réinitialisé ! Redirection vers la connexion...",
+      "invalidToken": "Lien de réinitialisation invalide",
+      "invalidTokenMessage": "Ce lien de réinitialisation est invalide ou a expiré.",
+      "requestNewLink": "Demander un nouveau lien"
     },
     "accessDenied": {
       "pendingTitle": "Accès en attente",

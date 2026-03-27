@@ -11,7 +11,7 @@ export function AuthLanguageSwitcher() {
   const current = SUPPORTED_LANGUAGES.find((l) => l.code === i18n.language) ?? SUPPORTED_LANGUAGES[0];
 
   return (
-    <div className="fixed top-4 right-4 flex items-center gap-1">
+    <div className="flex items-center gap-1">
       <Globe className="h-4 w-4 text-verde/50" />
       <select
         value={current.code}

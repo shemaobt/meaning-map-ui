@@ -8,11 +8,9 @@ import {
 } from "react";
 import type { MyRole, User } from "../types/auth";
 import { accessRequestsAPI, authAPI } from "../services/api";
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../constants/app";
+import { ACCESS_TOKEN_KEY, MM_APP_KEY, REFRESH_TOKEN_KEY } from "../constants/app";
 import i18n from "../i18n";
 import { LOCALE_STORAGE_KEY } from "../i18n";
-
-const MM_APP_KEY = "meaning-map-generator";
 
 const SPECIALIST_ROLES = ["exegete", "biblical_language_specialist", "translation_specialist"] as const;
 

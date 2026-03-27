@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { AccessRequest, AuthResponse, LoginRequest, MyRole, SignupRequest, TokenResponse, User } from "../types/auth";
+import type { AccessRequest, AuthResponse, ForgotPasswordRequest, LoginRequest, MyRole, PasswordResetResponse, ResetPasswordRequest, SignupRequest, TokenResponse, User } from "../types/auth";
 import type { BibleBook, ChapterSummary, DashboardSummary, Pericope, PericopeCreate, PericopeWithStatus } from "../types/bible";
 import type { MeaningMap, MeaningMapData, MeaningMapFeedback } from "../types/meaningMap";
 import type { BHSAPassageData, BHSAStatus } from "../types/bhsa";
@@ -66,6 +66,10 @@ export const authAPI = {
   },
   updateMe: (data: { display_name?: string; avatar_url?: string | null; locale?: string }) =>
     client.patch<User>("/auth/me", data).then((r) => r.data),
+  forgotPassword: (data: ForgotPasswordRequest) =>
+    client.post<PasswordResetResponse>("/auth/forgot-password", data).then((r) => r.data),
+  resetPassword: (data: ResetPasswordRequest) =>
+    client.post<PasswordResetResponse>("/auth/reset-password", data).then((r) => r.data),
 };
 
 export const booksAPI = {
