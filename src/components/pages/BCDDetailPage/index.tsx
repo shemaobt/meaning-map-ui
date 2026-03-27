@@ -94,7 +94,7 @@ export function BCDDetailPage() {
     if (bcdId) fetchBCD(bcdId);
     return () => {
       const state = useBCDStore.getState();
-      if (state.currentBCD?.locked_by === user?.id) {
+      if (state.currentBCD && state.currentBCD.locked_by === user?.id) {
         bookContextAPI.unlock(state.currentBCD.id).catch(() => {});
       }
       clear();
