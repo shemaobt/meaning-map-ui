@@ -102,7 +102,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
           </Button>
         )}
 
-        {canEdit && isLockedByMe && status !== "generating" && (
+        {canEdit && status !== "generating" && (
           <Button
             size="sm"
             onClick={onRegenerateClick}
