@@ -54,7 +54,7 @@ const SECTIONS: SectionDef[] = [
   { key: "theological_spine", label: "Theological Spine", icon: BookOpen, color: "bg-telha/10 text-telha" },
   { key: "places", label: "Places", icon: MapPin, color: "bg-azul/10 text-azul" },
   { key: "objects", label: "Objects", icon: Package, color: "bg-areia/30 text-verde" },
-  { key: "institutions", label: "Institutions", icon: Building2, color: "bg-verde-claro/10 text-verde-claro" },
+  { key: "institutions", label: "Cultural Practices", icon: Building2, color: "bg-verde-claro/10 text-verde-claro" },
   { key: "genre_context", label: "Genre Context", icon: Tag, color: "bg-verde/10 text-verde" },
   { key: "maintenance_notes", label: "Maintenance Notes", icon: StickyNote, color: "bg-areia/20 text-verde" },
 ];
