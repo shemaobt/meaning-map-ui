@@ -56,19 +56,48 @@
       "successToast": "Bem-vindo de volta!",
       "error": "Usuário ou senha inválidos",
       "noAccount": "Não tem uma conta?",
-      "signupLink": "Cadastre-se"
+      "signupLink": "Cadastre-se",
+      "forgotPassword": "Esqueceu a senha?",
+      "statusPending": "Sua conta está aguardando aprovação do administrador. Você poderá fazer login após a aprovação.",
+      "statusApproved": "Sua conta foi aprovada! Agora você pode fazer login.",
+      "statusRejected": "Sua conta foi rejeitada. Entre em contato com o suporte.",
+      "statusPasswordReset": "Sua senha foi redefinida. Agora você pode fazer login com sua nova senha."
     },
     "signup": {
       "subtitle": "Crie sua conta para começar",
       "namePlaceholder": "Nome completo",
       "emailPlaceholder": "Endereço de e-mail",
       "passwordPlaceholder": "Crie uma senha",
+      "confirmPasswordPlaceholder": "Confirme sua senha",
+      "passwordMismatch": "As senhas não coincidem",
       "creating": "Criando conta...",
       "submit": "Criar conta",
       "successToast": "Conta criada! Bem-vindo.",
       "error": "Não foi possível criar a conta. Tente novamente.",
       "hasAccount": "Já tem uma conta?",
       "signinLink": "Entrar"
+    },
+    "forgotPassword": {
+      "title": "Redefinir sua senha",
+      "subtitle": "Insira seu e-mail e enviaremos um link de redefinição",
+      "emailPlaceholder": "Endereço de e-mail",
+      "submit": "Enviar link de redefinição",
+      "sending": "Enviando...",
+      "successMessage": "Se uma conta com esse e-mail existir, enviamos um link de redefinição de senha. Verifique sua caixa de entrada.",
+      "backToLogin": "Voltar ao login"
+    },
+    "resetPassword": {
+      "title": "Definir nova senha",
+      "subtitle": "Digite sua nova senha abaixo",
+      "passwordPlaceholder": "Nova senha",
+      "confirmPasswordPlaceholder": "Confirme a nova senha",
+      "passwordMismatch": "As senhas não coincidem",
+      "submit": "Redefinir senha",
+      "resetting": "Redefinindo...",
+      "success": "Senha redefinida com sucesso! Redirecionando para o login...",
+      "invalidToken": "Link de redefinição inválido",
+      "invalidTokenMessage": "Este link de redefinição de senha é inválido ou expirou.",
+      "requestNewLink": "Solicitar novo link"
     },
     "accessDenied": {
       "pendingTitle": "Acesso Pendente",

@@ -56,19 +56,48 @@
       "successToast": "Welcome back!",
       "error": "Invalid username or password",
       "noAccount": "Don't have an account?",
-      "signupLink": "Sign up"
+      "signupLink": "Sign up",
+      "forgotPassword": "Forgot password?",
+      "statusPending": "Your account is awaiting admin approval. You'll be able to log in once approved.",
+      "statusApproved": "Your account has been approved! You can now log in.",
+      "statusRejected": "Your account has been rejected. Please contact support.",
+      "statusPasswordReset": "Your password has been reset. You can now log in with your new password."
     },
     "signup": {
       "subtitle": "Create your account to get started",
       "namePlaceholder": "Full name",
       "emailPlaceholder": "Email address",
       "passwordPlaceholder": "Create a password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "passwordMismatch": "Passwords don't match",
       "creating": "Creating account...",
       "submit": "Create account",
       "successToast": "Account created! Welcome.",
       "error": "Could not create account. Please try again.",
       "hasAccount": "Already have an account?",
       "signinLink": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we'll send you a reset link",
+      "emailPlaceholder": "Email address",
+      "submit": "Send reset link",
+      "sending": "Sending...",
+      "successMessage": "If an account with that email exists, we've sent a password reset link. Please check your inbox.",
+      "backToLogin": "Back to login"
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "subtitle": "Enter your new password below",
+      "passwordPlaceholder": "New password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "passwordMismatch": "Passwords don't match",
+      "submit": "Reset password",
+      "resetting": "Resetting...",
+      "success": "Password reset successfully! Redirecting to login...",
+      "invalidToken": "Invalid reset link",
+      "invalidTokenMessage": "This password reset link is invalid or has expired.",
+      "requestNewLink": "Request a new reset link"
     },
     "accessDenied": {
       "pendingTitle": "Access Pending",

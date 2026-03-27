@@ -56,19 +56,48 @@
       "successToast": "¡Bienvenido de nuevo!",
       "error": "Usuario o contraseña inválidos",
       "noAccount": "¿No tienes una cuenta?",
-      "signupLink": "Regístrate"
+      "signupLink": "Regístrate",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "statusPending": "Tu cuenta está esperando la aprobación del administrador. Podrás iniciar sesión una vez aprobada.",
+      "statusApproved": "¡Tu cuenta ha sido aprobada! Ya puedes iniciar sesión.",
+      "statusRejected": "Tu cuenta ha sido rechazada. Contacta al soporte.",
+      "statusPasswordReset": "Tu contraseña ha sido restablecida. Ya puedes iniciar sesión con tu nueva contraseña."
     },
     "signup": {
       "subtitle": "Crea tu cuenta para comenzar",
       "namePlaceholder": "Nombre completo",
       "emailPlaceholder": "Correo electrónico",
       "passwordPlaceholder": "Crea una contraseña",
+      "confirmPasswordPlaceholder": "Confirma tu contraseña",
+      "passwordMismatch": "Las contraseñas no coinciden",
       "creating": "Creando cuenta...",
       "submit": "Crear cuenta",
       "successToast": "¡Cuenta creada! Bienvenido.",
       "error": "No se pudo crear la cuenta. Intenta de nuevo.",
       "hasAccount": "¿Ya tienes una cuenta?",
       "signinLink": "Inicia sesión"
+    },
+    "forgotPassword": {
+      "title": "Restablecer tu contraseña",
+      "subtitle": "Ingresa tu correo y te enviaremos un enlace de restablecimiento",
+      "emailPlaceholder": "Correo electr��nico",
+      "submit": "Enviar enlace",
+      "sending": "Enviando...",
+      "successMessage": "Si existe una cuenta con ese correo, hemos enviado un enlace de restablecimiento. Revisa tu bandeja de entrada.",
+      "backToLogin": "Volver al inicio de sesión"
+    },
+    "resetPassword": {
+      "title": "Establecer nueva contraseña",
+      "subtitle": "Ingresa tu nueva contraseña a continuación",
+      "passwordPlaceholder": "Nueva contraseña",
+      "confirmPasswordPlaceholder": "Confirmar nueva contraseña",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "submit": "Restablecer contraseña",
+      "resetting": "Restableciendo...",
+      "success": "¡Contraseña restablecida! Redirigiendo al inicio de sesión...",
+      "invalidToken": "Enlace de restablecimiento inválido",
+      "invalidTokenMessage": "Este enlace de restablecimiento de contraseña es inválido o ha expirado.",
+      "requestNewLink": "Solicitar nuevo enlace"
     },
     "accessDenied": {
       "pendingTitle": "Acceso pendiente",
