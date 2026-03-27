@@ -6,6 +6,8 @@ import { ErrorBoundary } from "./components/common/ErrorBoundary";
 import { AppShell } from "./components/layout/AppShell";
 import { LoginPage } from "./components/pages/LoginPage";
 import { SignupPage } from "./components/pages/SignupPage";
+import { ForgotPasswordPage } from "./components/pages/ForgotPasswordPage";
+import { ResetPasswordPage } from "./components/pages/ResetPasswordPage";
 import { NotFoundPage } from "./components/pages/NotFoundPage";
 import { DashboardPage } from "./components/pages/DashboardPage";
 import { BooksPage } from "./components/pages/BooksPage";
@@ -45,6 +47,8 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/app" element={<ErrorBoundary><AppShell /></ErrorBoundary>}>
               <Route index element={<Navigate to="books" replace />} />
               <Route path="dashboard" element={<DashboardPage />} />
