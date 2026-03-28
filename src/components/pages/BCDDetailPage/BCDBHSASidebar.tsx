@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, PanelRightClose, AlertCircle } from "lucide-react";
 import { useBHSAStore } from "../../../stores/bhsaStore";
 import { bhsaAPI } from "../../../services/api";
@@ -12,6 +13,7 @@ interface BCDBHSASidebarProps {
 }
 
 export function BCDBHSASidebar({ bookName, chapterCount }: BCDBHSASidebarProps) {
+  const { t } = useTranslation();
   const { isSidebarOpen, toggleSidebar } = useBHSAStore();
   const [chapter, setChapter] = useState(1);
   const [verseCounts, setVerseCounts] = useState<Record<string, number>>({});
@@ -63,14 +65,14 @@ export function BCDBHSASidebar({ bookName, chapterCount }: BCDBHSASidebarProps) 
           <div className="flex items-center gap-2.5">
             <span className="text-lg font-serif text-telha/80 leading-none select-none" dir="rtl" lang="he">א</span>
             <div>
-              <h3 className="text-sm font-semibold text-preto tracking-tight">Hebrew Text</h3>
+              <h3 className="text-sm font-semibold text-preto tracking-tight">{t("bhsa.hebrewText")}</h3>
               <p className="text-[11px] text-verde/50 mt-px">{bookName}</p>
             </div>
           </div>
           <button
             onClick={toggleSidebar}
             className="p-1.5 rounded-md hover:bg-areia/20 transition-colors text-verde/50 hover:text-preto"
-            title="Collapse sidebar"
+            title={t("bhsa.collapseSidebar")}
           >
             <PanelRightClose className="h-4 w-4" />
           </button>
@@ -85,7 +87,7 @@ export function BCDBHSASidebar({ bookName, chapterCount }: BCDBHSASidebarProps) 
             <ChevronLeft className="h-4 w-4" />
           </button>
           <span className="text-xs font-semibold text-preto tabular-nums">
-            Chapter {chapter}
+            {t("bhsa.chapterLabel", { chapter })}
           </span>
           <button
             onClick={() => setChapter((c) => Math.min(chapterCount, c + 1))}
@@ -106,7 +108,7 @@ export function BCDBHSASidebar({ bookName, chapterCount }: BCDBHSASidebarProps) 
           {!loading && !data && (
             <div className="py-12 text-center text-sm text-verde/50">
               <AlertCircle className="h-5 w-5 mx-auto mb-2 opacity-50" />
-              <p>Hebrew data unavailable</p>
+              <p>{t("bhsa.unavailable")}</p>
             </div>
           )}
 
@@ -117,7 +119,7 @@ export function BCDBHSASidebar({ bookName, chapterCount }: BCDBHSASidebarProps) 
 
         {data && (
           <div className="flex-shrink-0 px-4 py-2 border-t border-areia/15 text-[10px] text-verde/40 text-center">
-            {data.clauses.length} clauses · {verseGroups.length} verses
+            {t("bhsa.clauseVerseCount", { clauses: data.clauses.length, verses: verseGroups.length })}
           </div>
         )}
       </div>
@@ -126,6 +128,7 @@ export function BCDBHSASidebar({ bookName, chapterCount }: BCDBHSASidebarProps) 
 }
 
 export function BCDBHSASidebarToggle({ bookName }: { bookName: string }) {
+  const { t } = useTranslation();
   const { isSidebarOpen, toggleSidebar } = useBHSAStore();
 
   if (isSidebarOpen) return null;
@@ -134,7 +137,7 @@ export function BCDBHSASidebarToggle({ bookName }: { bookName: string }) {
     <button
       onClick={toggleSidebar}
       className="fixed right-0 top-1/2 -translate-y-1/2 z-30 hidden md:flex flex-col items-center gap-1 px-1.5 py-3 rounded-l-lg bg-surface border border-r-0 border-areia/30 text-preto shadow-lg hover:bg-surface-alt transition-colors"
-      title={`Hebrew Text — ${bookName}`}
+      title={`${t("bhsa.hebrewText")} — ${bookName}`}
     >
       <span className="text-base font-serif text-telha leading-none select-none" dir="rtl" lang="he">א</span>
       <span className="text-[9px] font-medium text-verde/60 tracking-wide [writing-mode:vertical-lr] rotate-180">
@@ -145,11 +148,12 @@ export function BCDBHSASidebarToggle({ bookName }: { bookName: string }) {
 }
 
 function VerseGroup({ verse, clauses }: { verse: number; clauses: BHSAClause[] }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-1">
       <div className="sticky top-0 z-10 bg-surface-alt/95 backdrop-blur-sm px-1 py-0.5">
         <span className="text-[10px] font-semibold text-verde/40 uppercase tracking-widest">
-          Verse {verse}
+          {t("bhsa.verse", { verse })}
         </span>
       </div>
       {clauses.map((clause) => (
@@ -174,7 +178,7 @@ function VerseGroup({ verse, clauses }: { verse: number; clauses: BHSAClause[] }
               {clause.clause_type}
             </span>
             {clause.is_mainline && (
-              <span className="text-[9px] text-telha/70 font-medium">mainline</span>
+              <span className="text-[9px] text-telha/70 font-medium">{t("bhsa.mainline")}</span>
             )}
             {clause.subjects.map((s) => (
               <span key={s} className="text-[10px] px-1.5 py-px rounded-full bg-azul/15 text-azul">{s}</span>

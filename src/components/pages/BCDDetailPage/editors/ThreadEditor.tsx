@@ -100,7 +100,7 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                   <EditableInput
                     value={th.label ?? ""}
                     onChange={(val) => updateItem(i, "label", val)}
-                    placeholder="Thread label"
+                    placeholder={t("editors.placeholders.threadLabel")}
                   />
                 </FieldGroup>
 
@@ -108,7 +108,7 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                   <EditableTextarea
                     value={th.question ?? ""}
                     onChange={(val) => updateItem(i, "question", val)}
-                    placeholder="The question this thread raises..."
+                    placeholder={t("editors.placeholders.threadQuestion")}
                     rows={2}
                   />
                 </FieldGroup>
@@ -134,7 +134,7 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                         <EditableInput
                           value={ep.status ?? ""}
                           onChange={(val) => updateEpisode(i, ei, val)}
-                          placeholder="Status at this point"
+                          placeholder={t("editors.placeholders.threadStatus")}
                           className="flex-1"
                         />
                         <button type="button" onClick={() => removeEpisode(i, ei)} className="text-verde/30 hover:text-red-500 transition-colors">

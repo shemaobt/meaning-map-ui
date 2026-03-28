@@ -77,7 +77,7 @@ export function FeedbackPanel({ bcdId, sectionKey, canManage }: FeedbackPanelPro
                 <button
                   onClick={() => handleResolve(fb.id)}
                   className="p-0.5 text-verde-claro hover:text-verde-claro/80 transition-colors flex-shrink-0"
-                  title="Mark as resolved"
+                  title={t("editors.markAsResolved")}
                 >
                   <Check className="h-3.5 w-3.5" />
                 </button>

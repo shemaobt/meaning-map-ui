@@ -71,7 +71,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
                     <EditableInput
                       value={pl.english_gloss ?? ""}
                       onChange={(val) => updateItem(i, "english_gloss", val)}
-                      placeholder="English meaning"
+                      placeholder={t("editors.placeholders.englishMeaning")}
                     />
                   </FieldGroup>
                 </div>
@@ -85,7 +85,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
                     <EditableInput
                       value={pl.type ?? ""}
                       onChange={(val) => updateItem(i, "type", val)}
-                      placeholder="e.g. city, region, location"
+                      placeholder={t("editors.placeholders.placeType")}
                     />
                   </FieldGroup>
                 </div>
@@ -93,7 +93,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
                   <EditableTextarea
                     value={pl.meaning_and_function ?? ""}
                     onChange={(val) => updateItem(i, "meaning_and_function", val)}
-                    placeholder="Describe the significance and role of this place..."
+                    placeholder={t("editors.placeholders.placeSignificance")}
                     rows={2}
                   />
                 </FieldGroup>
@@ -184,7 +184,7 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
                   <EditableTextarea
                     value={obj.what_it_is ?? ""}
                     onChange={(val) => updateItem(i, "what_it_is", val)}
-                    placeholder="Describe what this object is..."
+                    placeholder={t("editors.placeholders.objectDescription")}
                     rows={2}
                   />
                 </FieldGroup>
@@ -192,7 +192,7 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
                   <EditableTextarea
                     value={obj.meaning_across_scenes ?? ""}
                     onChange={(val) => updateItem(i, "meaning_across_scenes", val)}
-                    placeholder="How its meaning evolves across the book..."
+                    placeholder={t("editors.placeholders.objectMeaning")}
                     rows={2}
                   />
                 </FieldGroup>
@@ -283,7 +283,7 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
                   <EditableTextarea
                     value={inst.what_it_is ?? ""}
                     onChange={(val) => updateItem(i, "what_it_is", val)}
-                    placeholder="Describe this institution or custom..."
+                    placeholder={t("editors.placeholders.institutionDescription")}
                     rows={2}
                   />
                 </FieldGroup>
@@ -291,7 +291,7 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
                   <EditableInput
                     value={inst.role_in_book ?? ""}
                     onChange={(val) => updateItem(i, "role_in_book", val)}
-                    placeholder="How it functions in the narrative"
+                    placeholder={t("editors.placeholders.institutionRole")}
                   />
                 </FieldGroup>
                 {Array.isArray(inst.appears_in) && inst.appears_in.length > 0 && (

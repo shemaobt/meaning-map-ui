@@ -48,7 +48,7 @@ export function OutlineEditor({ data, setData }: OutlineEditorProps) {
         <EditableTextarea
           value={bookArc}
           onChange={(val) => update("book_arc", val)}
-          placeholder="Describe the overall narrative arc of the book..."
+          placeholder={t("editors.placeholders.bookArc")}
           rows={4}
         />
       </FieldGroup>
@@ -120,7 +120,7 @@ function ChapterCard({
             <EditableInput
               value={chapter.title ?? ""}
               onChange={(val) => onUpdate("title", val)}
-              placeholder="Chapter title"
+              placeholder={t("editors.placeholders.chapterTitle")}
             />
           </FieldGroup>
 
@@ -128,7 +128,7 @@ function ChapterCard({
             <EditableTextarea
               value={chapter.summary ?? ""}
               onChange={(val) => onUpdate("summary", val)}
-              placeholder="Brief summary of this chapter..."
+              placeholder={t("editors.placeholders.chapterSummary")}
               rows={3}
             />
           </FieldGroup>
@@ -137,7 +137,7 @@ function ChapterCard({
             <TagsInput
               tags={Array.isArray(chapter.key_events) ? chapter.key_events : []}
               onChange={(tags) => onUpdate("key_events", tags)}
-              placeholder="Add key event and press Enter"
+              placeholder={t("editors.placeholders.addKeyEvent")}
             />
           </FieldGroup>
 
@@ -145,7 +145,7 @@ function ChapterCard({
             <TagsInput
               tags={Array.isArray(chapter.key_themes) ? chapter.key_themes : []}
               onChange={(tags) => onUpdate("key_themes", tags)}
-              placeholder="Add theme and press Enter"
+              placeholder={t("editors.placeholders.addTheme")}
             />
           </FieldGroup>
 

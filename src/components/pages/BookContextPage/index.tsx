@@ -37,7 +37,7 @@ export function BookContextPage() {
         ]);
         if (!cancelled) setBook(books.find((b) => b.id === bookId) ?? null);
       } catch {
-        if (!cancelled) toast.error("Failed to load book context data.");
+        if (!cancelled) toast.error(t("bookContext.loadFailed"));
       }
     })();
     return () => { cancelled = true; };
