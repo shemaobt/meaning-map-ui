@@ -121,11 +121,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [fetchUser]);
 
   const login = async (email: string, password: string) => {
+    const preLoginLocale = i18n.language;
     const res = await authAPI.login({ email, password });
     localStorage.setItem(ACCESS_TOKEN_KEY, res.tokens.access_token);
     localStorage.setItem(REFRESH_TOKEN_KEY, res.tokens.refresh_token);
     setUser(res.user);
-    syncLocale(res.user);
+
+    if (preLoginLocale && preLoginLocale !== res.user.locale) {
+      authAPI.updateMe({ locale: preLoginLocale }).then((updated) => setUser(updated)).catch(() => {});
+    }
+
     const roles = await resolveRoles(res.user);
     setAppRoles(roles);
   };

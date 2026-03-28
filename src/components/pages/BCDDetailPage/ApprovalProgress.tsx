@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, Clock } from "lucide-react";
+import { AlertTriangle, Check, Clock } from "lucide-react";
 import { bookContextAPI } from "../../../services/api";
 import { cn } from "../../../utils/cn";
 
@@ -10,6 +10,7 @@ interface Approval {
   user_name: string;
   avatar_url: string | null;
   roles_at_approval: string[];
+  reviewer_locale: string | null;
 }
 
 interface ApprovalStatus {
@@ -18,6 +19,7 @@ interface ApprovalStatus {
   missing_specialties: string[];
   distinct_reviewers: number;
   is_complete: boolean;
+  has_english_review: boolean;
 }
 
 type SpecKey = "exegete" | "biblical_language_specialist" | "translation_specialist";
@@ -69,7 +71,7 @@ export function ApprovalProgress({ bcdId, status }: { bcdId: string; status: str
             {approvers.length > 0 ? (
               <div className="flex -space-x-1">
                 {approvers.map((a) => (
-                  <Avatar key={a.user_id} name={a.user_name} avatarUrl={a.avatar_url} accent={spec.accent} accentBg={spec.accentBg} />
+                  <Avatar key={a.user_id} name={a.user_name} avatarUrl={a.avatar_url} accent={spec.accent} accentBg={spec.accentBg} locale={a.reviewer_locale} />
                 ))}
               </div>
             ) : (
@@ -98,11 +100,18 @@ export function ApprovalProgress({ bcdId, status }: { bcdId: string; status: str
       )}>
         {t("bcdDetail.approvalCounter", { approved: data.covered_specialties.length, total: 3 })}
       </span>
+
+      {data.approvals.length > 0 && !data.has_english_review && (
+        <span className="inline-flex items-center gap-1 text-[10px] font-medium text-telha/80 bg-telha/10 rounded-full px-2 py-0.5">
+          <AlertTriangle className="h-2.5 w-2.5" />
+          {t("bcdDetail.noEnglishReview")}
+        </span>
+      )}
     </div>
   );
 }
 
-function Avatar({ name, avatarUrl, accent, accentBg }: { name: string; avatarUrl: string | null; accent: string; accentBg: string }) {
+function Avatar({ name, avatarUrl, accent, accentBg, locale }: { name: string; avatarUrl: string | null; accent: string; accentBg: string; locale?: string | null }) {
   const initials = name
     .split(/\s+/)
     .map((w) => w[0])
@@ -127,7 +136,7 @@ function Avatar({ name, avatarUrl, accent, accentBg }: { name: string; avatarUrl
         </div>
       )}
       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 rounded bg-preto text-branco text-[10px] font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-20">
-        {name}
+        {name}{locale ? ` [${locale}]` : ""}
         <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-[3px] border-x-transparent border-t-[3px] border-t-preto" />
       </div>
     </div>
