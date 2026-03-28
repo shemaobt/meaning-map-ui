@@ -47,6 +47,30 @@
     "newTestament": "NEW TESTAMENT"
   },
   "auth": {
+    "welcomeBack": "Welcome back",
+    "placeholders": {
+      "email": "you@example.com",
+      "password": "Enter your password",
+      "passwordMin": "Min. 8 characters",
+      "confirmPassword": "Repeat your password",
+      "fullName": "John Doe"
+    },
+    "hero": {
+      "discover": "Discover,",
+      "analyze": "Analyze,",
+      "translate": "Translate.",
+      "subheading": "Semantic analysis of Biblical Hebrew — mapping the meaning structures that power faithful oral translations."
+    },
+    "footer": {
+      "pipeline": "Meaning Map Pipeline",
+      "hebrewAnalysis": "Hebrew Analysis",
+      "semanticMapping": "Semantic Mapping",
+      "translationSupport": "Translation Support",
+      "books": "Books",
+      "stages": "Stages",
+      "hebrew": "Hebrew",
+      "branding": "Shema OBT · Bible Meaning Map Platform"
+    },
     "login": {
       "subtitle": "Welcome back! Please sign in to continue",
       "emailPlaceholder": "Email address",
@@ -109,6 +133,7 @@
     }
   },
   "errors": {
+    "genericRetry": "Something went wrong. Please try again.",
     "notFound": {
       "code": "404",
       "message": "Page not found",
@@ -174,7 +199,8 @@
     "unavailable": "Hebrew data unavailable",
     "clauseVerseCount": "{{clauses}} clauses · {{verses}} verses",
     "collapseSidebar": "Collapse sidebar",
-    "verse": "Verse {{verse}}"
+    "verse": "Verse {{verse}}",
+    "chapterLabel": "Chapter {{chapter}}"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -278,6 +304,7 @@
     "noData": "No data to review. Import or generate a meaning map first.",
     "unsavedChanges": "Unsaved changes",
     "saveSuccess": "Changes saved successfully.",
+    "saveTranslatedSuccess": "Changes translated to English and saved.",
     "saveFailed": "Failed to save. Please try again.",
     "sentToCrossCheck": "Meaning map sent for cross-check review.",
     "crossCheckFailed": "Failed to send to cross-check.",
@@ -309,6 +336,7 @@
     "section2B": "2B — Places",
     "section2C": "2C — Objects & Elements",
     "significantAbsence": "Significant Absence",
+    "significantAbsencePlaceholder": "Any notable absence...",
     "whatHappens": "What Happens",
     "purpose": "Purpose",
     "orImportManually": "or import manually",
@@ -398,6 +426,7 @@
     "unsaved": "unsaved",
     "saveFailed": "Save failed.",
     "sectionSaved": "{{label}} saved.",
+    "sectionSavedTranslated": "{{label}} translated to English and saved.",
     "noContentYet": "No content yet.",
     "notes": "Notes",
     "noteAdded": "Note added.",
@@ -406,8 +435,39 @@
     "notePlaceholder": "Add a note about this section...",
     "noNotes": "No notes yet.",
     "resolved": "resolved",
+    "invalidJSON": "Invalid JSON",
+    "noEntries": "No entries yet.",
+    "noAdditionalDetails": "No additional details.",
+    "markAsResolved": "Mark as resolved",
     "named": "Named",
-    "group": "Group"
+    "group": "Group",
+    "placeholders": {
+      "bookArc": "Describe the overall narrative arc of the book...",
+      "chapterTitle": "Chapter title",
+      "chapterSummary": "Brief summary of this chapter...",
+      "addKeyEvent": "Add key event and press Enter",
+      "addTheme": "Add theme and press Enter",
+      "englishMeaning": "English meaning",
+      "roleExample": "e.g. protagonist, antagonist, supporting",
+      "addRelationship": "Add relationship and press Enter",
+      "audienceKnowledge": "What the audience already knows about this person...",
+      "stateAtPoint": "State at this point",
+      "statusExample": "e.g. alive, dead, departed",
+      "placeType": "e.g. city, region, location",
+      "placeSignificance": "Describe the significance and role of this place...",
+      "objectDescription": "Describe what this object is...",
+      "objectMeaning": "How its meaning evolves across the book...",
+      "institutionDescription": "Describe this institution or custom...",
+      "institutionRole": "How it functions in the narrative",
+      "threadLabel": "Thread label",
+      "threadQuestion": "The question this thread raises...",
+      "threadStatus": "Status at this point",
+      "primaryGenre": "e.g. narrative, poetry, prophecy",
+      "subGenre": "e.g. historical narrative, wisdom poetry",
+      "addFeature": "Add feature and press Enter",
+      "addItem": "Add item and press Enter",
+      "newKeyName": "New key name"
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -431,6 +491,7 @@
     "newVersion": "New Version",
     "noDocuments": "No Book Context Documents",
     "noDocumentsCreateMessage": "Create the first version to get started.",
+    "loadFailed": "Failed to load book context data.",
     "noDocumentsViewMessage": "No context documents have been created for this book yet.",
     "generateWithAI": "Generate with AI",
     "generationStarted": "Generation started. This may take a few minutes.",
@@ -473,6 +534,7 @@
     "generationStarted": "Generation started...",
     "generationFailed": "Generation failed.",
     "approvalCounter": "{{approved}}/{{total}}",
+    "noEnglishReview": "No English-language review yet",
     "generationTitle": "Generation",
     "generationProgress": "{{completed}}/{{total}} steps",
     "stopGeneration": "Stop",

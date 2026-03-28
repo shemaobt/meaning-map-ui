@@ -47,6 +47,30 @@
     "newTestament": "NOVO TESTAMENTO"
   },
   "auth": {
+    "welcomeBack": "Bem-vindo de volta",
+    "placeholders": {
+      "email": "voce@exemplo.com",
+      "password": "Digite sua senha",
+      "passwordMin": "Mín. 8 caracteres",
+      "confirmPassword": "Repita sua senha",
+      "fullName": "João Silva"
+    },
+    "hero": {
+      "discover": "Descubra,",
+      "analyze": "Analise,",
+      "translate": "Traduza.",
+      "subheading": "Análise semântica do Hebraico Bíblico — mapeando as estruturas de significado que sustentam traduções orais fiéis."
+    },
+    "footer": {
+      "pipeline": "Pipeline de Mapa de Significado",
+      "hebrewAnalysis": "Análise Hebraica",
+      "semanticMapping": "Mapeamento Semântico",
+      "translationSupport": "Suporte à Tradução",
+      "books": "Livros",
+      "stages": "Estágios",
+      "hebrew": "Hebraico",
+      "branding": "Shema OBT · Plataforma de Mapas de Significado Bíblico"
+    },
     "login": {
       "subtitle": "Bem-vindo de volta! Faça login para continuar",
       "emailPlaceholder": "Endereço de e-mail",
@@ -109,6 +133,7 @@
     }
   },
   "errors": {
+    "genericRetry": "Algo deu errado. Tente novamente.",
     "notFound": {
       "code": "404",
       "message": "Página não encontrada",
@@ -174,7 +199,8 @@
     "unavailable": "Dados hebraicos indisponíveis",
     "clauseVerseCount": "{{clauses}} cláusulas · {{verses}} versículos",
     "collapseSidebar": "Recolher barra lateral",
-    "verse": "Versículo {{verse}}"
+    "verse": "Versículo {{verse}}",
+    "chapterLabel": "Capítulo {{chapter}}"
   },
   "dashboard": {
     "title": "Painel",
@@ -278,6 +304,7 @@
     "noData": "Sem dados para revisar. Importe ou gere um mapa de significado primeiro.",
     "unsavedChanges": "Alterações não salvas",
     "saveSuccess": "Alterações salvas com sucesso.",
+    "saveTranslatedSuccess": "Alterações traduzidas para inglês e salvas.",
     "saveFailed": "Falha ao salvar. Tente novamente.",
     "sentToCrossCheck": "Mapa de significado enviado para revisão cruzada.",
     "crossCheckFailed": "Falha ao enviar para revisão cruzada.",
@@ -309,6 +336,7 @@
     "section2B": "2B — Lugares",
     "section2C": "2C — Objetos e Elementos",
     "significantAbsence": "Ausência Significativa",
+    "significantAbsencePlaceholder": "Alguma ausência notável...",
     "whatHappens": "O Que Acontece",
     "purpose": "Propósito",
     "orImportManually": "ou importe manualmente",
@@ -398,6 +426,11 @@
     "unsaved": "não salvo",
     "saveFailed": "Falha ao salvar.",
     "sectionSaved": "{{label}} salvo.",
+    "sectionSavedTranslated": "{{label}} traduzido para inglês e salvo.",
+    "invalidJSON": "JSON inválido",
+    "noEntries": "Nenhuma entrada ainda.",
+    "noAdditionalDetails": "Sem detalhes adicionais.",
+    "markAsResolved": "Marcar como resolvido",
     "noContentYet": "Sem conteúdo ainda.",
     "notes": "Notas",
     "noteAdded": "Nota adicionada.",
@@ -407,7 +440,34 @@
     "noNotes": "Nenhuma nota ainda.",
     "resolved": "resolvido",
     "named": "Nomeado",
-    "group": "Grupo"
+    "group": "Grupo",
+    "placeholders": {
+      "bookArc": "Descreva o arco narrativo geral do livro...",
+      "chapterTitle": "Título do capítulo",
+      "chapterSummary": "Breve resumo deste capítulo...",
+      "addKeyEvent": "Adicione evento-chave e pressione Enter",
+      "addTheme": "Adicione tema e pressione Enter",
+      "englishMeaning": "Significado em inglês",
+      "roleExample": "ex: protagonista, antagonista, coadjuvante",
+      "addRelationship": "Adicione relacionamento e pressione Enter",
+      "audienceKnowledge": "O que o público já sabe sobre esta pessoa...",
+      "stateAtPoint": "Estado neste ponto",
+      "statusExample": "ex: vivo, morto, partido",
+      "placeType": "ex: cidade, região, local",
+      "placeSignificance": "Descreva a importância e o papel deste lugar...",
+      "objectDescription": "Descreva o que é este objeto...",
+      "objectMeaning": "Como seu significado evolui ao longo do livro...",
+      "institutionDescription": "Descreva esta instituição ou costume...",
+      "institutionRole": "Como funciona na narrativa",
+      "threadLabel": "Rótulo do tópico",
+      "threadQuestion": "A pergunta que este tópico levanta...",
+      "threadStatus": "Status neste ponto",
+      "primaryGenre": "ex: narrativa, poesia, profecia",
+      "subGenre": "ex: narrativa histórica, poesia sapiencial",
+      "addFeature": "Adicione característica e pressione Enter",
+      "addItem": "Adicione item e pressione Enter",
+      "newKeyName": "Nome da nova chave"
+    }
   },
   "notifications": {
     "title": "Notificações",
@@ -431,6 +491,7 @@
     "newVersion": "Nova Versão",
     "noDocuments": "Sem Documentos de Contexto do Livro",
     "noDocumentsCreateMessage": "Crie a primeira versão para começar.",
+    "loadFailed": "Falha ao carregar dados do contexto do livro.",
     "noDocumentsViewMessage": "Nenhum documento de contexto foi criado para este livro ainda.",
     "generateWithAI": "Gerar com IA",
     "generationStarted": "Geração iniciada. Isso pode levar alguns minutos.",
@@ -473,6 +534,7 @@
     "generationStarted": "Geração iniciada...",
     "generationFailed": "A geração falhou.",
     "approvalCounter": "{{approved}}/{{total}}",
+    "noEnglishReview": "Sem revisão em inglês ainda",
     "generationTitle": "Geração",
     "generationProgress": "{{completed}}/{{total}} etapas",
     "stopGeneration": "Parar",
