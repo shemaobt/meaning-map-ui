@@ -99,7 +99,13 @@
       "successToast": "¡Cuenta creada! Bienvenido.",
       "error": "No se pudo crear la cuenta. Intenta de nuevo.",
       "hasAccount": "¿Ya tienes una cuenta?",
-      "signinLink": "Inicia sesión"
+      "signinLink": "Inicia sesión",
+      "continue": "Continuar",
+      "profileTitle": "Configura tu perfil",
+      "profileSubtitle": "Agrega una foto de perfil (opcional)",
+      "skip": "Omitir por ahora",
+      "back": "Atrás",
+      "avatarUploadFailed": "Cuenta creada, pero la imagen de perfil no se pudo guardar"
     },
     "forgotPassword": {
       "title": "Restablecer tu contraseña",
@@ -171,7 +177,15 @@
     "displayNameLabel": "Nombre para mostrar",
     "displayNamePlaceholder": "Tu nombre para mostrar",
     "emailLabel": "Correo electrónico",
-    "emailCannotChange": "El correo electrónico no se puede cambiar"
+    "emailCannotChange": "El correo electrónico no se puede cambiar",
+    "rolesLabel": "Tus Roles",
+    "roles": {
+      "admin": "Administrador",
+      "analyst": "Analista",
+      "exegete": "Exegeta",
+      "biblicalLanguageSpecialist": "Especialista en Lengua Bíblica",
+      "translationSpecialist": "Especialista en Traducción"
+    }
   },
   "imageUpload": {
     "invalidFormat": "Sube una imagen JPG, PNG, WebP o SVG",
