@@ -47,6 +47,30 @@
     "newTestament": "NOUVEAU TESTAMENT"
   },
   "auth": {
+    "welcomeBack": "Bon retour",
+    "placeholders": {
+      "email": "vous@exemple.com",
+      "password": "Entrez votre mot de passe",
+      "passwordMin": "Min. 8 caractères",
+      "confirmPassword": "Répétez votre mot de passe",
+      "fullName": "Jean Dupont"
+    },
+    "hero": {
+      "discover": "Découvrez,",
+      "analyze": "Analysez,",
+      "translate": "Traduisez.",
+      "subheading": "Analyse sémantique de l'Hébreu Biblique — cartographier les structures de sens qui soutiennent des traductions orales fidèles."
+    },
+    "footer": {
+      "pipeline": "Pipeline de Carte de Sens",
+      "hebrewAnalysis": "Analyse Hébraïque",
+      "semanticMapping": "Cartographie Sémantique",
+      "translationSupport": "Support de Traduction",
+      "books": "Livres",
+      "stages": "Étapes",
+      "hebrew": "Hébreu",
+      "branding": "Shema OBT · Plateforme de Cartes de Sens Biblique"
+    },
     "login": {
       "subtitle": "Bon retour ! Veuillez vous connecter pour continuer",
       "emailPlaceholder": "Adresse e-mail",
@@ -109,6 +133,7 @@
     }
   },
   "errors": {
+    "genericRetry": "Une erreur est survenue. Veuillez réessayer.",
     "notFound": {
       "code": "404",
       "message": "Page introuvable",
@@ -174,7 +199,8 @@
     "unavailable": "Données hébraïques indisponibles",
     "clauseVerseCount": "{{clauses}} propositions · {{verses}} versets",
     "collapseSidebar": "Réduire le panneau latéral",
-    "verse": "Verset {{verse}}"
+    "verse": "Verset {{verse}}",
+    "chapterLabel": "Chapitre {{chapter}}"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -278,6 +304,7 @@
     "noData": "Aucune donnée à examiner. Importez ou générez d'abord une carte de sens.",
     "unsavedChanges": "Modifications non enregistrées",
     "saveSuccess": "Modifications enregistrées avec succès.",
+    "saveTranslatedSuccess": "Modifications traduites en anglais et enregistrées.",
     "saveFailed": "Échec de l'enregistrement. Veuillez réessayer.",
     "sentToCrossCheck": "Carte de sens envoyée pour contre-vérification.",
     "crossCheckFailed": "Échec de l'envoi pour contre-vérification.",
@@ -309,6 +336,7 @@
     "section2B": "2B — Lieux",
     "section2C": "2C — Objets et éléments",
     "significantAbsence": "Absence significative",
+    "significantAbsencePlaceholder": "Toute absence notable...",
     "whatHappens": "Ce qui se passe",
     "purpose": "Objectif",
     "orImportManually": "ou importer manuellement",
@@ -398,6 +426,11 @@
     "unsaved": "non enregistré",
     "saveFailed": "Échec de l'enregistrement.",
     "sectionSaved": "{{label}} enregistré.",
+    "sectionSavedTranslated": "{{label}} traduit en anglais et enregistré.",
+    "invalidJSON": "JSON invalide",
+    "noEntries": "Aucune entrée pour l'instant.",
+    "noAdditionalDetails": "Pas de détails supplémentaires.",
+    "markAsResolved": "Marquer comme résolu",
     "noContentYet": "Pas encore de contenu.",
     "notes": "Notes",
     "noteAdded": "Note ajoutée.",
@@ -407,7 +440,34 @@
     "noNotes": "Pas encore de notes.",
     "resolved": "résolu",
     "named": "Nommé",
-    "group": "Groupe"
+    "group": "Groupe",
+    "placeholders": {
+      "bookArc": "Décrivez l'arc narratif global du livre...",
+      "chapterTitle": "Titre du chapitre",
+      "chapterSummary": "Bref résumé de ce chapitre...",
+      "addKeyEvent": "Ajoutez un événement clé et appuyez sur Entrée",
+      "addTheme": "Ajoutez un thème et appuyez sur Entrée",
+      "englishMeaning": "Signification en anglais",
+      "roleExample": "ex : protagoniste, antagoniste, secondaire",
+      "addRelationship": "Ajoutez une relation et appuyez sur Entrée",
+      "audienceKnowledge": "Ce que le public sait déjà sur cette personne...",
+      "stateAtPoint": "État à ce stade",
+      "statusExample": "ex : vivant, mort, parti",
+      "placeType": "ex : ville, région, lieu",
+      "placeSignificance": "Décrivez l'importance et le rôle de ce lieu...",
+      "objectDescription": "Décrivez ce qu'est cet objet...",
+      "objectMeaning": "Comment sa signification évolue à travers le livre...",
+      "institutionDescription": "Décrivez cette institution ou coutume...",
+      "institutionRole": "Comment elle fonctionne dans le récit",
+      "threadLabel": "Libellé du fil",
+      "threadQuestion": "La question que ce fil soulève...",
+      "threadStatus": "Statut à ce stade",
+      "primaryGenre": "ex : narratif, poésie, prophétie",
+      "subGenre": "ex : récit historique, poésie sapientielle",
+      "addFeature": "Ajoutez une caractéristique et appuyez sur Entrée",
+      "addItem": "Ajoutez un élément et appuyez sur Entrée",
+      "newKeyName": "Nom de la nouvelle clé"
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -431,6 +491,7 @@
     "newVersion": "Nouvelle version",
     "noDocuments": "Aucun document de Contexte du Livre",
     "noDocumentsCreateMessage": "Créez la première version pour commencer.",
+    "loadFailed": "Échec du chargement des données du contexte du livre.",
     "noDocumentsViewMessage": "Aucun document de contexte n'a encore été créé pour ce livre.",
     "generateWithAI": "Générer avec l'IA",
     "generationStarted": "Génération démarrée. Cela peut prendre quelques minutes.",
@@ -473,6 +534,7 @@
     "generationStarted": "Génération démarrée...",
     "generationFailed": "La génération a échoué.",
     "approvalCounter": "{{approved}}/{{total}}",
+    "noEnglishReview": "Pas encore de révision en anglais",
     "generationTitle": "Génération",
     "generationProgress": "{{completed}}/{{total}} étapes",
     "stopGeneration": "Arrêter",

@@ -23,7 +23,8 @@ interface BCDActionBarProps {
 }
 
 export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent, isApproved, lockedBy, isLockedByMe, onLock, onUnlock }: BCDActionBarProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [showRegenDialog, setShowRegenDialog] = useState(false);
@@ -54,7 +55,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
   const handleApprove = async () => {
     setLoading("approve");
     try {
-      await bookContextAPI.approve(bcdId);
+      await bookContextAPI.approve(bcdId, locale);
       await fetchBCD(bcdId);
       toast.success(t("bcdDetail.approveSuccess"));
     } catch (e) {

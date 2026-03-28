@@ -165,7 +165,7 @@ export function SceneCard({
               readOnly={readOnly}
               rows={2}
               className="mt-1 text-sm font-serif leading-relaxed"
-              placeholder="Any notable absence..."
+              placeholder={t("meaningMap.significantAbsencePlaceholder")}
             />
           </div>
           {showFeedback && (

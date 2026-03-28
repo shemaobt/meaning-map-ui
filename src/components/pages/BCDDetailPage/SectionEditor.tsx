@@ -28,7 +28,8 @@ export function SectionEditor({
   readOnly,
   children,
 }: SectionEditorProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
   const currentBCD = useBCDStore((s) => s.currentBCD);
   const fetchBCD = useBCDStore((s) => s.fetchBCD);
   const [saving, setSaving] = useState(false);
@@ -50,10 +51,14 @@ export function SectionEditor({
   const handleSave = async () => {
     setSaving(true);
     try {
-      await bookContextAPI.updateSection(bcdId, sectionKey, localData);
+      await bookContextAPI.updateSection(bcdId, sectionKey, localData, locale);
       await fetchBCD(bcdId);
       setDirty(false);
-      toast.success(t("editors.sectionSaved", { label }));
+      if (locale !== "en") {
+        toast.success(t("editors.sectionSavedTranslated", { label }));
+      } else {
+        toast.success(t("editors.sectionSaved", { label }));
+      }
     } catch (e) {
       const msg = e instanceof AxiosError ? e.response?.data?.detail : t("editors.saveFailed");
       toast.error(msg);
@@ -149,7 +154,7 @@ export function JSONSection({ data, setData, readOnly }: JSONSectionProps) {
             setData(parsed);
             setParseError(null);
           } catch {
-            setParseError("Invalid JSON");
+            setParseError(t("editors.invalidJSON"));
           }
         }}
         rows={12}
@@ -245,6 +250,7 @@ interface ListSectionProps {
 }
 
 export function ListSection({ data, setData, readOnly, nameKey = "name" }: ListSectionProps) {
+  const { t } = useTranslation();
   const items = Array.isArray(data) ? data : [];
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
 
@@ -253,7 +259,7 @@ export function ListSection({ data, setData, readOnly, nameKey = "name" }: ListS
   }
 
   if (items.length === 0) {
-    return <p className="text-sm text-verde/40 italic">No entries yet.</p>;
+    return <p className="text-sm text-verde/40 italic">{t("editors.noEntries")}</p>;
   }
 
   return (
@@ -297,10 +303,11 @@ export function ListSection({ data, setData, readOnly, nameKey = "name" }: ListS
 }
 
 function ItemDetailView({ item, nameKey }: { item: Record<string, unknown>; nameKey: string }) {
+  const { t } = useTranslation();
   const entries = Object.entries(item).filter(([k]) => k !== nameKey);
 
   if (entries.length === 0) {
-    return <p className="text-xs text-verde/40 italic">No additional details.</p>;
+    return <p className="text-xs text-verde/40 italic">{t("editors.noAdditionalDetails")}</p>;
   }
 
   return (

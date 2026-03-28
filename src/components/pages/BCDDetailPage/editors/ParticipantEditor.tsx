@@ -116,7 +116,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                     <EditableInput
                       value={p.english_gloss ?? ""}
                       onChange={(val) => updateItem(i, "english_gloss", val)}
-                      placeholder="English meaning"
+                      placeholder={t("editors.placeholders.englishMeaning")}
                     />
                   </FieldGroup>
                 </div>
@@ -152,7 +152,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                   <EditableInput
                     value={p.role_in_book ?? ""}
                     onChange={(val) => updateItem(i, "role_in_book", val)}
-                    placeholder="e.g. protagonist, antagonist, supporting"
+                    placeholder={t("editors.placeholders.roleExample")}
                   />
                 </FieldGroup>
 
@@ -160,7 +160,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                   <TagsInput
                     tags={Array.isArray(p.relationships) ? p.relationships : []}
                     onChange={(tags) => updateItem(i, "relationships", tags)}
-                    placeholder="Add relationship and press Enter"
+                    placeholder={t("editors.placeholders.addRelationship")}
                   />
                 </FieldGroup>
 
@@ -168,7 +168,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                   <EditableTextarea
                     value={p.what_audience_knows_at_entry ?? ""}
                     onChange={(val) => updateItem(i, "what_audience_knows_at_entry", val)}
-                    placeholder="What the audience already knows about this person..."
+                    placeholder={t("editors.placeholders.audienceKnowledge")}
                     rows={2}
                   />
                 </FieldGroup>
@@ -182,7 +182,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                           <EditableInput
                             value={a.state ?? ""}
                             onChange={(val) => updateArc(i, ai, val)}
-                            placeholder="State at this point"
+                            placeholder={t("editors.placeholders.stateAtPoint")}
                             className="flex-1"
                           />
                           <button type="button" onClick={() => removeArcEntry(i, ai)} className="text-verde/30 hover:text-red-500 transition-colors">
@@ -201,7 +201,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                   <EditableInput
                     value={p.status_at_end ?? ""}
                     onChange={(val) => updateItem(i, "status_at_end", val)}
-                    placeholder="e.g. alive, dead, departed"
+                    placeholder={t("editors.placeholders.statusExample")}
                   />
                 </FieldGroup>
 

@@ -24,7 +24,8 @@ export function ReviewTab({
   isAnalyst,
   onRefresh,
 }: ReviewTabProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
   const currentMap = useMeaningMapStore((s) => s.currentMap);
   const isDirty = useMeaningMapStore((s) => s.isDirty);
   const [saving, setSaving] = useState(false);
@@ -44,9 +45,13 @@ export function ReviewTab({
   const handleSave = async () => {
     setSaving(true);
     try {
-      const updated = await meaningMapsAPI.update(currentMap.id, data);
+      const updated = await meaningMapsAPI.update(currentMap.id, data, locale);
       useMeaningMapStore.getState().setFromBackend(updated);
-      toast.success(t("meaningMap.saveSuccess"));
+      if (locale !== "en") {
+        toast.success(t("meaningMap.saveTranslatedSuccess"));
+      } else {
+        toast.success(t("meaningMap.saveSuccess"));
+      }
     } catch (err) {
       console.error("Save failed:", err);
       toast.error(t("meaningMap.saveFailed"));

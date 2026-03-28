@@ -32,14 +32,14 @@ export function GenreContextEditor({ data, setData }: GenreContextEditorProps) {
           <EditableInput
             value={primaryGenre}
             onChange={(val) => update("primary_genre", val)}
-            placeholder="e.g. narrative, poetry, prophecy"
+            placeholder={t("editors.placeholders.primaryGenre")}
           />
         </FieldGroup>
         <FieldGroup label={t("fields.subGenre")}>
           <EditableInput
             value={subGenre}
             onChange={(val) => update("sub_genre", val)}
-            placeholder="e.g. historical narrative, wisdom poetry"
+            placeholder={t("editors.placeholders.subGenre")}
           />
         </FieldGroup>
       </div>
@@ -48,7 +48,7 @@ export function GenreContextEditor({ data, setData }: GenreContextEditorProps) {
         <TagsInput
           tags={literaryFeatures}
           onChange={(tags) => update("literary_features", tags)}
-          placeholder="Add feature and press Enter"
+          placeholder={t("editors.placeholders.addFeature")}
         />
       </FieldGroup>
 
@@ -130,7 +130,7 @@ export function KeyValueEditor({ data, setData }: KeyValueEditorProps) {
             <TagsInput
               tags={val.map(String)}
               onChange={(tags) => update(key, tags)}
-              placeholder="Add item and press Enter"
+              placeholder={t("editors.placeholders.addItem")}
             />
           ) : (
             <EditableTextarea
@@ -146,7 +146,7 @@ export function KeyValueEditor({ data, setData }: KeyValueEditorProps) {
         <EditableInput
           value={newKey}
           onChange={setNewKey}
-          placeholder="New key name"
+          placeholder={t("editors.placeholders.newKeyName")}
           className="flex-1"
         />
         <Button

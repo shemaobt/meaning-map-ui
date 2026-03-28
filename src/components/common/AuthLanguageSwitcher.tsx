@@ -1,8 +1,10 @@
+import { useTranslation } from "react-i18next";
 import { Globe } from "lucide-react";
 import { SUPPORTED_LANGUAGES, LOCALE_STORAGE_KEY } from "../../i18n";
-import i18n from "../../i18n";
 
 export function AuthLanguageSwitcher() {
+  const { i18n } = useTranslation();
+
   const handleChange = (code: string) => {
     i18n.changeLanguage(code);
     localStorage.setItem(LOCALE_STORAGE_KEY, code);

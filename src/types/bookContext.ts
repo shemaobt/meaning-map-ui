@@ -93,6 +93,7 @@ export interface BCDApprovalEntry {
   avatar_url: string | null;
   role_at_approval: string;
   roles_at_approval: string[];
+  reviewer_locale: string | null;
   approved_at: string | null;
 }
 
@@ -102,4 +103,5 @@ export interface BCDApprovalStatus {
   missing_specialties: string[];
   distinct_reviewers: number;
   is_complete: boolean;
+  has_english_review: boolean;
 }

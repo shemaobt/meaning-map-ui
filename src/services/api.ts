@@ -97,8 +97,8 @@ export const meaningMapsAPI = {
   list: (params?: { book_id?: string; chapter?: number; status?: string }) =>
     client.get<MeaningMap[]>("/meaning-maps", { params }).then((r) => r.data),
   get: (id: string) => client.get<MeaningMap>(`/meaning-maps/${id}`).then((r) => r.data),
-  update: (id: string, data: Partial<MeaningMapData>) =>
-    client.put<MeaningMap>(`/meaning-maps/${id}`, { data }).then((r) => r.data),
+  update: (id: string, data: Partial<MeaningMapData>, locale: string = "en") =>
+    client.put<MeaningMap>(`/meaning-maps/${id}`, { data, locale }).then((r) => r.data),
   updateStatus: (id: string, status: string) =>
     client.patch<MeaningMap>(`/meaning-maps/${id}/status`, { status }).then((r) => r.data),
   lock: (id: string) => client.post<MeaningMap>(`/meaning-maps/${id}/lock`).then((r) => r.data),
@@ -164,10 +164,10 @@ export const bookContextAPI = {
     client.post<BCD>(`/book-context/${bookId}`, data).then((r) => r.data),
   get: (bcdId: string) =>
     client.get<BCD>(`/book-context/${bcdId}`).then((r) => r.data),
-  updateSection: (bcdId: string, sectionKey: string, data: unknown) =>
-    client.patch<BCD>(`/book-context/${bcdId}/sections/${sectionKey}`, { data }).then((r) => r.data),
-  approve: (bcdId: string) =>
-    client.post<BCD>(`/book-context/${bcdId}/approve`).then((r) => r.data),
+  updateSection: (bcdId: string, sectionKey: string, data: unknown, locale: string = "en") =>
+    client.patch<BCD>(`/book-context/${bcdId}/sections/${sectionKey}`, { data, locale }).then((r) => r.data),
+  approve: (bcdId: string, locale: string = "en") =>
+    client.post<BCD>(`/book-context/${bcdId}/approve`, null, { params: { locale } }).then((r) => r.data),
   requestRevision: (bcdId: string) =>
     client.post<BCD>(`/book-context/${bcdId}/request-revision`).then((r) => r.data),
   createNewVersion: (bcdId: string) =>

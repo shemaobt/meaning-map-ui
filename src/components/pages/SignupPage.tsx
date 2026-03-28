@@ -71,7 +71,7 @@ export function SignupPage() {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               className={INPUT_CLASS}
-              placeholder="John Doe"
+              placeholder={t("auth.placeholders.fullName")}
               required
               autoFocus
             />
@@ -86,7 +86,7 @@ export function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={INPUT_CLASS}
-              placeholder="you@example.com"
+              placeholder={t("auth.placeholders.email")}
               required
             />
           </div>
@@ -99,7 +99,7 @@ export function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={INPUT_CLASS}
-              placeholder="Min. 8 characters"
+              placeholder={t("auth.placeholders.passwordMin")}
               required
               minLength={8}
             />
@@ -113,7 +113,7 @@ export function SignupPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className={`${INPUT_CLASS} ${passwordMismatch ? "!border-red-400/50 !focus:ring-red-400/30" : ""}`}
-              placeholder="Repeat your password"
+              placeholder={t("auth.placeholders.confirmPassword")}
               required
               minLength={8}
             />

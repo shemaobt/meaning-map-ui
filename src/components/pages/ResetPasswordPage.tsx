@@ -94,7 +94,7 @@ export function ResetPasswordPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={INPUT_CLASS}
-              placeholder="Min. 8 characters"
+              placeholder={t("auth.placeholders.passwordMin")}
               required
               minLength={8}
               autoFocus
@@ -109,7 +109,7 @@ export function ResetPasswordPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className={`${INPUT_CLASS} ${passwordMismatch ? "!border-red-400/50" : ""}`}
-              placeholder="Repeat your password"
+              placeholder={t("auth.placeholders.confirmPassword")}
               required
               minLength={8}
             />
