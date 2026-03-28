@@ -99,7 +99,13 @@
       "successToast": "Compte créé ! Bienvenue.",
       "error": "Impossible de créer le compte. Veuillez réessayer.",
       "hasAccount": "Vous avez déjà un compte ?",
-      "signinLink": "Se connecter"
+      "signinLink": "Se connecter",
+      "continue": "Continuer",
+      "profileTitle": "Configurez votre profil",
+      "profileSubtitle": "Ajoutez une photo de profil (facultatif)",
+      "skip": "Passer pour le moment",
+      "back": "Retour",
+      "avatarUploadFailed": "Compte créé, mais l'image de profil n'a pas pu être enregistrée"
     },
     "forgotPassword": {
       "title": "Réinitialiser votre mot de passe",
@@ -171,7 +177,15 @@
     "displayNameLabel": "Nom d'affichage",
     "displayNamePlaceholder": "Votre nom d'affichage",
     "emailLabel": "E-mail",
-    "emailCannotChange": "L'adresse e-mail ne peut pas être modifiée"
+    "emailCannotChange": "L'adresse e-mail ne peut pas être modifiée",
+    "rolesLabel": "Vos Rôles",
+    "roles": {
+      "admin": "Administrateur",
+      "analyst": "Analyste",
+      "exegete": "Exégète",
+      "biblicalLanguageSpecialist": "Spécialiste en Langues Bibliques",
+      "translationSpecialist": "Spécialiste en Traduction"
+    }
   },
   "imageUpload": {
     "invalidFormat": "Veuillez téléverser une image JPG, PNG, WebP ou SVG",

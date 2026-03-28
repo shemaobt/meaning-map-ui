@@ -4,6 +4,7 @@ import { User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 import { authAPI } from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
+import { cn } from "../../utils/cn";
 import { Button } from "../ui/button";
 import { ImageUpload } from "./ImageUpload";
 import {
@@ -15,6 +16,22 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 
+const ROLE_LABEL_KEYS: Record<string, string> = {
+  admin: "profile.roles.admin",
+  analyst: "profile.roles.analyst",
+  exegete: "profile.roles.exegete",
+  biblical_language_specialist: "profile.roles.biblicalLanguageSpecialist",
+  translation_specialist: "profile.roles.translationSpecialist",
+};
+
+const ROLE_STYLES: Record<string, string> = {
+  admin: "bg-telha/15 text-telha border-telha/20",
+  analyst: "bg-azul/15 text-azul border-azul/20",
+  exegete: "bg-telha/15 text-telha border-telha/20",
+  biblical_language_specialist: "bg-azul/15 text-azul border-azul/20",
+  translation_specialist: "bg-verde-claro/15 text-verde-claro border-verde-claro/20",
+};
+
 interface ProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -22,7 +39,7 @@ interface ProfileDialogProps {
 
 export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
   const { t } = useTranslation();
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, appRoles } = useAuth();
   const [displayName, setDisplayName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -109,6 +126,27 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
               {t("profile.emailCannotChange")}
             </p>
           </div>
+
+          {appRoles.length > 0 && (
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-preto">
+                {t("profile.rolesLabel")}
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {appRoles.map((role) => (
+                  <span
+                    key={role}
+                    className={cn(
+                      "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+                      ROLE_STYLES[role] || "bg-areia/15 text-verde border-areia/20"
+                    )}
+                  >
+                    {t(ROLE_LABEL_KEYS[role] || role)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <DialogFooter className="border-t border-areia/10 pt-4 mt-2">

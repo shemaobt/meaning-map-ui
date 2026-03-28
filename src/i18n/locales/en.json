@@ -99,7 +99,13 @@
       "successToast": "Account created! Welcome.",
       "error": "Could not create account. Please try again.",
       "hasAccount": "Already have an account?",
-      "signinLink": "Sign in"
+      "signinLink": "Sign in",
+      "continue": "Continue",
+      "profileTitle": "Set up your profile",
+      "profileSubtitle": "Add a profile photo (optional)",
+      "skip": "Skip for now",
+      "back": "Back",
+      "avatarUploadFailed": "Account created but profile image could not be saved"
     },
     "forgotPassword": {
       "title": "Reset your password",
@@ -171,7 +177,15 @@
     "displayNameLabel": "Display Name",
     "displayNamePlaceholder": "Your display name",
     "emailLabel": "Email",
-    "emailCannotChange": "Email cannot be changed"
+    "emailCannotChange": "Email cannot be changed",
+    "rolesLabel": "Your Roles",
+    "roles": {
+      "admin": "Administrator",
+      "analyst": "Analyst",
+      "exegete": "Exegete",
+      "biblicalLanguageSpecialist": "Biblical Language Specialist",
+      "translationSpecialist": "Translation Specialist"
+    }
   },
   "imageUpload": {
     "invalidFormat": "Please upload a JPG, PNG, WebP, or SVG image",
