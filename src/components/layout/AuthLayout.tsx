@@ -65,18 +65,17 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           {/* Hero headline — desktop only */}
           <div className="hidden lg:block text-center mb-10 max-w-xl">
             <h1 className="text-[42px] font-bold text-white/95 leading-[1.1] tracking-tight mb-4">
-              Discover,{" "}
+              {t("auth.hero.discover")}{" "}
               <span
                 className="bg-clip-text text-transparent"
                 style={{ backgroundImage: "linear-gradient(135deg, #BE4A01, #89AAA3, #777D45)" }}
               >
-                Analyze,
+                {t("auth.hero.analyze")}
               </span>{" "}
-              Translate.
+              {t("auth.hero.translate")}
             </h1>
             <p className="text-[14px] text-white/30 leading-relaxed">
-              Semantic analysis of Biblical Hebrew — mapping the meaning
-              structures that power faithful oral translations.
+              {t("auth.hero.subheading")}
             </p>
           </div>
 
@@ -115,13 +114,13 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <div className="hidden lg:flex items-end justify-between px-12 pb-9">
           <div>
             <div className="text-[9px] font-semibold tracking-[0.15em] text-white/15 uppercase mb-2">
-              Meaning Map Pipeline
+              {t("auth.footer.pipeline")}
             </div>
             <div className="flex items-center gap-2">
               {[
-                { label: "Hebrew Analysis", color: "#89AAA3" },
-                { label: "Semantic Mapping", color: "#777D45" },
-                { label: "Translation Support", color: "#BE4A01" },
+                { label: t("auth.footer.hebrewAnalysis"), color: "#89AAA3" },
+                { label: t("auth.footer.semanticMapping"), color: "#777D45" },
+                { label: t("auth.footer.translationSupport"), color: "#BE4A01" },
               ].map((step, i) => (
                 <div key={step.label} className="flex items-center gap-2">
                   <div
@@ -139,9 +138,9 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
           <div className="flex items-center gap-6">
             {[
-              { value: "66", label: "Books" },
-              { value: "5", label: "Stages" },
-              { value: "RTL", label: "Hebrew" },
+              { value: "66", label: t("auth.footer.books") },
+              { value: "5", label: t("auth.footer.stages") },
+              { value: "RTL", label: t("auth.footer.hebrew") },
             ].map((stat) => (
               <div key={stat.label} className="text-right">
                 <div className="text-lg font-bold font-mono tabular-nums text-white/40">{stat.value}</div>
@@ -154,7 +153,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         {/* Bottom bar */}
         <div className="flex items-center justify-between px-5 pb-4 sm:px-8 sm:pb-5 lg:px-12">
           <p className="text-[10px] text-white/10">
-            Shema OBT &middot; Bible Meaning Map Platform
+            {t("auth.footer.branding")}
           </p>
           <div className="flex items-center gap-1">
             {[0, 1, 2, 3].map((i) => (

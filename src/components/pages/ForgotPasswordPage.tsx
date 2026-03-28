@@ -23,7 +23,7 @@ export function ForgotPasswordPage() {
       await authAPI.forgotPassword({ email, app_key: MM_APP_KEY });
       setSubmitted(true);
     } catch {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t("errors.genericRetry"));
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ export function ForgotPasswordPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={INPUT_CLASS}
-              placeholder="you@example.com"
+              placeholder={t("auth.placeholders.email")}
               required
               autoFocus
             />

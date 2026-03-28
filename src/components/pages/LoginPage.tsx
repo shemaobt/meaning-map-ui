@@ -49,7 +49,7 @@ export function LoginPage() {
     <AuthLayout>
       <div className="mb-7">
         <h2 className="text-[24px] font-bold tracking-tight text-white mb-1.5">
-          Welcome back
+          {t("auth.welcomeBack")}
         </h2>
         <p className="text-[14px] text-white/35">{t("auth.login.subtitle")}</p>
       </div>
@@ -84,7 +84,7 @@ export function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={INPUT_CLASS}
-              placeholder="you@example.com"
+              placeholder={t("auth.placeholders.email")}
               required
               autoFocus
             />
@@ -98,7 +98,7 @@ export function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={INPUT_CLASS}
-              placeholder="Enter your password"
+              placeholder={t("auth.placeholders.password")}
               required
             />
             <div className="flex justify-end mt-1.5">
