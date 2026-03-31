@@ -7,12 +7,6 @@ import { cn } from "../../../utils/cn";
 
 type SpecKey = "exegete" | "biblical_language_specialist" | "translation_specialist";
 
-const ROLE_LABEL_MAP: Record<string, string> = {
-  exegete: "roles.exegete",
-  biblical_language_specialist: "roles.biblicalLanguageSpecialist",
-  translation_specialist: "roles.translationSpecialist",
-};
-
 const SPECS: { key: SpecKey; labelKey: string; accent: string; accentBg: string }[] = [
   { key: "exegete", labelKey: "roles.exegete", accent: "text-telha", accentBg: "bg-telha/15" },
   { key: "biblical_language_specialist", labelKey: "roles.biblicalLanguageSpecialist", accent: "text-azul", accentBg: "bg-azul/15" },
