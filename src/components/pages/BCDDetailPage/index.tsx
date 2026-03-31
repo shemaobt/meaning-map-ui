@@ -9,6 +9,7 @@ import {
   MapPin,
   MessageCircle,
   Package,
+  Pencil,
   StickyNote,
   Tag,
   Users,
@@ -67,9 +68,12 @@ export function BCDDetailPage() {
   const { currentBCD, isLoading, fetchBCD, clear } = useBCDStore();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [book, setBook] = useState<BibleBook | null>(null);
+  const [approvalRefreshKey, setApprovalRefreshKey] = useState(0);
 
   const isLockedByMe = currentBCD?.locked_by === user?.id;
-  const canEdit = (isAdmin || isAnalyst) && isLockedByMe;
+  const canEditDraft = (isAdmin || isAnalyst) && isLockedByMe && currentBCD?.status === "draft";
+  const canEditReview = canApproveBCD && isLockedByMe && currentBCD?.status === "review";
+  const canEdit = canEditDraft || canEditReview;
 
   const handleLock = useCallback(async () => {
     if (!currentBCD) return;
@@ -143,6 +147,7 @@ export function BCDDetailPage() {
             currentVersion={currentBCD.version}
             isActive={currentBCD.is_active}
             canManage={isAdmin}
+            onActivated={() => setApprovalRefreshKey((k) => k + 1)}
           />
         </div>
         <BCDActionBar
@@ -163,7 +168,7 @@ export function BCDDetailPage() {
         <GenerationPanel bcdId={currentBCD.id} canManage={isAdmin} />
       )}
 
-      <ApprovalProgress bcdId={currentBCD.id} status={currentBCD.status} />
+      <ApprovalProgress bcdId={currentBCD.id} status={currentBCD.status} refreshKey={approvalRefreshKey} />
 
       <div className="flex-1 flex gap-6 items-start min-h-0">
         <div className="flex-1 min-w-0">
@@ -171,6 +176,7 @@ export function BCDDetailPage() {
             <TileGrid
               bcd={currentBCD}
               disabled={currentBCD.status === "generating"}
+              canEdit={canEdit}
               onSelect={setActiveSection}
             />
           )}
@@ -184,7 +190,7 @@ export function BCDDetailPage() {
                 <X className="h-3 w-3" />
                 {t("bcdDetail.backToOverview")}
               </button>
-              {canEdit && currentBCD.status === "draft" ? (
+              {canEdit ? (
                 <EditableSection
                   bcdId={currentBCD.id}
                   sectionKey={activeSection}
@@ -211,7 +217,7 @@ export function BCDDetailPage() {
   );
 }
 
-function TileGrid({ bcd, disabled, onSelect }: { bcd: BCD; disabled?: boolean; onSelect: (key: string) => void }) {
+function TileGrid({ bcd, disabled, canEdit, onSelect }: { bcd: BCD; disabled?: boolean; canEdit?: boolean; onSelect: (key: string) => void }) {
   const { t } = useTranslation();
 
   return (
@@ -237,7 +243,10 @@ function TileGrid({ bcd, disabled, onSelect }: { bcd: BCD; disabled?: boolean; o
               !hasContent && !disabled && "opacity-50",
             )}
           >
-            <section.icon className="h-6 w-6 mb-3 opacity-70" />
+            <div className="flex items-start justify-between">
+              <section.icon className="h-6 w-6 mb-3 opacity-70" />
+              {canEdit && !disabled && <Pencil className="h-3.5 w-3.5 opacity-40" />}
+            </div>
             <div>
               <p className="text-xs font-bold leading-tight">{t(section.labelKey)}</p>
               {count !== null && (

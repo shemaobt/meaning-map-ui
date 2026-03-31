@@ -8,6 +8,7 @@ import { useBCDStore } from "../../../stores/bcdStore";
 import type { BCDListItem } from "../../../types/bookContext";
 import { cn } from "../../../utils/cn";
 import { BCDStatusBadge } from "../BookContextPage/BCDStatusBadge";
+import { ConfirmDialog } from "../../common/ConfirmDialog";
 
 interface VersionPickerProps {
   currentBCDId: string;
@@ -15,15 +16,18 @@ interface VersionPickerProps {
   currentVersion: number;
   isActive: boolean;
   canManage: boolean;
+  onActivated?: () => void;
 }
 
-export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, canManage }: VersionPickerProps) {
+export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, canManage, onActivated }: VersionPickerProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [versions, setVersions] = useState<BCDListItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [activating, setActivating] = useState(false);
+  const [showActivateDialog, setShowActivateDialog] = useState(false);
+  const [hasApprovals, setHasApprovals] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -33,12 +37,23 @@ export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, 
     }).finally(() => setLoading(false));
   }, [open, bookId]);
 
-  const handleSetActive = async () => {
+  const handleSetActiveClick = async () => {
+    try {
+      const status = await bookContextAPI.getApprovalStatus(currentBCDId);
+      setHasApprovals(status.approvals.length > 0);
+    } catch {
+      setHasApprovals(false);
+    }
+    setShowActivateDialog(true);
+  };
+
+  const handleSetActiveConfirm = async () => {
     setActivating(true);
     try {
       const updated = await bookContextAPI.setActive(currentBCDId);
       useBCDStore.setState({ currentBCD: updated });
       toast.success(t("bcdDetail.setActiveSuccess"));
+      onActivated?.();
     } catch {
       toast.error(t("bcdDetail.setActiveFailed"));
     } finally {
@@ -64,7 +79,7 @@ export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, 
         </button>
         {canManage && !isActive && (
           <button
-            onClick={handleSetActive}
+            onClick={handleSetActiveClick}
             disabled={activating}
             className="flex items-center gap-1 text-[10px] text-verde/40 hover:text-telha transition-colors disabled:opacity-50"
           >
@@ -130,6 +145,19 @@ export function VersionPicker({ currentBCDId, bookId, currentVersion, isActive, 
           </div>
         </>
       )}
+
+      <ConfirmDialog
+        open={showActivateDialog}
+        onOpenChange={setShowActivateDialog}
+        title={t("bcdDetail.setActiveConfirmTitle")}
+        description={hasApprovals
+          ? t("bcdDetail.setActiveConfirmDescriptionWithApprovals")
+          : t("bcdDetail.setActiveConfirmDescription")
+        }
+        confirmLabel={t("bcdDetail.setActive")}
+        variant={hasApprovals ? "destructive" : "default"}
+        onConfirm={handleSetActiveConfirm}
+      />
     </div>
   );
 }

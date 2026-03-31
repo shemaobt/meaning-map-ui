@@ -574,7 +574,18 @@
     "bookArc": "Arco do Livro",
     "keyEvents": "Eventos-Chave",
     "keyThemes": "Temas-Chave",
-    "chapterLabel": "Capítulo {{number}}"
+    "chapterLabel": "Capítulo {{number}}",
+    "lockAndReview": "Bloquear e Revisar",
+    "singleReviewerWarning": "Revisor único",
+    "singleReviewerDetail": "Todas as especialidades aprovadas por uma pessoa. Revisão adicional recomendada.",
+    "reviewerCount": "{{count}} revisor",
+    "reviewerCount_plural": "{{count}} revisores",
+    "approvedBy": "Aprovado por {{name}}",
+    "approvedOn": "em {{date}}",
+    "setActiveConfirmTitle": "Definir como versão ativa?",
+    "setActiveConfirmDescription": "Esta versão se tornará o contexto ativo para todos os mapas de significado de perícopes.",
+    "setActiveConfirmDescriptionWithApprovals": "Esta versão possui aprovações existentes que podem precisar ser reavaliadas após a ativação.",
+    "approveWarningSingleReviewer": "Aprovado, mas todas as especialidades foram cobertas por um único revisor. Uma segunda revisão é recomendada."
   },
   "bibleAbbr": {
     "Gen": "Gn", "Exod": "Êx", "Lev": "Lv", "Num": "Nm", "Deut": "Dt",

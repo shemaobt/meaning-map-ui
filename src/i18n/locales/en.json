@@ -574,7 +574,18 @@
     "bookArc": "Book Arc",
     "keyEvents": "Key Events",
     "keyThemes": "Key Themes",
-    "chapterLabel": "Chapter {{number}}"
+    "chapterLabel": "Chapter {{number}}",
+    "lockAndReview": "Lock & Review",
+    "singleReviewerWarning": "Single reviewer",
+    "singleReviewerDetail": "All specialties approved by one person. Additional review recommended.",
+    "reviewerCount": "{{count}} reviewer",
+    "reviewerCount_plural": "{{count}} reviewers",
+    "approvedBy": "Approved by {{name}}",
+    "approvedOn": "on {{date}}",
+    "setActiveConfirmTitle": "Set as active version?",
+    "setActiveConfirmDescription": "This version will become the active context for all pericope meaning maps.",
+    "setActiveConfirmDescriptionWithApprovals": "This version has existing approvals that may need to be re-evaluated after activation.",
+    "approveWarningSingleReviewer": "Approved, but all specialties were covered by a single reviewer. A second review is recommended."
   },
   "bibleAbbr": {
     "Gen": "Gen", "Exod": "Exod", "Lev": "Lev", "Num": "Num", "Deut": "Deut",
