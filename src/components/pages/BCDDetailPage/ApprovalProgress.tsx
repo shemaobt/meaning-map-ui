@@ -41,7 +41,8 @@ export function ApprovalProgress({ bcdId, status, refreshKey }: ApprovalProgress
     }
   }
 
-  const isSingleReviewer = data.is_complete && data.distinct_reviewers === 1;
+  const allSpecialtiesCovered = data.covered_specialties.length === SPECS.length;
+  const isSingleReviewer = allSpecialtiesCovered && data.distinct_reviewers === 1;
 
   return (
     <div className="flex flex-col gap-2 mb-4">
