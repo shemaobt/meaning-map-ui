@@ -57,7 +57,12 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
     try {
       await bookContextAPI.approve(bcdId, locale);
       await fetchBCD(bcdId);
-      toast.success(t("bcdDetail.approveSuccess"));
+      const approvalStatus = await bookContextAPI.getApprovalStatus(bcdId);
+      if (approvalStatus.is_complete && approvalStatus.distinct_reviewers < 2) {
+        toast.warning(t("bcdDetail.approveWarningSingleReviewer"));
+      } else {
+        toast.success(t("bcdDetail.approveSuccess"));
+      }
     } catch (e) {
       const msg = e instanceof AxiosError ? e.response?.data?.detail : t("bcdDetail.approveFailed");
       toast.error(msg);
@@ -89,6 +94,19 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
           >
             <Lock className="h-3.5 w-3.5" />
             Lock & Edit
+          </Button>
+        )}
+
+        {canApproveBCD && status === "review" && !lockedBy && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onLock}
+            disabled={loading !== null}
+            className="gap-1"
+          >
+            <Lock className="h-3.5 w-3.5" />
+            {t("bcdDetail.lockAndReview")}
           </Button>
         )}
 
