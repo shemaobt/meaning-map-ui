@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, Lock, Sparkles, Unlock, X } from "lucide-react";
+import { Check, Lock, RotateCcw, Sparkles, Unlock, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
@@ -14,20 +14,23 @@ interface BCDActionBarProps {
   status: BCDStatus;
   canEdit: boolean;
   canApproveBCD: boolean;
+  isAdmin: boolean;
   hasContent: boolean;
   isApproved: boolean;
   lockedBy: string | null;
   isLockedByMe: boolean;
   onLock: () => Promise<void>;
   onUnlock: () => Promise<void>;
+  onRevisionRequested?: () => void;
 }
 
-export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent, isApproved, lockedBy, isLockedByMe, onLock, onUnlock }: BCDActionBarProps) {
+export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, isAdmin, hasContent, isApproved, lockedBy, isLockedByMe, onLock, onUnlock, onRevisionRequested }: BCDActionBarProps) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [showRegenDialog, setShowRegenDialog] = useState(false);
+  const [showRevisionDialog, setShowRevisionDialog] = useState(false);
   const [feedback, setFeedback] = useState("");
   const fetchBCD = useBCDStore((s) => s.fetchBCD);
   const startPolling = useBCDStore((s) => s.startPolling);
@@ -71,6 +74,22 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
     }
   };
 
+  const handleRequestRevision = async () => {
+    setLoading("revision");
+    setShowRevisionDialog(false);
+    try {
+      await bookContextAPI.requestRevision(bcdId);
+      await fetchBCD(bcdId);
+      onRevisionRequested?.();
+      toast.success(t("bcdDetail.revisionSuccess"));
+    } catch (e) {
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : t("bcdDetail.revisionFailed");
+      toast.error(msg);
+    } finally {
+      setLoading(null);
+    }
+  };
+
   const onRegenerateClick = () => {
     if (hasContent) {
       setShowRegenDialog(true);
@@ -79,7 +98,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
     }
   };
 
-  if (!canEdit && !canApproveBCD) return null;
+  if (!canEdit && !canApproveBCD && !isAdmin) return null;
 
   return (
     <>
@@ -147,6 +166,19 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
             {loading === "approve" ? t("common.approving") : t("common.approve")}
           </Button>
         )}
+
+        {isAdmin && (status === "approved" || status === "review") && !lockedBy && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setShowRevisionDialog(true)}
+            disabled={loading !== null}
+            className="gap-1 text-telha/70 hover:text-telha hover:bg-telha/10"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            {loading === "revision" ? t("bcdDetail.requesting") : t("bcdDetail.requestRevision")}
+          </Button>
+        )}
       </div>
 
       {showRegenDialog && (
@@ -190,6 +222,43 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, hasContent
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 {t("bcdDetail.regenerateButton")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showRevisionDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-preto/40">
+          <div className="relative w-full max-w-sm mx-4 rounded-xl bg-surface border border-areia/30 shadow-xl p-6">
+            <button
+              onClick={() => setShowRevisionDialog(false)}
+              className="absolute top-3 right-3 text-verde/40 hover:text-telha transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <h3 className="text-base font-bold text-preto mb-1">{t("bcdDetail.revisionConfirmTitle")}</h3>
+            <p className="text-xs text-verde/60 mb-4">
+              {t("bcdDetail.revisionConfirmDescription")}
+            </p>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowRevisionDialog(false)}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={handleRequestRevision}
+                disabled={loading !== null}
+                className="gap-1"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                {t("bcdDetail.requestRevision")}
               </Button>
             </div>
           </div>
