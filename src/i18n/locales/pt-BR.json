@@ -585,7 +585,13 @@
     "setActiveConfirmTitle": "Definir como versão ativa?",
     "setActiveConfirmDescription": "Esta versão se tornará o contexto ativo para todos os mapas de significado de perícopes.",
     "setActiveConfirmDescriptionWithApprovals": "Esta versão possui aprovações existentes que podem precisar ser reavaliadas após a ativação.",
-    "approveWarningSingleReviewer": "Aprovado, mas todas as especialidades foram cobertas por um único revisor. Uma segunda revisão é recomendada."
+    "approveWarningSingleReviewer": "Aprovado, mas todas as especialidades foram cobertas por um único revisor. Uma segunda revisão é recomendada.",
+    "requestRevision": "Solicitar Revisão",
+    "requesting": "Solicitando...",
+    "revisionConfirmTitle": "Solicitar revisão?",
+    "revisionConfirmDescription": "Isso limpará todas as aprovações existentes e retornará o documento ao status de rascunho. Esta ação não pode ser desfeita.",
+    "revisionSuccess": "Aprovações removidas. Documento retornado ao rascunho.",
+    "revisionFailed": "Falha ao solicitar revisão."
   },
   "bibleAbbr": {
     "Gen": "Gn", "Exod": "Êx", "Lev": "Lv", "Num": "Nm", "Deut": "Dt",

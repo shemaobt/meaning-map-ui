@@ -574,7 +574,13 @@
     "bookArc": "Arc du livre",
     "keyEvents": "Événements clés",
     "keyThemes": "Thèmes clés",
-    "chapterLabel": "Chapitre {{number}}"
+    "chapterLabel": "Chapitre {{number}}",
+    "requestRevision": "Demander une révision",
+    "requesting": "Demande en cours...",
+    "revisionConfirmTitle": "Demander une révision ?",
+    "revisionConfirmDescription": "Cela supprimera toutes les approbations existantes et remettra le document en brouillon. Cette action est irréversible.",
+    "revisionSuccess": "Approbations supprimées. Document remis en brouillon.",
+    "revisionFailed": "Échec de la demande de révision."
   },
   "bibleAbbr": {
     "Gen": "Gn", "Exod": "Ex", "Lev": "Lv", "Num": "Nb", "Deut": "Dt",

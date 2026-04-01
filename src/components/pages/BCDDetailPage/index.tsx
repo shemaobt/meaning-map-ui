@@ -155,12 +155,14 @@ export function BCDDetailPage() {
           status={currentBCD.status}
           canEdit={isAdmin || isAnalyst}
           canApproveBCD={canApproveBCD}
+          isAdmin={isAdmin}
           hasContent={currentBCD.structural_outline != null || currentBCD.participant_register != null}
           isApproved={currentBCD.status === "approved"}
           lockedBy={currentBCD.locked_by}
           isLockedByMe={isLockedByMe}
           onLock={handleLock}
           onUnlock={handleUnlock}
+          onRevisionRequested={() => setApprovalRefreshKey((k) => k + 1)}
         />
       </div>
 
