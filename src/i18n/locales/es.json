@@ -574,7 +574,13 @@
     "bookArc": "Arco del Libro",
     "keyEvents": "Eventos Clave",
     "keyThemes": "Temas Clave",
-    "chapterLabel": "Capítulo {{number}}"
+    "chapterLabel": "Capítulo {{number}}",
+    "requestRevision": "Solicitar Revisión",
+    "requesting": "Solicitando...",
+    "revisionConfirmTitle": "¿Solicitar revisión?",
+    "revisionConfirmDescription": "Esto eliminará todas las aprobaciones existentes y devolverá el documento al estado de borrador. Esta acción no se puede deshacer.",
+    "revisionSuccess": "Aprobaciones eliminadas. Documento devuelto a borrador.",
+    "revisionFailed": "No se pudo solicitar la revisión."
   },
   "bibleAbbr": {
     "Gen": "Gn", "Exod": "Éx", "Lev": "Lv", "Num": "Nm", "Deut": "Dt",

@@ -585,7 +585,13 @@
     "setActiveConfirmTitle": "Set as active version?",
     "setActiveConfirmDescription": "This version will become the active context for all pericope meaning maps.",
     "setActiveConfirmDescriptionWithApprovals": "This version has existing approvals that may need to be re-evaluated after activation.",
-    "approveWarningSingleReviewer": "Approved, but all specialties were covered by a single reviewer. A second review is recommended."
+    "approveWarningSingleReviewer": "Approved, but all specialties were covered by a single reviewer. A second review is recommended.",
+    "requestRevision": "Request Revision",
+    "requesting": "Requesting...",
+    "revisionConfirmTitle": "Request revision?",
+    "revisionConfirmDescription": "This will clear all existing approvals and set the document back to draft status. This action cannot be undone.",
+    "revisionSuccess": "Approvals cleared. Document returned to draft.",
+    "revisionFailed": "Failed to request revision."
   },
   "bibleAbbr": {
     "Gen": "Gen", "Exod": "Exod", "Lev": "Lev", "Num": "Num", "Deut": "Deut",
