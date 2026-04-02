@@ -170,3 +170,43 @@ export function EditableTextarea({ value, onChange, placeholder, rows = 3 }: Edi
     />
   );
 }
+
+interface OtherKeysSectionProps {
+  data: Record<string, unknown>;
+  knownKeys: Set<string>;
+  onUpdate: (key: string, value: unknown) => void;
+}
+
+export function OtherKeysSection({ data, knownKeys, onUpdate }: OtherKeysSectionProps) {
+  const otherKeys = Object.keys(data).filter((k) => !knownKeys.has(k));
+  if (otherKeys.length === 0) return null;
+
+  return (
+    <>
+      {otherKeys.map((key) => {
+        const val = data[key];
+        return (
+          <FieldGroup key={key} label={key.replace(/_/g, " ")}>
+            {typeof val === "string" ? (
+              <EditableTextarea
+                value={val}
+                onChange={(v) => onUpdate(key, v)}
+                rows={2}
+              />
+            ) : Array.isArray(val) ? (
+              <TagsInput
+                tags={val.map(String)}
+                onChange={(tags) => onUpdate(key, tags)}
+              />
+            ) : (
+              <EditableInput
+                value={String(val ?? "")}
+                onChange={(v) => onUpdate(key, v)}
+              />
+            )}
+          </FieldGroup>
+        );
+      })}
+    </>
+  );
+}

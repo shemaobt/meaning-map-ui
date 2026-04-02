@@ -72,14 +72,17 @@ export function SectionEditor({
       <div className="flex items-center gap-3 px-4 py-3">
         <Icon className="h-4 w-4 text-verde/40 flex-shrink-0" />
         <span className="text-sm font-medium text-preto flex-1">{label}</span>
-        {dirty && (
-          <span className="text-[10px] font-medium text-telha bg-telha/10 rounded-full px-2 py-0.5">{t("editors.unsaved")}</span>
-        )}
         {!hasContent && !dirty && (
           <span className="text-[10px] text-verde/30 italic">{t("bcdDetail.empty")}</span>
         )}
         {hasContent && itemCount !== null && (
           <span className="text-[10px] text-verde/40 bg-areia/15 rounded-full px-2 py-0.5 tabular-nums">{itemCount}</span>
+        )}
+        {!readOnly && dirty && (
+          <Button size="sm" onClick={handleSave} disabled={saving} className="gap-1.5 h-8">
+            <Save className="h-3.5 w-3.5" />
+            {saving ? t("common.saving") : t("common.save")}
+          </Button>
         )}
       </div>
 
@@ -87,14 +90,6 @@ export function SectionEditor({
         <div className="mt-2">
           {children({ data: displayData, setData: handleSetData })}
         </div>
-        {!readOnly && dirty && (
-          <div className="flex justify-end mt-3">
-            <Button size="sm" onClick={handleSave} disabled={saving} className="gap-1.5 h-8">
-              <Save className="h-3.5 w-3.5" />
-              {saving ? t("common.saving") : t("common.save")}
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
