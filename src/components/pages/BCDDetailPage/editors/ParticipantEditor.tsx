@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, Plus, Trash2, User } from "lucide-react";
 import {
   FieldGroup,
-  ReadOnlyValue,
   VerseRefInput,
   EditableInput,
   EditableTextarea,
@@ -109,8 +108,12 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
             {isOpen && (
               <div className="border-t border-areia/15 px-4 py-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <FieldGroup label={t("fields.name")} readOnly>
-                    <ReadOnlyValue value={p.name ?? ""} />
+                  <FieldGroup label={t("fields.name")}>
+                    <EditableInput
+                      value={p.name ?? ""}
+                      onChange={(val) => updateItem(i, "name", val)}
+                      placeholder={t("editors.placeholders.hebrewName")}
+                    />
                   </FieldGroup>
                   <FieldGroup label={t("fields.englishGloss")}>
                     <EditableInput
