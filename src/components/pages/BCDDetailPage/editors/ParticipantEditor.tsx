@@ -91,6 +91,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
               <User className="h-4 w-4 text-azul/50 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <span className="text-sm font-medium text-preto">{p.name || `Participant ${i + 1}`}</span>
+                {p.english_gloss && <span className="text-sm text-verde/70 ml-2">{p.english_gloss}</span>}
                 {p.role_in_book && (
                   <span className="text-xs text-verde/40 ml-2">{p.role_in_book}</span>
                 )}

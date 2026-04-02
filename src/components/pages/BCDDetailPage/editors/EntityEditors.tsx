@@ -56,6 +56,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
               <MapPin className="h-4 w-4 text-azul/50 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <span className="text-sm font-medium text-preto">{pl.name || `Place ${i + 1}`}</span>
+                {pl.english_gloss && <span className="text-sm text-verde/70 ml-2">{pl.english_gloss}</span>}
                 {pl.type && <span className="text-xs text-verde/40 ml-2">{pl.type}</span>}
               </div>
               <VerseRefBadge verse={pl.first_appears} />
@@ -127,6 +128,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
 
 type Obj = {
   name?: string;
+  english_gloss?: string;
   first_appears?: VerseRef;
   what_it_is?: string;
   meaning_across_scenes?: string;
@@ -166,7 +168,10 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
               className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-surface-alt transition-colors"
             >
               <Package className="h-4 w-4 text-verde/40 flex-shrink-0" />
-              <span className="flex-1 text-sm font-medium text-preto">{obj.name || `Object ${i + 1}`}</span>
+              <div className="flex-1 min-w-0">
+                <span className="text-sm font-medium text-preto">{obj.name || `Object ${i + 1}`}</span>
+                {obj.english_gloss && <span className="text-sm text-verde/70 ml-2">{obj.english_gloss}</span>}
+              </div>
               <VerseRefBadge verse={obj.first_appears} />
               {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-verde/30" /> : <ChevronRight className="h-3.5 w-3.5 text-verde/30" />}
             </button>
@@ -180,13 +185,20 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
                       placeholder={t("editors.placeholders.hebrewName")}
                     />
                   </FieldGroup>
-                  <FieldGroup label={t("fields.firstAppears")}>
-                    <VerseRefInput
-                      verse={obj.first_appears}
-                      onChange={(val) => updateItem(i, "first_appears", val)}
+                  <FieldGroup label={t("fields.englishGloss")}>
+                    <EditableInput
+                      value={obj.english_gloss ?? ""}
+                      onChange={(val) => updateItem(i, "english_gloss", val)}
+                      placeholder={t("editors.placeholders.englishMeaning")}
                     />
                   </FieldGroup>
                 </div>
+                <FieldGroup label={t("fields.firstAppears")}>
+                  <VerseRefInput
+                    verse={obj.first_appears}
+                    onChange={(val) => updateItem(i, "first_appears", val)}
+                  />
+                </FieldGroup>
                 <FieldGroup label={t("fields.whatItIsLabel")}>
                   <EditableTextarea
                     value={obj.what_it_is ?? ""}
@@ -228,6 +240,7 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
 
 type Institution = {
   name?: string;
+  english_gloss?: string;
   first_invoked?: VerseRef;
   what_it_is?: string;
   role_in_book?: string;
@@ -267,7 +280,10 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
               className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-surface-alt transition-colors"
             >
               <Building2 className="h-4 w-4 text-verde-claro/50 flex-shrink-0" />
-              <span className="flex-1 text-sm font-medium text-preto">{inst.name || `Institution ${i + 1}`}</span>
+              <div className="flex-1 min-w-0">
+                <span className="text-sm font-medium text-preto">{inst.name || `Institution ${i + 1}`}</span>
+                {inst.english_gloss && <span className="text-sm text-verde/70 ml-2">{inst.english_gloss}</span>}
+              </div>
               <VerseRefBadge verse={inst.first_invoked} />
               {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-verde/30" /> : <ChevronRight className="h-3.5 w-3.5 text-verde/30" />}
             </button>
@@ -281,13 +297,20 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
                       placeholder={t("editors.placeholders.hebrewName")}
                     />
                   </FieldGroup>
-                  <FieldGroup label={t("fields.firstInvoked")}>
-                    <VerseRefInput
-                      verse={inst.first_invoked}
-                      onChange={(val) => updateItem(i, "first_invoked", val)}
+                  <FieldGroup label={t("fields.englishGloss")}>
+                    <EditableInput
+                      value={inst.english_gloss ?? ""}
+                      onChange={(val) => updateItem(i, "english_gloss", val)}
+                      placeholder={t("editors.placeholders.englishMeaning")}
                     />
                   </FieldGroup>
                 </div>
+                <FieldGroup label={t("fields.firstInvoked")}>
+                  <VerseRefInput
+                    verse={inst.first_invoked}
+                    onChange={(val) => updateItem(i, "first_invoked", val)}
+                  />
+                </FieldGroup>
                 <FieldGroup label={t("fields.whatItIsLabel")}>
                   <EditableTextarea
                     value={inst.what_it_is ?? ""}
