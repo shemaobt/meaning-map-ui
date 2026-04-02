@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, Plus, Trash2, User } from "lucide-react";
 import {
   FieldGroup,
-  ReadOnlyValue,
-  VerseRefBadge,
+  VerseRefInput,
   EditableInput,
   EditableTextarea,
   TagsInput,
@@ -49,10 +48,10 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
     setData(updated);
   };
 
-  const updateArc = (itemIdx: number, arcIdx: number, state: string) => {
+  const updateArc = (itemIdx: number, arcIdx: number, field: string, value: unknown) => {
     const item = items[itemIdx];
     const arcs = [...(item.arc || [])];
-    arcs[arcIdx] = { ...arcs[arcIdx], state };
+    arcs[arcIdx] = { ...arcs[arcIdx], [field]: value };
     updateItem(itemIdx, "arc", arcs);
   };
 
@@ -109,8 +108,12 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
             {isOpen && (
               <div className="border-t border-areia/15 px-4 py-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <FieldGroup label={t("fields.name")} readOnly>
-                    <ReadOnlyValue value={p.name ?? ""} />
+                  <FieldGroup label={t("fields.name")}>
+                    <EditableInput
+                      value={p.name ?? ""}
+                      onChange={(val) => updateItem(i, "name", val)}
+                      placeholder={t("editors.placeholders.hebrewName")}
+                    />
                   </FieldGroup>
                   <FieldGroup label={t("fields.englishGloss")}>
                     <EditableInput
@@ -136,15 +139,17 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                       </SelectContent>
                     </Select>
                   </FieldGroup>
-                  <FieldGroup label={t("fields.entryVerse")} readOnly>
-                    <div className="flex items-center h-9">
-                      <VerseRefBadge verse={p.entry_verse} />
-                    </div>
+                  <FieldGroup label={t("fields.entryVerse")}>
+                    <VerseRefInput
+                      verse={p.entry_verse}
+                      onChange={(val) => updateItem(i, "entry_verse", val)}
+                    />
                   </FieldGroup>
-                  <FieldGroup label={t("fields.exitVerse")} readOnly>
-                    <div className="flex items-center h-9">
-                      <VerseRefBadge verse={p.exit_verse} />
-                    </div>
+                  <FieldGroup label={t("fields.exitVerse")}>
+                    <VerseRefInput
+                      verse={p.exit_verse}
+                      onChange={(val) => updateItem(i, "exit_verse", val)}
+                    />
                   </FieldGroup>
                 </div>
 
@@ -178,10 +183,13 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                     <div className="space-y-1.5">
                       {p.arc.map((a, ai) => (
                         <div key={ai} className="flex items-center gap-2">
-                          <VerseRefBadge verse={a.at} />
+                          <VerseRefInput
+                            verse={a.at}
+                            onChange={(val) => updateArc(i, ai, "at", val)}
+                          />
                           <EditableInput
                             value={a.state ?? ""}
-                            onChange={(val) => updateArc(i, ai, val)}
+                            onChange={(val) => updateArc(i, ai, "state", val)}
                             placeholder={t("editors.placeholders.stateAtPoint")}
                             className="flex-1"
                           />

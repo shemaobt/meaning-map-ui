@@ -104,6 +104,36 @@ export function TagsInput({ tags, onChange, placeholder = "Type and press Enter"
   );
 }
 
+interface VerseRefInputProps {
+  verse: { chapter?: number; verse?: number } | null | undefined;
+  onChange: (verse: { chapter: number; verse: number }) => void;
+}
+
+export function VerseRefInput({ verse, onChange }: VerseRefInputProps) {
+  const ch = verse?.chapter ?? 1;
+  const vs = verse?.verse ?? 1;
+
+  return (
+    <div className="flex items-center gap-1">
+      <Input
+        type="number"
+        min={1}
+        value={ch}
+        onChange={(e) => onChange({ chapter: Number(e.target.value) || 1, verse: vs })}
+        className="h-9 w-16 text-center font-mono text-xs"
+      />
+      <span className="text-verde/40 font-mono">:</span>
+      <Input
+        type="number"
+        min={1}
+        value={vs}
+        onChange={(e) => onChange({ chapter: ch, verse: Number(e.target.value) || 1 })}
+        className="h-9 w-16 text-center font-mono text-xs"
+      />
+    </div>
+  );
+}
+
 interface EditableInputProps {
   value: string;
   onChange: (val: string) => void;
