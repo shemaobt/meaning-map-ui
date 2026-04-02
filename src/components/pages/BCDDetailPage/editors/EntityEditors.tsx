@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, MapPin, Package, Building2, Plus, Trash2 } from "lucide-react";
 import {
   FieldGroup,
-  ReadOnlyValue,
   VerseRefBadge,
+  VerseRefInput,
   EditableInput,
   EditableTextarea,
 } from "./FieldPrimitives";
@@ -64,8 +64,12 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
             {isOpen && (
               <div className="border-t border-areia/15 px-4 py-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <FieldGroup label={t("fields.name")} readOnly>
-                    <ReadOnlyValue value={pl.name ?? ""} />
+                  <FieldGroup label={t("fields.name")}>
+                    <EditableInput
+                      value={pl.name ?? ""}
+                      onChange={(val) => updateItem(i, "name", val)}
+                      placeholder={t("editors.placeholders.hebrewName")}
+                    />
                   </FieldGroup>
                   <FieldGroup label={t("fields.englishGloss")}>
                     <EditableInput
@@ -76,10 +80,11 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
                   </FieldGroup>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <FieldGroup label={t("fields.firstAppears")} readOnly>
-                    <div className="flex items-center h-9">
-                      <VerseRefBadge verse={pl.first_appears} />
-                    </div>
+                  <FieldGroup label={t("fields.firstAppears")}>
+                    <VerseRefInput
+                      verse={pl.first_appears}
+                      onChange={(val) => updateItem(i, "first_appears", val)}
+                    />
                   </FieldGroup>
                   <FieldGroup label={t("fields.type")}>
                     <EditableInput
@@ -97,15 +102,12 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
                     rows={2}
                   />
                 </FieldGroup>
-                {Array.isArray(pl.appears_in) && pl.appears_in.length > 0 && (
-                  <FieldGroup label={t("fields.alsoAppearsIn")} readOnly>
-                    <div className="flex flex-wrap gap-1.5">
-                      {pl.appears_in.map((v, vi) => (
-                        <VerseRefBadge key={vi} verse={v} />
-                      ))}
-                    </div>
-                  </FieldGroup>
-                )}
+                <VerseRefListField
+                  label={t("fields.alsoAppearsIn")}
+                  verses={Array.isArray(pl.appears_in) ? pl.appears_in : []}
+                  onChange={(verses) => updateItem(i, "appears_in", verses)}
+                  addLabel={t("editors.addVerse")}
+                />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
                   <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removePlace")}
@@ -171,13 +173,18 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
             {isOpen && (
               <div className="border-t border-areia/15 px-4 py-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <FieldGroup label={t("fields.name")} readOnly>
-                    <ReadOnlyValue value={obj.name ?? ""} />
+                  <FieldGroup label={t("fields.name")}>
+                    <EditableInput
+                      value={obj.name ?? ""}
+                      onChange={(val) => updateItem(i, "name", val)}
+                      placeholder={t("editors.placeholders.hebrewName")}
+                    />
                   </FieldGroup>
-                  <FieldGroup label={t("fields.firstAppears")} readOnly>
-                    <div className="flex items-center h-9">
-                      <VerseRefBadge verse={obj.first_appears} />
-                    </div>
+                  <FieldGroup label={t("fields.firstAppears")}>
+                    <VerseRefInput
+                      verse={obj.first_appears}
+                      onChange={(val) => updateItem(i, "first_appears", val)}
+                    />
                   </FieldGroup>
                 </div>
                 <FieldGroup label={t("fields.whatItIsLabel")}>
@@ -196,15 +203,12 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
                     rows={2}
                   />
                 </FieldGroup>
-                {Array.isArray(obj.appears_in) && obj.appears_in.length > 0 && (
-                  <FieldGroup label={t("fields.alsoAppearsIn")} readOnly>
-                    <div className="flex flex-wrap gap-1.5">
-                      {obj.appears_in.map((v, vi) => (
-                        <VerseRefBadge key={vi} verse={v} />
-                      ))}
-                    </div>
-                  </FieldGroup>
-                )}
+                <VerseRefListField
+                  label={t("fields.alsoAppearsIn")}
+                  verses={Array.isArray(obj.appears_in) ? obj.appears_in : []}
+                  onChange={(verses) => updateItem(i, "appears_in", verses)}
+                  addLabel={t("editors.addVerse")}
+                />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
                   <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removeObject")}
@@ -270,13 +274,18 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
             {isOpen && (
               <div className="border-t border-areia/15 px-4 py-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <FieldGroup label={t("fields.name")} readOnly>
-                    <ReadOnlyValue value={inst.name ?? ""} />
+                  <FieldGroup label={t("fields.name")}>
+                    <EditableInput
+                      value={inst.name ?? ""}
+                      onChange={(val) => updateItem(i, "name", val)}
+                      placeholder={t("editors.placeholders.hebrewName")}
+                    />
                   </FieldGroup>
-                  <FieldGroup label={t("fields.firstInvoked")} readOnly>
-                    <div className="flex items-center h-9">
-                      <VerseRefBadge verse={inst.first_invoked} />
-                    </div>
+                  <FieldGroup label={t("fields.firstInvoked")}>
+                    <VerseRefInput
+                      verse={inst.first_invoked}
+                      onChange={(val) => updateItem(i, "first_invoked", val)}
+                    />
                   </FieldGroup>
                 </div>
                 <FieldGroup label={t("fields.whatItIsLabel")}>
@@ -294,15 +303,12 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
                     placeholder={t("editors.placeholders.institutionRole")}
                   />
                 </FieldGroup>
-                {Array.isArray(inst.appears_in) && inst.appears_in.length > 0 && (
-                  <FieldGroup label={t("fields.alsoAppearsIn")} readOnly>
-                    <div className="flex flex-wrap gap-1.5">
-                      {inst.appears_in.map((v, vi) => (
-                        <VerseRefBadge key={vi} verse={v} />
-                      ))}
-                    </div>
-                  </FieldGroup>
-                )}
+                <VerseRefListField
+                  label={t("fields.alsoAppearsIn")}
+                  verses={Array.isArray(inst.appears_in) ? inst.appears_in : []}
+                  onChange={(verses) => updateItem(i, "appears_in", verses)}
+                  addLabel={t("editors.addVerse")}
+                />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
                   <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removeInstitution")}
@@ -317,5 +323,52 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
         <Plus className="h-4 w-4" /> {t("editors.addInstitution")}
       </Button>
     </div>
+  );
+}
+
+function VerseRefListField({
+  label,
+  verses,
+  onChange,
+  addLabel,
+}: {
+  label: string;
+  verses: { chapter?: number; verse?: number }[];
+  onChange: (verses: { chapter: number; verse: number }[]) => void;
+  addLabel: string;
+}) {
+  return (
+    <FieldGroup label={label}>
+      <div className="space-y-1.5">
+        {verses.map((v, vi) => (
+          <div key={vi} className="flex items-center gap-2">
+            <VerseRefInput
+              verse={v}
+              onChange={(val) => {
+                const updated = [...verses] as { chapter: number; verse: number }[];
+                updated[vi] = val;
+                onChange(updated);
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => onChange(verses.filter((_, j) => j !== vi) as { chapter: number; verse: number }[])}
+              className="text-verde/30 hover:text-red-500 transition-colors"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        ))}
+      </div>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        onClick={() => onChange([...verses, { chapter: 1, verse: 1 }] as { chapter: number; verse: number }[])}
+        className="gap-1 h-7 text-xs mt-2"
+      >
+        <Plus className="h-3 w-3" /> {addLabel}
+      </Button>
+    </FieldGroup>
   );
 }

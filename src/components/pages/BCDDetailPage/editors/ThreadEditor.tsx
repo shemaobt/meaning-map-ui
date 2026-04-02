@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, MessageCircle, Plus, Trash2 } from "lucide-react";
 import {
   FieldGroup,
-  VerseRefBadge,
+  VerseRefInput,
   EditableInput,
   EditableTextarea,
 } from "./FieldPrimitives";
@@ -35,10 +35,10 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
     setData(updated);
   };
 
-  const updateEpisode = (itemIdx: number, epIdx: number, status: string) => {
+  const updateEpisode = (itemIdx: number, epIdx: number, field: string, value: unknown) => {
     const item = items[itemIdx];
     const episodes = [...(item.status_by_episode || [])];
-    episodes[epIdx] = { ...episodes[epIdx], status };
+    episodes[epIdx] = { ...episodes[epIdx], [field]: value };
     updateItem(itemIdx, "status_by_episode", episodes);
   };
 
@@ -114,15 +114,17 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                 </FieldGroup>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <FieldGroup label={t("fields.openedAt")} readOnly>
-                    <div className="flex items-center h-9">
-                      <VerseRefBadge verse={th.opened_at} />
-                    </div>
+                  <FieldGroup label={t("fields.openedAt")}>
+                    <VerseRefInput
+                      verse={th.opened_at}
+                      onChange={(val) => updateItem(i, "opened_at", val)}
+                    />
                   </FieldGroup>
-                  <FieldGroup label={t("fields.resolvedAt")} readOnly>
-                    <div className="flex items-center h-9">
-                      <VerseRefBadge verse={th.resolved_at} />
-                    </div>
+                  <FieldGroup label={t("fields.resolvedAt")}>
+                    <VerseRefInput
+                      verse={th.resolved_at}
+                      onChange={(val) => updateItem(i, "resolved_at", val)}
+                    />
                   </FieldGroup>
                 </div>
 
@@ -130,10 +132,13 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                   <div className="space-y-1.5">
                     {(th.status_by_episode || []).map((ep, ei) => (
                       <div key={ei} className="flex items-center gap-2">
-                        <VerseRefBadge verse={ep.at} />
+                        <VerseRefInput
+                          verse={ep.at}
+                          onChange={(val) => updateEpisode(i, ei, "at", val)}
+                        />
                         <EditableInput
                           value={ep.status ?? ""}
-                          onChange={(val) => updateEpisode(i, ei, val)}
+                          onChange={(val) => updateEpisode(i, ei, "status", val)}
                           placeholder={t("editors.placeholders.threadStatus")}
                           className="flex-1"
                         />
