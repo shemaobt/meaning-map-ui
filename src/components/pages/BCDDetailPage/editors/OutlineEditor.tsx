@@ -23,6 +23,7 @@ export function OutlineEditor({ data, setData }: OutlineEditorProps) {
   const outline = (typeof data === "object" && data !== null ? data : {}) as Record<string, unknown>;
   const bookArc = typeof outline.book_arc === "string" ? outline.book_arc : "";
   const chapters = Array.isArray(outline.chapters) ? (outline.chapters as Chapter[]) : [];
+  const otherKeys = Object.keys(outline).filter((k) => k !== "book_arc" && k !== "chapters");
 
   const update = (field: string, value: unknown) => {
     setData({ ...outline, [field]: value });
@@ -74,9 +75,36 @@ export function OutlineEditor({ data, setData }: OutlineEditorProps) {
           ))}
         </div>
       </div>
+
+      {otherKeys.map((key) => {
+        const val = outline[key];
+        return (
+          <FieldGroup key={key} label={key.replace(/_/g, " ")}>
+            {typeof val === "string" ? (
+              <EditableTextarea
+                value={val}
+                onChange={(v) => update(key, v)}
+                rows={2}
+              />
+            ) : Array.isArray(val) ? (
+              <TagsInput
+                tags={val.map(String)}
+                onChange={(tags) => update(key, tags)}
+              />
+            ) : (
+              <EditableInput
+                value={String(val ?? "")}
+                onChange={(v) => update(key, v)}
+              />
+            )}
+          </FieldGroup>
+        );
+      })}
     </div>
   );
 }
+
+const KNOWN_CHAPTER_KEYS = new Set(["chapter", "title", "summary", "key_events", "key_themes"]);
 
 function ChapterCard({
   chapter,
@@ -92,6 +120,7 @@ function ChapterCard({
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const num = chapter.chapter ?? index + 1;
+  const otherKeys = Object.keys(chapter).filter((k) => !KNOWN_CHAPTER_KEYS.has(k));
 
   return (
     <div className="rounded-lg border border-areia/20 overflow-hidden bg-surface">
@@ -148,6 +177,31 @@ function ChapterCard({
               placeholder={t("editors.placeholders.addTheme")}
             />
           </FieldGroup>
+
+          {otherKeys.map((key) => {
+            const val = chapter[key];
+            return (
+              <FieldGroup key={key} label={key.replace(/_/g, " ")}>
+                {typeof val === "string" ? (
+                  <EditableTextarea
+                    value={val}
+                    onChange={(v) => onUpdate(key, v)}
+                    rows={2}
+                  />
+                ) : Array.isArray(val) ? (
+                  <TagsInput
+                    tags={val.map(String)}
+                    onChange={(tags) => onUpdate(key, tags)}
+                  />
+                ) : (
+                  <EditableInput
+                    value={String(val ?? "")}
+                    onChange={(v) => onUpdate(key, v)}
+                  />
+                )}
+              </FieldGroup>
+            );
+          })}
 
           <div className="flex justify-end pt-2 border-t border-areia/10">
             <Button type="button" size="sm" variant="outline" onClick={onRemove} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
