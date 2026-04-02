@@ -7,6 +7,7 @@ import {
   EditableInput,
   EditableTextarea,
   TagsInput,
+  OtherKeysSection,
 } from "./FieldPrimitives";
 import {
   Select,
@@ -32,6 +33,12 @@ type Participant = {
   status_at_end?: string;
   [k: string]: unknown;
 };
+
+const KNOWN_PARTICIPANT_KEYS = new Set([
+  "name", "english_gloss", "type", "entry_verse", "exit_verse",
+  "role_in_book", "relationships", "what_audience_knows_at_entry",
+  "arc", "status_at_end",
+]);
 
 interface ParticipantEditorProps {
   data: unknown;
@@ -213,6 +220,12 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                     placeholder={t("editors.placeholders.statusExample")}
                   />
                 </FieldGroup>
+
+                <OtherKeysSection
+                  data={p as Record<string, unknown>}
+                  knownKeys={KNOWN_PARTICIPANT_KEYS}
+                  onUpdate={(key, val) => updateItem(i, key, val)}
+                />
 
                 <div className="flex justify-end pt-2 border-t border-areia/10">
                   <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">

@@ -6,6 +6,7 @@ import {
   VerseRefInput,
   EditableInput,
   EditableTextarea,
+  OtherKeysSection,
 } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
 
@@ -19,6 +20,10 @@ type Thread = {
   status_by_episode?: EpisodeStatus[];
   [k: string]: unknown;
 };
+
+const KNOWN_THREAD_KEYS = new Set([
+  "label", "opened_at", "resolved_at", "question", "status_by_episode",
+]);
 
 interface ThreadEditorProps {
   data: unknown;
@@ -152,6 +157,12 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                     <Plus className="h-3 w-3" /> {t("editors.addEpisode")}
                   </Button>
                 </FieldGroup>
+
+                <OtherKeysSection
+                  data={th as Record<string, unknown>}
+                  knownKeys={KNOWN_THREAD_KEYS}
+                  onUpdate={(key, val) => updateItem(i, key, val)}
+                />
 
                 <div className="flex justify-end pt-2 border-t border-areia/10">
                   <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">

@@ -7,6 +7,7 @@ import {
   VerseRefInput,
   EditableInput,
   EditableTextarea,
+  OtherKeysSection,
 } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
 
@@ -21,6 +22,10 @@ type Place = {
   appears_in?: VerseRef[];
   [k: string]: unknown;
 };
+
+const KNOWN_PLACE_KEYS = new Set([
+  "name", "english_gloss", "first_appears", "type", "meaning_and_function", "appears_in",
+]);
 
 export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
   const { t } = useTranslation();
@@ -109,6 +114,11 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
                   onChange={(verses) => updateItem(i, "appears_in", verses)}
                   addLabel={t("editors.addVerse")}
                 />
+                <OtherKeysSection
+                  data={pl as Record<string, unknown>}
+                  knownKeys={KNOWN_PLACE_KEYS}
+                  onUpdate={(key, val) => updateItem(i, key, val)}
+                />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
                   <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removePlace")}
@@ -135,6 +145,10 @@ type Obj = {
   appears_in?: VerseRef[];
   [k: string]: unknown;
 };
+
+const KNOWN_OBJECT_KEYS = new Set([
+  "name", "english_gloss", "first_appears", "what_it_is", "meaning_across_scenes", "appears_in",
+]);
 
 export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
   const { t } = useTranslation();
@@ -221,6 +235,11 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
                   onChange={(verses) => updateItem(i, "appears_in", verses)}
                   addLabel={t("editors.addVerse")}
                 />
+                <OtherKeysSection
+                  data={obj as Record<string, unknown>}
+                  knownKeys={KNOWN_OBJECT_KEYS}
+                  onUpdate={(key, val) => updateItem(i, key, val)}
+                />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
                   <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removeObject")}
@@ -247,6 +266,10 @@ type Institution = {
   appears_in?: VerseRef[];
   [k: string]: unknown;
 };
+
+const KNOWN_INSTITUTION_KEYS = new Set([
+  "name", "english_gloss", "first_invoked", "what_it_is", "role_in_book", "appears_in",
+]);
 
 export function InstitutionEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
   const { t } = useTranslation();
@@ -331,6 +354,11 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
                   verses={Array.isArray(inst.appears_in) ? inst.appears_in : []}
                   onChange={(verses) => updateItem(i, "appears_in", verses)}
                   addLabel={t("editors.addVerse")}
+                />
+                <OtherKeysSection
+                  data={inst as Record<string, unknown>}
+                  knownKeys={KNOWN_INSTITUTION_KEYS}
+                  onUpdate={(key, val) => updateItem(i, key, val)}
                 />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
                   <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
