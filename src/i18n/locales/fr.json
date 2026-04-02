@@ -436,6 +436,7 @@
     "removeThread": "Supprimer le fil",
     "addArcEntry": "Ajouter une entrée d'arc",
     "addEpisode": "Ajouter un épisode",
+    "addVerse": "Ajouter un verset",
     "addEntry": "Ajouter",
     "unsaved": "non enregistré",
     "saveFailed": "Échec de l'enregistrement.",
