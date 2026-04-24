@@ -539,6 +539,7 @@
     "entries": "entries",
     "notFound": "Document not found",
     "bhsaWarning": "Fields marked BHSA are sourced from linguistic data and should not be modified.",
+    "loadingTranslation": "Loading translation…",
     "regenerate": "Regenerate",
     "generate": "Generate",
     "regenerateTitle": "Regenerate Book Context",
