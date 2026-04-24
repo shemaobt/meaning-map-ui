@@ -108,6 +108,10 @@ export function BCDDetailPage() {
         toast.error(t("bcdDetail.saveFailedPartial", { count: result.failed.length }));
         return;
       }
+      if (useBCDStore.getState().isDirty()) {
+        toast.warning(t("bcdDetail.newEditsDuringSave"));
+        return;
+      }
     }
     try {
       await bookContextAPI.unlock(currentBCD.id);
@@ -150,6 +154,10 @@ export function BCDDetailPage() {
       const result = await saveAllDirty(currentBCD.id, locale);
       if (result.failed.length > 0) {
         toast.error(t("bcdDetail.saveFailedPartial", { count: result.failed.length }));
+        return;
+      }
+      if (useBCDStore.getState().isDirty()) {
+        toast.warning(t("bcdDetail.newEditsDuringSave"));
         return;
       }
       proceedAfterDialog();

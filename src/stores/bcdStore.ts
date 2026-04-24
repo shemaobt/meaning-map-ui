@@ -147,9 +147,9 @@ export const useBCDStore = create<BCDStore>((set, get) => ({
   isDirty: () => Object.keys(get().dirtySections).length > 0,
 
   saveAllDirty: async (bcdId, locale) => {
-    const entries = Object.entries(get().dirtySections);
+    const snapshot = Object.entries(get().dirtySections);
     const failed: string[] = [];
-    for (const [key, data] of entries) {
+    for (const [key, data] of snapshot) {
       try {
         await bookContextAPI.updateSection(bcdId, key, data, locale);
       } catch {
@@ -158,8 +158,14 @@ export const useBCDStore = create<BCDStore>((set, get) => ({
     }
     set((s) => {
       const next = { ...s.dirtySections };
-      for (const key of Object.keys(next)) {
-        if (!failed.includes(key)) delete next[key];
+      for (const [key, savedValue] of snapshot) {
+        if (failed.includes(key)) continue;
+        // Preserve edits the user made during the network call — they'd
+        // land in dirtySections with a new reference, so only clear when
+        // the value still matches what we actually persisted.
+        if (next[key] === savedValue) {
+          delete next[key];
+        }
       }
       return { dirtySections: next };
     });
@@ -168,6 +174,6 @@ export const useBCDStore = create<BCDStore>((set, get) => ({
     } catch {
       // ignore — caller already has success/failure info
     }
-    return { saved: entries.length - failed.length, failed };
+    return { saved: snapshot.length - failed.length, failed };
   },
 }));
