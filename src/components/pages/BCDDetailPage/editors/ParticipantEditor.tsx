@@ -38,6 +38,7 @@ const KNOWN_PARTICIPANT_KEYS = new Set([
   "name", "english_gloss", "type", "entry_verse", "exit_verse",
   "role_in_book", "relationships", "what_audience_knows_at_entry",
   "arc", "status_at_end",
+  "entity_type", "appears_in", "appearance_count",
 ]);
 
 interface ParticipantEditorProps {
