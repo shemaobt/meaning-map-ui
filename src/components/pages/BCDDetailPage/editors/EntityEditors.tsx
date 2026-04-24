@@ -25,6 +25,7 @@ type Place = {
 
 const KNOWN_PLACE_KEYS = new Set([
   "name", "english_gloss", "first_appears", "type", "meaning_and_function", "appears_in",
+  "entity_type", "appearance_count",
 ]);
 
 export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
@@ -148,6 +149,7 @@ type Obj = {
 
 const KNOWN_OBJECT_KEYS = new Set([
   "name", "english_gloss", "first_appears", "what_it_is", "meaning_across_scenes", "appears_in",
+  "entity_type", "appearance_count",
 ]);
 
 export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
@@ -269,6 +271,7 @@ type Institution = {
 
 const KNOWN_INSTITUTION_KEYS = new Set([
   "name", "english_gloss", "first_invoked", "what_it_is", "role_in_book", "appears_in",
+  "entity_type", "appearance_count",
 ]);
 
 export function InstitutionEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
