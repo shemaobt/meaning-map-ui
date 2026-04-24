@@ -9,11 +9,18 @@ interface SectionDetailProps {
 }
 
 export function SectionDetail({ bcd, sectionKey }: SectionDetailProps) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const rawData = (bcd as unknown as Record<string, unknown>)[sectionKey];
+  const localeData =
+    locale !== "en"
+      ? (bcd.translations?.[locale]?.[sectionKey] ?? null)
+      : null;
+  const displayData = localeData ?? rawData;
 
   return (
     <div className="rounded-xl border border-areia/20 bg-surface p-4 sm:p-5">
-      <StructuredView data={rawData} sectionKey={sectionKey} />
+      <StructuredView data={displayData} sectionKey={sectionKey} />
     </div>
   );
 }

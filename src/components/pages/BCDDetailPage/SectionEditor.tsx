@@ -39,9 +39,14 @@ export function SectionEditor({
   if (!currentBCD) return null;
 
   const rawData = (currentBCD as unknown as Record<string, unknown>)[sectionKey];
-  const displayData = dirty ? localData : rawData;
-  const hasContent = rawData !== null && rawData !== undefined;
-  const itemCount = Array.isArray(rawData) ? rawData.length : null;
+  const localeData =
+    locale !== "en"
+      ? (currentBCD.translations?.[locale]?.[sectionKey] ?? null)
+      : null;
+  const baseData = localeData ?? rawData;
+  const displayData = dirty ? localData : baseData;
+  const hasContent = baseData !== null && baseData !== undefined;
+  const itemCount = Array.isArray(baseData) ? baseData.length : null;
 
   const handleSetData = (val: unknown) => {
     setLocalData(val);
