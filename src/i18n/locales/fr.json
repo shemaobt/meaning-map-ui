@@ -499,7 +499,9 @@
       "addItem": "Ajoutez un élément et appuyez sur Entrée",
       "newKeyName": "Nom de la nouvelle clé"
     },
-    "isResolvedAtEntryDescription": "Cochez si ce fil est déjà résolu au début de cette péricope."
+    "isResolvedAtEntryDescription": "Cochez si ce fil est déjà résolu au début de cette péricope.",
+    "readOnly": "Lecture seule",
+    "complexDataHint": "Données structurées — non modifiables dans ce formulaire"
   },
   "notifications": {
     "title": "Notifications",

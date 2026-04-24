@@ -499,7 +499,9 @@
       "addItem": "Add item and press Enter",
       "newKeyName": "New key name"
     },
-    "isResolvedAtEntryDescription": "Tick if this thread is already resolved at the start of this pericope."
+    "isResolvedAtEntryDescription": "Tick if this thread is already resolved at the start of this pericope.",
+    "readOnly": "Read-only",
+    "complexDataHint": "Structured data — not editable from this form"
   },
   "notifications": {
     "title": "Notifications",

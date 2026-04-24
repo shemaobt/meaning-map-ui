@@ -499,7 +499,9 @@
       "addItem": "Adicione item e pressione Enter",
       "newKeyName": "Nome da nova chave"
     },
-    "isResolvedAtEntryDescription": "Marque se este fio já está resolvido no início desta perícope."
+    "isResolvedAtEntryDescription": "Marque se este fio já está resolvido no início desta perícope.",
+    "readOnly": "Somente leitura",
+    "complexDataHint": "Dados estruturados — não editáveis neste formulário"
   },
   "notifications": {
     "title": "Notificações",
