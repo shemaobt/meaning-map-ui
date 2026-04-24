@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, ChevronRight, Save } from "lucide-react";
+import { ChevronDown, ChevronRight, Save, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { bookContextAPI } from "../../../services/api";
@@ -32,9 +32,11 @@ export function SectionEditor({
   const locale = i18n.language;
   const currentBCD = useBCDStore((s) => s.currentBCD);
   const fetchBCD = useBCDStore((s) => s.fetchBCD);
+  const dirtyValue = useBCDStore((s) => s.dirtySections[sectionKey]);
+  const dirtyKeyPresent = useBCDStore((s) => sectionKey in s.dirtySections);
+  const markDirty = useBCDStore((s) => s.markDirty);
+  const clearDirty = useBCDStore((s) => s.clearDirty);
   const [saving, setSaving] = useState(false);
-  const [localData, setLocalData] = useState<unknown>(null);
-  const [dirty, setDirty] = useState(false);
 
   if (!currentBCD) return null;
 
@@ -44,21 +46,21 @@ export function SectionEditor({
       ? (currentBCD.translations?.[locale]?.[sectionKey] ?? null)
       : null;
   const baseData = localeData ?? rawData;
-  const displayData = dirty ? localData : baseData;
+  const dirty = dirtyKeyPresent;
+  const displayData = dirty ? dirtyValue : baseData;
   const hasContent = baseData !== null && baseData !== undefined;
   const itemCount = Array.isArray(baseData) ? baseData.length : null;
 
   const handleSetData = (val: unknown) => {
-    setLocalData(val);
-    setDirty(true);
+    markDirty(sectionKey, val);
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await bookContextAPI.updateSection(bcdId, sectionKey, localData, locale);
+      await bookContextAPI.updateSection(bcdId, sectionKey, dirtyValue, locale);
       await fetchBCD(bcdId);
-      setDirty(false);
+      clearDirty(sectionKey);
       if (locale !== "en") {
         toast.success(t("editors.sectionSavedTranslated", { label }));
       } else {
@@ -72,22 +74,25 @@ export function SectionEditor({
     }
   };
 
+  const handleDiscard = () => {
+    clearDirty(sectionKey);
+  };
+
   return (
     <div className="rounded-lg border border-areia/40 bg-surface shadow-sm">
       <div className="flex items-center gap-3 px-4 py-3">
         <Icon className="h-4 w-4 text-verde/40 flex-shrink-0" />
         <span className="text-sm font-medium text-preto flex-1">{label}</span>
+        {dirty && (
+          <span className="text-[10px] font-medium text-telha bg-telha/10 rounded-full px-2 py-0.5">
+            {t("editors.unsaved")}
+          </span>
+        )}
         {!hasContent && !dirty && (
           <span className="text-[10px] text-verde/30 italic">{t("bcdDetail.empty")}</span>
         )}
         {hasContent && itemCount !== null && (
           <span className="text-[10px] text-verde/40 bg-areia/15 rounded-full px-2 py-0.5 tabular-nums">{itemCount}</span>
-        )}
-        {!readOnly && dirty && (
-          <Button size="sm" onClick={handleSave} disabled={saving} className="gap-1.5 h-8">
-            <Save className="h-3.5 w-3.5" />
-            {saving ? t("common.saving") : t("common.save")}
-          </Button>
         )}
       </div>
 
@@ -96,6 +101,30 @@ export function SectionEditor({
           {children({ data: displayData, setData: handleSetData })}
         </div>
       </div>
+
+      {!readOnly && dirty && (
+        <div className="sticky bottom-0 z-10 flex items-center justify-end gap-2 bg-surface border-t border-areia/30 px-4 py-2 rounded-b-lg">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleDiscard}
+            disabled={saving}
+            className="gap-1.5 h-8"
+          >
+            <Undo2 className="h-3.5 w-3.5" />
+            {t("editors.discard")}
+          </Button>
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={saving}
+            className="gap-1.5 h-8"
+          >
+            <Save className="h-3.5 w-3.5" />
+            {saving ? t("common.saving") : t("common.save")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

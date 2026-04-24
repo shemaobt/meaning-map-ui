@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router-dom";
+import { Link, useBlocker, useParams } from "react-router-dom";
 import {
   BookOpen,
   Building2,
@@ -25,6 +25,7 @@ import type { BibleBook } from "../../../types/bible";
 import { LoadingSpinner } from "../../common/LoadingSpinner";
 import { EmptyState } from "../../common/EmptyState";
 import { LockBadge } from "../../common/LockBadge";
+import { UnsavedChangesDialog } from "../../common/UnsavedChangesDialog";
 import { BCDStatusBadge } from "../BookContextPage/BCDStatusBadge";
 import { BCDActionBar } from "./BCDActionBar";
 import { GenerationPanel } from "./GenerationPanel";
@@ -62,13 +63,25 @@ const SECTIONS: SectionDef[] = [
 ];
 
 export function BCDDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
   const { bcdId } = useParams<{ bcdId: string }>();
   const { user, isAdmin, isAnalyst, canApproveBCD } = useAuth();
   const { currentBCD, isLoading, fetchBCD, clear } = useBCDStore();
+  const saveAllDirty = useBCDStore((s) => s.saveAllDirty);
+  const clearAllDirty = useBCDStore((s) => s.clearAllDirty);
+  const dirtyCount = useBCDStore((s) => Object.keys(s.dirtySections).length);
+  const hasDirty = dirtyCount > 0;
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [book, setBook] = useState<BibleBook | null>(null);
   const [approvalRefreshKey, setApprovalRefreshKey] = useState(0);
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+  const [dialogSaving, setDialogSaving] = useState(false);
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      hasDirty && currentLocation.pathname !== nextLocation.pathname,
+  );
 
   const isLockedByMe = currentBCD?.locked_by === user?.id;
   const canEditDraft = (isAdmin || isAnalyst) && isLockedByMe && currentBCD?.status === "draft";
@@ -80,24 +93,92 @@ export function BCDDetailPage() {
     try {
       await bookContextAPI.lock(currentBCD.id);
       await fetchBCD(currentBCD.id);
-      toast.success("Document locked for editing.");
+      toast.success(t("bcdDetail.lockSuccess"));
     } catch (e) {
-      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Could not lock document.";
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : t("bcdDetail.lockFailed");
       toast.error(msg);
     }
-  }, [currentBCD, fetchBCD]);
+  }, [currentBCD, fetchBCD, t]);
 
   const handleUnlock = useCallback(async () => {
     if (!currentBCD) return;
+    if (hasDirty) {
+      const result = await saveAllDirty(currentBCD.id, locale);
+      if (result.failed.length > 0) {
+        toast.error(t("bcdDetail.saveFailedPartial", { count: result.failed.length }));
+        return;
+      }
+    }
     try {
       await bookContextAPI.unlock(currentBCD.id);
       await fetchBCD(currentBCD.id);
-      toast.success("Document unlocked.");
+      toast.success(t("bcdDetail.unlockSuccess"));
     } catch (e) {
-      const msg = e instanceof AxiosError ? e.response?.data?.detail : "Could not unlock document.";
+      const msg = e instanceof AxiosError ? e.response?.data?.detail : t("bcdDetail.unlockFailed");
       toast.error(msg);
     }
-  }, [currentBCD, fetchBCD]);
+  }, [currentBCD, fetchBCD, hasDirty, saveAllDirty, locale, t]);
+
+  const requestSectionChange = useCallback(
+    (next: string | null) => {
+      if (hasDirty) {
+        setPendingAction(() => () => setActiveSection(next));
+      } else {
+        setActiveSection(next);
+      }
+    },
+    [hasDirty],
+  );
+
+  const proceedAfterDialog = useCallback(() => {
+    if (blocker.state === "blocked") blocker.proceed?.();
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
+  }, [blocker, pendingAction]);
+
+  const cancelDialog = useCallback(() => {
+    if (blocker.state === "blocked") blocker.reset?.();
+    setPendingAction(null);
+  }, [blocker]);
+
+  const handleDialogSave = useCallback(async () => {
+    if (!currentBCD) return;
+    setDialogSaving(true);
+    try {
+      const result = await saveAllDirty(currentBCD.id, locale);
+      if (result.failed.length > 0) {
+        toast.error(t("bcdDetail.saveFailedPartial", { count: result.failed.length }));
+        return;
+      }
+      proceedAfterDialog();
+    } finally {
+      setDialogSaving(false);
+    }
+  }, [currentBCD, locale, proceedAfterDialog, saveAllDirty, t]);
+
+  const handleDialogDiscard = useCallback(() => {
+    clearAllDirty();
+    proceedAfterDialog();
+  }, [clearAllDirty, proceedAfterDialog]);
+
+  const handleDialogOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) cancelDialog();
+    },
+    [cancelDialog],
+  );
+
+  useEffect(() => {
+    if (!hasDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [hasDirty]);
 
   useEffect(() => {
     if (bcdId) {
@@ -179,14 +260,14 @@ export function BCDDetailPage() {
               bcd={currentBCD}
               disabled={currentBCD.status === "generating"}
               canEdit={canEdit}
-              onSelect={setActiveSection}
+              onSelect={requestSectionChange}
             />
           )}
 
           {activeSection && (
             <>
               <button
-                onClick={() => setActiveSection(null)}
+                onClick={() => requestSectionChange(null)}
                 className="flex items-center gap-1.5 text-xs text-verde/50 hover:text-telha transition-colors mb-4"
               >
                 <X className="h-3 w-3" />
@@ -215,6 +296,14 @@ export function BCDDetailPage() {
       {bookName && chapterCount > 0 && (
         <BCDBHSASidebarToggle bookName={bookName} />
       )}
+
+      <UnsavedChangesDialog
+        open={blocker.state === "blocked" || pendingAction !== null}
+        onOpenChange={handleDialogOpenChange}
+        onSave={handleDialogSave}
+        onDiscard={handleDialogDiscard}
+        saving={dialogSaving}
+      />
     </div>
   );
 }

@@ -34,6 +34,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, isAdmin, h
   const [feedback, setFeedback] = useState("");
   const fetchBCD = useBCDStore((s) => s.fetchBCD);
   const startPolling = useBCDStore((s) => s.startPolling);
+  const dirtyCount = useBCDStore((s) => Object.keys(s.dirtySections).length);
 
   const handleGenerate = async (feedbackText?: string) => {
     setLoading("generate");
@@ -112,7 +113,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, isAdmin, h
             className="gap-1"
           >
             <Lock className="h-3.5 w-3.5" />
-            Lock & Edit
+            {t("bcdDetail.lockAndEdit")}
           </Button>
         )}
 
@@ -132,13 +133,13 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, isAdmin, h
         {isLockedByMe && (
           <Button
             size="sm"
-            variant="ghost"
+            variant={dirtyCount > 0 ? "default" : "ghost"}
             onClick={onUnlock}
             disabled={loading !== null}
             className="gap-1"
           >
             <Unlock className="h-3.5 w-3.5" />
-            Unlock
+            {dirtyCount > 0 ? t("bcdDetail.saveAndUnlock") : t("bcdDetail.unlock")}
           </Button>
         )}
 
