@@ -57,10 +57,17 @@ export function SectionEditor({
 
   const handleSave = async () => {
     setSaving(true);
+    const snapshot = dirtyValue;
     try {
-      await bookContextAPI.updateSection(bcdId, sectionKey, dirtyValue, locale);
+      await bookContextAPI.updateSection(bcdId, sectionKey, snapshot, locale);
       await fetchBCD(bcdId);
-      clearDirty(sectionKey);
+      // If the user typed during the network call, dirtySections[sectionKey]
+      // now holds a newer reference; keep it dirty so they don't lose the
+      // in-flight edits.
+      const latest = useBCDStore.getState().dirtySections[sectionKey];
+      if (latest === snapshot) {
+        clearDirty(sectionKey);
+      }
       if (locale !== "en") {
         toast.success(t("editors.sectionSavedTranslated", { label }));
       } else {

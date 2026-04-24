@@ -607,6 +607,7 @@
     "saveAndContinue": "Salvar e continuar",
     "discardChanges": "Descartar alterações",
     "saveFailedPartial": "Falha ao salvar {{count}} seção(ões). Tente novamente.",
+    "newEditsDuringSave": "Novas edições chegaram durante o salvamento. Por favor, salve novamente.",
     "singleReviewerWarning": "Revisor único",
     "singleReviewerDetail": "Todas as especialidades aprovadas por uma pessoa. Revisão adicional recomendada.",
     "reviewerCount": "{{count}} revisor",
