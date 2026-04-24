@@ -289,7 +289,32 @@ const BHSA_SECTIONS = new Set([
 ]);
 
 function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
+  const currentBCD = useBCDStore((s) => s.currentBCD);
+  const fetchBCD = useBCDStore((s) => s.fetchBCD);
+
+  const needsHydration =
+    locale !== "en" &&
+    currentBCD != null &&
+    currentBCD.translations?.[locale]?.[sectionKey] === undefined;
+
+  useEffect(() => {
+    if (!needsHydration) return;
+    let cancelled = false;
+    bookContextAPI
+      .translate(bcdId, locale)
+      .then(() => {
+        if (!cancelled) return fetchBCD(bcdId);
+      })
+      .catch(() => {
+        // Silent fallback — the UI keeps showing the English source.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [bcdId, locale, sectionKey, needsHydration, fetchBCD]);
+
   const sectionDef = SECTIONS.find((s) => s.key === sectionKey);
   if (!sectionDef) return null;
 
@@ -307,6 +332,11 @@ function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: str
     >
       {({ data, setData }) => (
         <>
+          {needsHydration && (
+            <div className="mb-3 rounded-md bg-azul/10 border border-azul/20 px-3 py-2 text-xs text-azul/80">
+              {t("bcdDetail.loadingTranslation")}
+            </div>
+          )}
           {hasBHSAFields && (
             <div className="mb-3 rounded-md bg-areia/15 border border-areia/30 px-3 py-2 text-xs text-verde/70">
               {t("bcdDetail.bhsaWarning")}
