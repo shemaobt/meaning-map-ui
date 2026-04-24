@@ -1,4 +1,5 @@
 import { useState, type KeyboardEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, Trash2, X } from "lucide-react";
 import { Input } from "../../../ui/input";
 import { Textarea } from "../../../ui/textarea";
@@ -54,16 +55,27 @@ interface TagsInputProps {
 export function TagsInput({ tags, onChange, placeholder = "Type and press Enter" }: TagsInputProps) {
   const [input, setInput] = useState("");
 
+  // Defence in depth: even if a caller accidentally passes an array containing
+  // a non-primitive (previously rendered as the literal "[object Object]"
+  // string), never surface it. Primitive coerce survives numbers; objects are
+  // dropped entirely.
+  const safeTags = tags.filter(
+    (t) =>
+      typeof t === "string" &&
+      t.length > 0 &&
+      t !== "[object Object]",
+  );
+
   const addTag = () => {
     const trimmed = input.trim();
-    if (trimmed && !tags.includes(trimmed)) {
-      onChange([...tags, trimmed]);
+    if (trimmed && !safeTags.includes(trimmed)) {
+      onChange([...safeTags, trimmed]);
     }
     setInput("");
   };
 
   const removeTag = (index: number) => {
-    onChange(tags.filter((_, i) => i !== index));
+    onChange(safeTags.filter((_, i) => i !== index));
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -77,7 +89,7 @@ export function TagsInput({ tags, onChange, placeholder = "Type and press Enter"
 
   return (
     <div className="flex flex-wrap items-center gap-1.5 rounded-md border border-areia bg-surface px-2 py-1.5 min-h-[40px] focus-within:ring-2 focus-within:ring-telha focus-within:border-telha">
-      {tags.map((tag, i) => (
+      {safeTags.map((tag, i) => (
         <span
           key={i}
           className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-azul/10 text-azul border border-azul/20"
@@ -98,7 +110,7 @@ export function TagsInput({ tags, onChange, placeholder = "Type and press Enter"
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         onBlur={addTag}
-        placeholder={tags.length === 0 ? placeholder : ""}
+        placeholder={safeTags.length === 0 ? placeholder : ""}
         className="flex-1 min-w-[100px] text-sm bg-transparent outline-none text-preto placeholder:text-areia"
       />
     </div>
@@ -255,6 +267,72 @@ export function CheckboxField({ label, checked, onChange, description }: Checkbo
   );
 }
 
+export function ReadOnlyJsonValue({ value }: { value: unknown }) {
+  const { t } = useTranslation();
+  return (
+    <div className="rounded-md border border-areia/30 bg-areia/5 px-3 py-2">
+      <div className="flex items-center gap-2 mb-1 text-[9px] font-medium uppercase tracking-wide text-verde/40">
+        <span className="px-1.5 py-0.5 rounded bg-areia/20">{t("editors.readOnly")}</span>
+        <span className="normal-case tracking-normal text-[10px] text-verde/50">
+          {t("editors.complexDataHint")}
+        </span>
+      </div>
+      <pre className="text-xs text-preto/70 font-mono whitespace-pre-wrap overflow-x-auto max-h-48">
+        {JSON.stringify(value, null, 2)}
+      </pre>
+    </div>
+  );
+}
+
+interface DynamicFieldProps {
+  value: unknown;
+  onChange: (next: unknown) => void;
+}
+
+export function DynamicField({ value, onChange }: DynamicFieldProps) {
+  if (value === null || value === undefined) {
+    return (
+      <EditableInput
+        value=""
+        onChange={(v) => onChange(v)}
+      />
+    );
+  }
+  if (typeof value === "string") {
+    return (
+      <EditableTextarea
+        value={value}
+        onChange={(v) => onChange(v)}
+        rows={2}
+      />
+    );
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return (
+      <EditableInput
+        value={String(value)}
+        onChange={(v) => onChange(v)}
+      />
+    );
+  }
+  if (Array.isArray(value)) {
+    const allPrimitives = value.every(
+      (v) =>
+        typeof v === "string" || typeof v === "number" || typeof v === "boolean",
+    );
+    if (allPrimitives) {
+      return (
+        <TagsInput
+          tags={value.map((v) => String(v))}
+          onChange={(tags) => onChange(tags)}
+        />
+      );
+    }
+    return <ReadOnlyJsonValue value={value} />;
+  }
+  return <ReadOnlyJsonValue value={value} />;
+}
+
 interface OtherKeysSectionProps {
   data: Record<string, unknown>;
   knownKeys: Set<string>;
@@ -267,30 +345,11 @@ export function OtherKeysSection({ data, knownKeys, onUpdate }: OtherKeysSection
 
   return (
     <>
-      {otherKeys.map((key) => {
-        const val = data[key];
-        return (
-          <FieldGroup key={key} label={key.replace(/_/g, " ")}>
-            {typeof val === "string" ? (
-              <EditableTextarea
-                value={val}
-                onChange={(v) => onUpdate(key, v)}
-                rows={2}
-              />
-            ) : Array.isArray(val) ? (
-              <TagsInput
-                tags={val.map(String)}
-                onChange={(tags) => onUpdate(key, tags)}
-              />
-            ) : (
-              <EditableInput
-                value={String(val ?? "")}
-                onChange={(v) => onUpdate(key, v)}
-              />
-            )}
-          </FieldGroup>
-        );
-      })}
+      {otherKeys.map((key) => (
+        <FieldGroup key={key} label={key.replace(/_/g, " ")}>
+          <DynamicField value={data[key]} onChange={(next) => onUpdate(key, next)} />
+        </FieldGroup>
+      ))}
     </>
   );
 }

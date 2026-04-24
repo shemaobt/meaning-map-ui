@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, GripVertical, Plus, Trash2 } from "lucide-react";
-import { FieldGroup, EditableInput, EditableTextarea, TagsInput } from "./FieldPrimitives";
+import { FieldGroup, EditableInput, EditableTextarea, TagsInput, DynamicField } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
 
 interface OutlineEditorProps {
@@ -75,30 +75,11 @@ export function OutlineEditor({ data, setData }: OutlineEditorProps) {
         </div>
       </div>
 
-      {otherKeys.map((key) => {
-        const val = outline[key];
-        return (
-          <FieldGroup key={key} label={key.replace(/_/g, " ")}>
-            {typeof val === "string" ? (
-              <EditableTextarea
-                value={val}
-                onChange={(v) => update(key, v)}
-                rows={2}
-              />
-            ) : Array.isArray(val) ? (
-              <TagsInput
-                tags={val.map(String)}
-                onChange={(tags) => update(key, tags)}
-              />
-            ) : (
-              <EditableInput
-                value={String(val ?? "")}
-                onChange={(v) => update(key, v)}
-              />
-            )}
-          </FieldGroup>
-        );
-      })}
+      {otherKeys.map((key) => (
+        <FieldGroup key={key} label={key.replace(/_/g, " ")}>
+          <DynamicField value={outline[key]} onChange={(next) => update(key, next)} />
+        </FieldGroup>
+      ))}
     </div>
   );
 }
@@ -182,30 +163,11 @@ function ChapterCard({
             />
           </FieldGroup>
 
-          {otherKeys.map((key) => {
-            const val = chapter[key];
-            return (
-              <FieldGroup key={key} label={key.replace(/_/g, " ")}>
-                {typeof val === "string" ? (
-                  <EditableTextarea
-                    value={val}
-                    onChange={(v) => onUpdate(key, v)}
-                    rows={2}
-                  />
-                ) : Array.isArray(val) ? (
-                  <TagsInput
-                    tags={val.map(String)}
-                    onChange={(tags) => onUpdate(key, tags)}
-                  />
-                ) : (
-                  <EditableInput
-                    value={String(val ?? "")}
-                    onChange={(v) => onUpdate(key, v)}
-                  />
-                )}
-              </FieldGroup>
-            );
-          })}
+          {otherKeys.map((key) => (
+            <FieldGroup key={key} label={key.replace(/_/g, " ")}>
+              <DynamicField value={chapter[key]} onChange={(next) => onUpdate(key, next)} />
+            </FieldGroup>
+          ))}
 
           <div className="flex justify-end pt-2 border-t border-areia/10">
             <Button type="button" size="sm" variant="outline" onClick={onRemove} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">

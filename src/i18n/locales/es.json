@@ -499,7 +499,9 @@
       "addItem": "Agrega elemento y presiona Enter",
       "newKeyName": "Nombre de nueva clave"
     },
-    "isResolvedAtEntryDescription": "Marca si este hilo ya está resuelto al inicio de esta perícopa."
+    "isResolvedAtEntryDescription": "Marca si este hilo ya está resuelto al inicio de esta perícopa.",
+    "readOnly": "Solo lectura",
+    "complexDataHint": "Datos estructurados — no editables en este formulario"
   },
   "notifications": {
     "title": "Notificaciones",
