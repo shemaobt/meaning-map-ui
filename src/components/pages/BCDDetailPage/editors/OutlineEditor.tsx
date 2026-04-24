@@ -14,7 +14,6 @@ type Chapter = {
   title?: string;
   summary?: string;
   key_events?: string[];
-  key_themes?: string[];
   [k: string]: unknown;
 };
 
@@ -36,7 +35,7 @@ export function OutlineEditor({ data, setData }: OutlineEditorProps) {
 
   const addChapter = () => {
     const nextNum = chapters.length + 1;
-    update("chapters", [...chapters, { chapter: nextNum, title: "", summary: "", key_events: [], key_themes: [] }]);
+    update("chapters", [...chapters, { chapter: nextNum, title: "", summary: "", key_events: [] }]);
   };
 
   const removeChapter = (index: number) => {
@@ -104,7 +103,7 @@ export function OutlineEditor({ data, setData }: OutlineEditorProps) {
   );
 }
 
-const KNOWN_CHAPTER_KEYS = new Set(["chapter", "title", "summary", "key_events", "key_themes"]);
+const KNOWN_CHAPTER_KEYS = new Set(["chapter", "title", "summary", "key_events"]);
 
 function ChapterCard({
   chapter,
@@ -145,13 +144,26 @@ function ChapterCard({
 
       {open && (
         <div className="border-t border-areia/15 px-4 py-4 space-y-4">
-          <FieldGroup label={t("fields.title")}>
-            <EditableInput
-              value={chapter.title ?? ""}
-              onChange={(val) => onUpdate("title", val)}
-              placeholder={t("editors.placeholders.chapterTitle")}
-            />
-          </FieldGroup>
+          <div className="grid grid-cols-[auto_1fr] gap-4 items-end">
+            <FieldGroup label={t("fields.chapterNumber")}>
+              <EditableInput
+                value={String(chapter.chapter ?? index + 1)}
+                onChange={(val) => {
+                  const parsed = parseInt(val, 10);
+                  onUpdate("chapter", Number.isFinite(parsed) && parsed > 0 ? parsed : 1);
+                }}
+                placeholder="1"
+                className="w-20"
+              />
+            </FieldGroup>
+            <FieldGroup label={t("fields.title")}>
+              <EditableInput
+                value={chapter.title ?? ""}
+                onChange={(val) => onUpdate("title", val)}
+                placeholder={t("editors.placeholders.chapterTitle")}
+              />
+            </FieldGroup>
+          </div>
 
           <FieldGroup label={t("fields.summary")}>
             <EditableTextarea
@@ -167,14 +179,6 @@ function ChapterCard({
               tags={Array.isArray(chapter.key_events) ? chapter.key_events : []}
               onChange={(tags) => onUpdate("key_events", tags)}
               placeholder={t("editors.placeholders.addKeyEvent")}
-            />
-          </FieldGroup>
-
-          <FieldGroup label={t("bcdDetail.keyThemes")}>
-            <TagsInput
-              tags={Array.isArray(chapter.key_themes) ? chapter.key_themes : []}
-              onChange={(tags) => onUpdate("key_themes", tags)}
-              placeholder={t("editors.placeholders.addTheme")}
             />
           </FieldGroup>
 

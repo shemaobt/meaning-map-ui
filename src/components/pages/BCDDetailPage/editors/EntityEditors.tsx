@@ -8,6 +8,7 @@ import {
   EditableInput,
   EditableTextarea,
   OtherKeysSection,
+  VerseRefListField,
 } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
 
@@ -380,49 +381,3 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
   );
 }
 
-function VerseRefListField({
-  label,
-  verses,
-  onChange,
-  addLabel,
-}: {
-  label: string;
-  verses: { chapter?: number; verse?: number }[];
-  onChange: (verses: { chapter: number; verse: number }[]) => void;
-  addLabel: string;
-}) {
-  return (
-    <FieldGroup label={label}>
-      <div className="space-y-1.5">
-        {verses.map((v, vi) => (
-          <div key={vi} className="flex items-center gap-2">
-            <VerseRefInput
-              verse={v}
-              onChange={(val) => {
-                const updated = [...verses] as { chapter: number; verse: number }[];
-                updated[vi] = val;
-                onChange(updated);
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => onChange(verses.filter((_, j) => j !== vi) as { chapter: number; verse: number }[])}
-              className="text-verde/30 hover:text-red-500 transition-colors"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        ))}
-      </div>
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        onClick={() => onChange([...verses, { chapter: 1, verse: 1 }] as { chapter: number; verse: number }[])}
-        className="gap-1 h-7 text-xs mt-2"
-      >
-        <Plus className="h-3 w-3" /> {addLabel}
-      </Button>
-    </FieldGroup>
-  );
-}

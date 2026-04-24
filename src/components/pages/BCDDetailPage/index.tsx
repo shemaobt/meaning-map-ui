@@ -35,7 +35,7 @@ import { OutlineEditor } from "./editors/OutlineEditor";
 import { ParticipantEditor } from "./editors/ParticipantEditor";
 import { ThreadEditor } from "./editors/ThreadEditor";
 import { PlaceEditor, ObjectEditor, InstitutionEditor } from "./editors/EntityEditors";
-import { GenreContextEditor, KeyValueEditor } from "./editors/DictEditors";
+import { GenreContextEditor, MaintenanceNotesEditor } from "./editors/DictEditors";
 import { VersionPicker } from "./VersionPicker";
 import { BCDInfoTooltip } from "./BCDInfoTooltip";
 import { ApprovalProgress } from "./ApprovalProgress";
@@ -367,7 +367,7 @@ const SECTION_EDITORS: Record<string, React.ComponentType<{ data: unknown; setDa
   objects: ObjectEditor,
   institutions: InstitutionEditor,
   genre_context: GenreContextEditor,
-  maintenance_notes: KeyValueEditor,
+  maintenance_notes: MaintenanceNotesEditor,
 };
 
 const BHSA_SECTIONS = new Set([
