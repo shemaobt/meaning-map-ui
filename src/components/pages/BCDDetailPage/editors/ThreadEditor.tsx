@@ -7,6 +7,7 @@ import {
   EditableInput,
   EditableTextarea,
   OtherKeysSection,
+  CheckboxField,
 } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
 
@@ -18,11 +19,13 @@ type Thread = {
   resolved_at?: VerseRef | null;
   question?: string;
   status_by_episode?: EpisodeStatus[];
+  is_resolved_at_entry?: boolean | null;
   [k: string]: unknown;
 };
 
 const KNOWN_THREAD_KEYS = new Set([
   "label", "opened_at", "resolved_at", "question", "status_by_episode",
+  "is_resolved_at_entry",
 ]);
 
 interface ThreadEditorProps {
@@ -157,6 +160,13 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                     <Plus className="h-3 w-3" /> {t("editors.addEpisode")}
                   </Button>
                 </FieldGroup>
+
+                <CheckboxField
+                  label={t("fields.isResolvedAtEntry")}
+                  description={t("editors.isResolvedAtEntryDescription")}
+                  checked={Boolean(th.is_resolved_at_entry)}
+                  onChange={(checked) => updateItem(i, "is_resolved_at_entry", checked)}
+                />
 
                 <OtherKeysSection
                   data={th as Record<string, unknown>}

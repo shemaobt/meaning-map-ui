@@ -8,6 +8,7 @@ import {
   EditableTextarea,
   TagsInput,
   OtherKeysSection,
+  VerseRefListField,
 } from "./FieldPrimitives";
 import {
   Select,
@@ -31,6 +32,7 @@ type Participant = {
   what_audience_knows_at_entry?: string;
   arc?: ArcEntry[];
   status_at_end?: string;
+  appears_in?: VerseRef[];
   [k: string]: unknown;
 };
 
@@ -221,6 +223,13 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                     placeholder={t("editors.placeholders.statusExample")}
                   />
                 </FieldGroup>
+
+                <VerseRefListField
+                  label={t("fields.alsoAppearsIn")}
+                  verses={Array.isArray(p.appears_in) ? p.appears_in : []}
+                  onChange={(verses) => updateItem(i, "appears_in", verses)}
+                  addLabel={t("editors.addVerse")}
+                />
 
                 <OtherKeysSection
                   data={p as Record<string, unknown>}
