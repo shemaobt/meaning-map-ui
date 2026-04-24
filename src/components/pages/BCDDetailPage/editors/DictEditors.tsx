@@ -7,6 +7,7 @@ import {
   EditableTextarea,
   TagsInput,
   OtherKeysSection,
+  DynamicField,
 } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
 
@@ -87,30 +88,11 @@ export function GenreContextEditor({ data, setData }: GenreContextEditorProps) {
         </FieldGroup>
       </div>
 
-      {otherKeys.map((key) => {
-        const val = ctx[key];
-        return (
-          <FieldGroup key={key} label={key.replace(/_/g, " ")}>
-            {typeof val === "string" ? (
-              <EditableTextarea
-                value={val}
-                onChange={(v) => update(key, v)}
-                rows={2}
-              />
-            ) : Array.isArray(val) ? (
-              <TagsInput
-                tags={val.map(String)}
-                onChange={(tags) => update(key, tags)}
-              />
-            ) : (
-              <EditableInput
-                value={String(val ?? "")}
-                onChange={(v) => update(key, v)}
-              />
-            )}
-          </FieldGroup>
-        );
-      })}
+      {otherKeys.map((key) => (
+        <FieldGroup key={key} label={key.replace(/_/g, " ")}>
+          <DynamicField value={ctx[key]} onChange={(next) => update(key, next)} />
+        </FieldGroup>
+      ))}
     </div>
   );
 }
@@ -209,19 +191,8 @@ export function KeyValueEditor({ data, setData }: KeyValueEditorProps) {
               <X className="h-3.5 w-3.5" />
             </button>
           </div>
-          {Array.isArray(val) ? (
-            <TagsInput
-              tags={val.map(String)}
-              onChange={(tags) => update(key, tags)}
-              placeholder={t("editors.placeholders.addItem")}
-            />
-          ) : (
-            <EditableTextarea
-              value={typeof val === "string" ? val : String(val ?? "")}
-              onChange={(v) => update(key, v)}
-              rows={2}
-            />
-          )}
+          <DynamicField value={val} onChange={(next) => update(key, next)} />
+
         </div>
       ))}
 
