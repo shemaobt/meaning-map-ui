@@ -10,6 +10,7 @@ interface BCDStore {
   generationLogs: BCDGenerationLog[];
   isLoading: boolean;
   isPolling: boolean;
+  dirtySections: Record<string, unknown>;
 
   fetchList: (bookId: string) => Promise<void>;
   fetchBCD: (bcdId: string) => Promise<void>;
@@ -18,6 +19,14 @@ interface BCDStore {
   startPolling: (bcdId: string) => void;
   stopPolling: () => void;
   clear: () => void;
+  markDirty: (sectionKey: string, data: unknown) => void;
+  clearDirty: (sectionKey: string) => void;
+  clearAllDirty: () => void;
+  isDirty: () => boolean;
+  saveAllDirty: (
+    bcdId: string,
+    locale: string,
+  ) => Promise<{ saved: number; failed: string[] }>;
 }
 
 let pollingInterval: ReturnType<typeof setInterval> | null = null;
@@ -31,6 +40,7 @@ export const useBCDStore = create<BCDStore>((set, get) => ({
   generationLogs: [],
   isLoading: false,
   isPolling: false,
+  dirtySections: {},
 
   fetchList: async (bookId) => {
     set({ isLoading: true });
@@ -114,6 +124,50 @@ export const useBCDStore = create<BCDStore>((set, get) => ({
       feedback: [],
       generationLogs: [],
       isLoading: false,
+      dirtySections: {},
     });
+  },
+
+  markDirty: (sectionKey, data) => {
+    set((s) => ({ dirtySections: { ...s.dirtySections, [sectionKey]: data } }));
+  },
+
+  clearDirty: (sectionKey) => {
+    set((s) => {
+      const next = { ...s.dirtySections };
+      delete next[sectionKey];
+      return { dirtySections: next };
+    });
+  },
+
+  clearAllDirty: () => {
+    set({ dirtySections: {} });
+  },
+
+  isDirty: () => Object.keys(get().dirtySections).length > 0,
+
+  saveAllDirty: async (bcdId, locale) => {
+    const entries = Object.entries(get().dirtySections);
+    const failed: string[] = [];
+    for (const [key, data] of entries) {
+      try {
+        await bookContextAPI.updateSection(bcdId, key, data, locale);
+      } catch {
+        failed.push(key);
+      }
+    }
+    set((s) => {
+      const next = { ...s.dirtySections };
+      for (const key of Object.keys(next)) {
+        if (!failed.includes(key)) delete next[key];
+      }
+      return { dirtySections: next };
+    });
+    try {
+      await get().fetchBCD(bcdId);
+    } catch {
+      // ignore — caller already has success/failure info
+    }
+    return { saved: entries.length - failed.length, failed };
   },
 }));
