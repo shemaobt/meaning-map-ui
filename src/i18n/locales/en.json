@@ -405,7 +405,14 @@
     "roleInBook": "Role in Book",
     "primaryGenre": "Primary Genre",
     "subGenre": "Sub-Genre",
+    "subGenres": "Sub-Genres",
     "literaryFeatures": "Literary Features",
+    "narrativeVoice": "Narrative Voice",
+    "temporalSetting": "Temporal Setting",
+    "audiencePositioning": "Audience Positioning",
+    "generationNotes": "Generation Notes",
+    "knownLimitations": "Known Limitations",
+    "isResolvedAtEntry": "Resolved at Entry",
     "label": "Label",
     "drivingQuestion": "Driving Question",
     "openedAt": "Opened At",
@@ -418,6 +425,7 @@
     "characterArc": "Character Arc",
     "statusAtEnd": "Status at End",
     "title": "Title",
+    "chapterNumber": "Chapter #",
     "summary": "Summary",
     "chapters": "Chapters"
   },
@@ -481,10 +489,17 @@
       "threadStatus": "Status at this point",
       "primaryGenre": "e.g. narrative, poetry, prophecy",
       "subGenre": "e.g. historical narrative, wisdom poetry",
+      "addSubGenre": "Add sub-genre and press Enter",
+      "narrativeVoice": "e.g. third-person omniscient",
+      "temporalSetting": "e.g. monarchical period",
+      "audiencePositioning": "e.g. post-exilic community",
+      "generationNotes": "Notes about how this document was generated or reviewed...",
+      "addLimitation": "Add known limitation and press Enter",
       "addFeature": "Add feature and press Enter",
       "addItem": "Add item and press Enter",
       "newKeyName": "New key name"
-    }
+    },
+    "isResolvedAtEntryDescription": "Tick if this thread is already resolved at the start of this pericope."
   },
   "notifications": {
     "title": "Notifications",
