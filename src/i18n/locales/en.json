@@ -607,6 +607,7 @@
     "saveAndContinue": "Save & continue",
     "discardChanges": "Discard changes",
     "saveFailedPartial": "{{count}} section(s) failed to save. Please try again.",
+    "newEditsDuringSave": "New edits came in while saving. Please save again.",
     "singleReviewerWarning": "Single reviewer",
     "singleReviewerDetail": "All specialties approved by one person. Additional review recommended.",
     "reviewerCount": "{{count}} reviewer",

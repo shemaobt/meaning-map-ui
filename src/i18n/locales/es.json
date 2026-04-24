@@ -607,6 +607,7 @@
     "saveAndContinue": "Guardar y continuar",
     "discardChanges": "Descartar cambios",
     "saveFailedPartial": "Falló al guardar {{count}} sección(es). Por favor, inténtalo de nuevo.",
+    "newEditsDuringSave": "Llegaron nuevas ediciones durante el guardado. Por favor, guarda de nuevo.",
     "requestRevision": "Solicitar Revisión",
     "requesting": "Solicitando...",
     "revisionConfirmTitle": "¿Solicitar revisión?",
