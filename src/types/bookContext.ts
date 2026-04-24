@@ -28,6 +28,7 @@ export interface BCD extends BCDListItem {
   genre_context: Record<string, unknown> | null;
   maintenance_notes: Record<string, unknown> | null;
   generation_metadata: Record<string, unknown> | null;
+  translations: Record<string, Record<string, unknown>> | null;
 }
 
 export interface BCDFeedback {
