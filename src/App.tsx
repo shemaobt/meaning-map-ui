@@ -1,4 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  Navigate,
+  Outlet,
+  RouterProvider,
+  createBrowserRouter,
+} from "react-router-dom";
 import { Toaster } from "sonner";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -39,31 +44,48 @@ function ThemedToaster() {
   );
 }
 
-export default function App() {
+function RootLayout() {
   return (
-    <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/app" element={<ErrorBoundary><AppShell /></ErrorBoundary>}>
-              <Route index element={<Navigate to="books" replace />} />
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path="books" element={<BooksPage />} />
-              <Route path="books/:bookId" element={<BookPage />} />
-              <Route path="book-context/:bcdId" element={<BCDDetailPage />} />
-              <Route path="maps/:mapId" element={<MeaningMapPage />} />
-              <Route path="notifications" element={<NotificationsPage />} />
-            </Route>
-            <Route path="/" element={<Navigate to="/app/books" replace />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-          <ThemedToaster />
-        </AuthProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <AuthProvider>
+        <Outlet />
+        <ThemedToaster />
+      </AuthProvider>
+    </ThemeProvider>
   );
+}
+
+const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    children: [
+      { path: "/login", element: <LoginPage /> },
+      { path: "/signup", element: <SignupPage /> },
+      { path: "/forgot-password", element: <ForgotPasswordPage /> },
+      { path: "/reset-password", element: <ResetPasswordPage /> },
+      {
+        path: "/app",
+        element: (
+          <ErrorBoundary>
+            <AppShell />
+          </ErrorBoundary>
+        ),
+        children: [
+          { index: true, element: <Navigate to="books" replace /> },
+          { path: "dashboard", element: <DashboardPage /> },
+          { path: "books", element: <BooksPage /> },
+          { path: "books/:bookId", element: <BookPage /> },
+          { path: "book-context/:bcdId", element: <BCDDetailPage /> },
+          { path: "maps/:mapId", element: <MeaningMapPage /> },
+          { path: "notifications", element: <NotificationsPage /> },
+        ],
+      },
+      { path: "/", element: <Navigate to="/app/books" replace /> },
+      { path: "*", element: <NotFoundPage /> },
+    ],
+  },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
 }
