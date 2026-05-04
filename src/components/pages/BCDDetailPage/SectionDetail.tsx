@@ -142,9 +142,13 @@ function ListView({ items, sectionKey }: { items: unknown[]; sectionKey: string 
         const obj = item as Record<string, unknown>;
         const name = String(obj[nameKey] ?? obj.name ?? obj.label ?? `Entry ${i + 1}`);
         const englishGloss = typeof obj.english_gloss === "string" && obj.english_gloss ? obj.english_gloss : null;
+        const displayName = typeof obj.display_name === "string" && obj.display_name ? obj.display_name : null;
+        const labelLine2 = displayName ?? englishGloss;
         const subtitle = getSubtitle(obj, nameKey);
         const isOpen = expandedIdx === i;
-        const detailKeys = Object.keys(obj).filter((k) => k !== nameKey && k !== "english_gloss");
+        const detailKeys = Object.keys(obj).filter(
+          (k) => k !== nameKey && k !== "english_gloss" && k !== "display_name",
+        );
 
         return (
           <div key={i} className="rounded-lg border border-areia/15 overflow-hidden">
@@ -155,7 +159,7 @@ function ListView({ items, sectionKey }: { items: unknown[]; sectionKey: string 
               <span className="flex-shrink-0 w-6 h-6 rounded-md bg-areia/10 flex items-center justify-center text-[10px] font-bold text-verde/40">{i + 1}</span>
               <div className="flex-1 min-w-0">
                 <span className="text-[15px] font-serif text-preto" dir="rtl" lang="he">{name}</span>
-                {englishGloss && <span className="text-sm text-verde/70 ml-2">{englishGloss}</span>}
+                {labelLine2 && <span className="text-sm text-verde/70 ml-2">{labelLine2}</span>}
                 {subtitle && !isOpen && <span className="text-xs text-verde/40 ml-2 truncate">{subtitle}</span>}
               </div>
               {isOpen ? <ChevronDown className="h-3 w-3 text-verde/30" /> : <ChevronRight className="h-3 w-3 text-verde/30" />}
@@ -292,7 +296,7 @@ function getNameKey(sectionKey: string): string {
 }
 
 function getSubtitle(obj: Record<string, unknown>, nameKey: string): string | null {
-  for (const k of ["role_in_book", "question", "description", "type", "primary_genre"]) {
+  for (const k of ["what_it_is", "role_in_book", "question", "description", "type", "primary_genre"]) {
     if (k !== nameKey && typeof obj[k] === "string") return obj[k] as string;
   }
   return null;

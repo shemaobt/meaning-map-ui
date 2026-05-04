@@ -140,6 +140,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
 
 type Obj = {
   name?: string;
+  display_name?: string;
   english_gloss?: string;
   first_appears?: VerseRef;
   what_it_is?: string;
@@ -149,7 +150,7 @@ type Obj = {
 };
 
 const KNOWN_OBJECT_KEYS = new Set([
-  "name", "english_gloss", "first_appears", "what_it_is", "meaning_across_scenes", "appears_in",
+  "name", "display_name", "english_gloss", "first_appears", "what_it_is", "meaning_across_scenes", "appears_in",
   "entity_type", "appearance_count",
 ]);
 
@@ -187,7 +188,12 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
               <Package className="h-4 w-4 text-verde/40 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <span className="text-sm font-medium text-preto">{obj.name || `Object ${i + 1}`}</span>
-                {obj.english_gloss && <span className="text-sm text-verde/70 ml-2">{obj.english_gloss}</span>}
+                {(obj.display_name || obj.english_gloss) && (
+                  <span className="text-sm text-verde/70 ml-2">{obj.display_name || obj.english_gloss}</span>
+                )}
+                {obj.what_it_is && !isOpen && (
+                  <span className="text-xs text-verde/40 ml-2 truncate">{obj.what_it_is}</span>
+                )}
               </div>
               <VerseRefBadge verse={obj.first_appears} />
               {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-verde/30" /> : <ChevronRight className="h-3.5 w-3.5 text-verde/30" />}
@@ -210,6 +216,12 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
                     />
                   </FieldGroup>
                 </div>
+                <FieldGroup label={t("fields.displayName")}>
+                  <EditableInput
+                    value={obj.display_name ?? ""}
+                    onChange={(val) => updateItem(i, "display_name", val)}
+                  />
+                </FieldGroup>
                 <FieldGroup label={t("fields.firstAppears")}>
                   <VerseRefInput
                     verse={obj.first_appears}
@@ -262,6 +274,7 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
 
 type Institution = {
   name?: string;
+  display_name?: string;
   english_gloss?: string;
   first_invoked?: VerseRef;
   what_it_is?: string;
@@ -271,7 +284,7 @@ type Institution = {
 };
 
 const KNOWN_INSTITUTION_KEYS = new Set([
-  "name", "english_gloss", "first_invoked", "what_it_is", "role_in_book", "appears_in",
+  "name", "display_name", "english_gloss", "first_invoked", "what_it_is", "role_in_book", "appears_in",
   "entity_type", "appearance_count",
 ]);
 
@@ -309,7 +322,12 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
               <Building2 className="h-4 w-4 text-verde-claro/50 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <span className="text-sm font-medium text-preto">{inst.name || `Institution ${i + 1}`}</span>
-                {inst.english_gloss && <span className="text-sm text-verde/70 ml-2">{inst.english_gloss}</span>}
+                {(inst.display_name || inst.english_gloss) && (
+                  <span className="text-sm text-verde/70 ml-2">{inst.display_name || inst.english_gloss}</span>
+                )}
+                {inst.what_it_is && !isOpen && (
+                  <span className="text-xs text-verde/40 ml-2 truncate">{inst.what_it_is}</span>
+                )}
               </div>
               <VerseRefBadge verse={inst.first_invoked} />
               {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-verde/30" /> : <ChevronRight className="h-3.5 w-3.5 text-verde/30" />}
@@ -332,6 +350,12 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
                     />
                   </FieldGroup>
                 </div>
+                <FieldGroup label={t("fields.displayName")}>
+                  <EditableInput
+                    value={inst.display_name ?? ""}
+                    onChange={(val) => updateItem(i, "display_name", val)}
+                  />
+                </FieldGroup>
                 <FieldGroup label={t("fields.firstInvoked")}>
                   <VerseRefInput
                     verse={inst.first_invoked}
