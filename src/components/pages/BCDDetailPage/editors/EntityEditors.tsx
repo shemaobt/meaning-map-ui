@@ -12,6 +12,13 @@ import {
 } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
 import { ConfirmDialog } from "../../../common/ConfirmDialog";
+import {
+  EntrySourceBadge,
+  PROVENANCE_KEY,
+  getEntrySource,
+  markAsEdited,
+  markAsHuman,
+} from "./EntryProvenance";
 
 type VerseRef = { chapter?: number; verse?: number };
 
@@ -28,6 +35,7 @@ type Place = {
 const KNOWN_PLACE_KEYS = new Set([
   "name", "english_gloss", "first_appears", "type", "meaning_and_function", "appears_in",
   "entity_type", "appearance_count",
+  PROVENANCE_KEY,
 ]);
 
 export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
@@ -37,12 +45,14 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
   const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    const updated = items.map((item, i) =>
+      i === index ? markAsEdited({ ...item, [field]: value }) : item,
+    );
     setData(updated);
   };
 
   const addItem = () => {
-    setData([...items, { name: "", first_appears: { chapter: 1, verse: 1 }, type: "", meaning_and_function: "" }]);
+    setData([...items, markAsHuman({ name: "", first_appears: { chapter: 1, verse: 1 }, type: "", meaning_and_function: "" })]);
     setOpenIdx(items.length);
   };
 
@@ -68,6 +78,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
                 {pl.english_gloss && <span className="text-sm text-verde/70 ml-2">{pl.english_gloss}</span>}
                 {pl.type && <span className="text-xs text-verde/40 ml-2">{pl.type}</span>}
               </div>
+              <EntrySourceBadge source={getEntrySource(pl as Record<string, unknown>)} />
               <VerseRefBadge verse={pl.first_appears} />
               {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-verde/30" /> : <ChevronRight className="h-3.5 w-3.5 text-verde/30" />}
             </button>
@@ -167,6 +178,7 @@ type Obj = {
 const KNOWN_OBJECT_KEYS = new Set([
   "name", "display_name", "english_gloss", "first_appears", "what_it_is", "meaning_across_scenes", "appears_in",
   "entity_type", "appearance_count",
+  PROVENANCE_KEY,
 ]);
 
 export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
@@ -176,12 +188,14 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
   const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    const updated = items.map((item, i) =>
+      i === index ? markAsEdited({ ...item, [field]: value }) : item,
+    );
     setData(updated);
   };
 
   const addItem = () => {
-    setData([...items, { name: "", first_appears: { chapter: 1, verse: 1 }, what_it_is: "", meaning_across_scenes: "" }]);
+    setData([...items, markAsHuman({ name: "", first_appears: { chapter: 1, verse: 1 }, what_it_is: "", meaning_across_scenes: "" })]);
     setOpenIdx(items.length);
   };
 
@@ -211,6 +225,7 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
                   <span className="text-xs text-verde/40 ml-2 truncate">{obj.what_it_is}</span>
                 )}
               </div>
+              <EntrySourceBadge source={getEntrySource(obj as Record<string, unknown>)} />
               <VerseRefBadge verse={obj.first_appears} />
               {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-verde/30" /> : <ChevronRight className="h-3.5 w-3.5 text-verde/30" />}
             </button>
@@ -315,6 +330,7 @@ type Institution = {
 const KNOWN_INSTITUTION_KEYS = new Set([
   "name", "display_name", "english_gloss", "first_invoked", "what_it_is", "role_in_book", "appears_in",
   "entity_type", "appearance_count",
+  PROVENANCE_KEY,
 ]);
 
 export function InstitutionEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
@@ -324,12 +340,14 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
   const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    const updated = items.map((item, i) =>
+      i === index ? markAsEdited({ ...item, [field]: value }) : item,
+    );
     setData(updated);
   };
 
   const addItem = () => {
-    setData([...items, { name: "", first_invoked: { chapter: 1, verse: 1 }, what_it_is: "", role_in_book: "" }]);
+    setData([...items, markAsHuman({ name: "", first_invoked: { chapter: 1, verse: 1 }, what_it_is: "", role_in_book: "" })]);
     setOpenIdx(items.length);
   };
 
@@ -359,6 +377,7 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
                   <span className="text-xs text-verde/40 ml-2 truncate">{inst.what_it_is}</span>
                 )}
               </div>
+              <EntrySourceBadge source={getEntrySource(inst as Record<string, unknown>)} />
               <VerseRefBadge verse={inst.first_invoked} />
               {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-verde/30" /> : <ChevronRight className="h-3.5 w-3.5 text-verde/30" />}
             </button>

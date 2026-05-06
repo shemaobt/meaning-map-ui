@@ -4,6 +4,13 @@ import { ChevronDown, ChevronRight, GripVertical, Plus, Trash2 } from "lucide-re
 import { FieldGroup, EditableInput, EditableTextarea, TagsInput, DynamicField } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
 import { ConfirmDialog } from "../../../common/ConfirmDialog";
+import {
+  EntrySourceBadge,
+  PROVENANCE_KEY,
+  getEntrySource,
+  markAsEdited,
+  markAsHuman,
+} from "./EntryProvenance";
 
 interface OutlineEditorProps {
   data: unknown;
@@ -30,13 +37,15 @@ export function OutlineEditor({ data, setData }: OutlineEditorProps) {
   };
 
   const updateChapter = (index: number, field: string, value: unknown) => {
-    const updated = chapters.map((ch, i) => (i === index ? { ...ch, [field]: value } : ch));
+    const updated = chapters.map((ch, i) =>
+      i === index ? markAsEdited({ ...ch, [field]: value }) : ch,
+    );
     update("chapters", updated);
   };
 
   const addChapter = () => {
     const nextNum = chapters.length + 1;
-    update("chapters", [...chapters, { chapter: nextNum, title: "", summary: "", key_events: [] }]);
+    update("chapters", [...chapters, markAsHuman({ chapter: nextNum, title: "", summary: "", key_events: [] })]);
   };
 
   const removeChapter = (index: number) => {
@@ -85,7 +94,7 @@ export function OutlineEditor({ data, setData }: OutlineEditorProps) {
   );
 }
 
-const KNOWN_CHAPTER_KEYS = new Set(["chapter", "title", "summary", "key_events"]);
+const KNOWN_CHAPTER_KEYS = new Set(["chapter", "title", "summary", "key_events", PROVENANCE_KEY]);
 
 function ChapterCard({
   chapter,
@@ -118,6 +127,7 @@ function ChapterCard({
         <span className="flex-1 text-sm font-medium text-preto truncate">
           {chapter.title || t("bcdDetail.chapterLabel", { number: num })}
         </span>
+        <EntrySourceBadge source={getEntrySource(chapter as Record<string, unknown>)} />
         {open ? (
           <ChevronDown className="h-3.5 w-3.5 text-verde/30 flex-shrink-0" />
         ) : (

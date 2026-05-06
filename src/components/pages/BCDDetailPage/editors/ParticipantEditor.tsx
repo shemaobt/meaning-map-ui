@@ -19,6 +19,13 @@ import {
 } from "../../../ui/select";
 import { Button } from "../../../ui/button";
 import { ConfirmDialog } from "../../../common/ConfirmDialog";
+import {
+  EntrySourceBadge,
+  PROVENANCE_KEY,
+  getEntrySource,
+  markAsEdited,
+  markAsHuman,
+} from "./EntryProvenance";
 
 type VerseRef = { chapter?: number; verse?: number };
 type ArcEntry = { at?: VerseRef; state?: string };
@@ -42,6 +49,7 @@ const KNOWN_PARTICIPANT_KEYS = new Set([
   "role_in_book", "relationships", "what_audience_knows_at_entry",
   "arc", "status_at_end",
   "entity_type", "appears_in", "appearance_count",
+  PROVENANCE_KEY,
 ]);
 
 interface ParticipantEditorProps {
@@ -56,7 +64,9 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
   const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    const updated = items.map((item, i) =>
+      i === index ? markAsEdited({ ...item, [field]: value }) : item,
+    );
     setData(updated);
   };
 
@@ -68,7 +78,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
   };
 
   const addItem = () => {
-    setData([...items, { name: "", type: "named", entry_verse: { chapter: 1, verse: 1 }, role_in_book: "", relationships: [], arc: [] }]);
+    setData([...items, markAsHuman({ name: "", type: "named", entry_verse: { chapter: 1, verse: 1 }, role_in_book: "", relationships: [], arc: [] })]);
     setOpenIdx(items.length);
   };
 
@@ -108,6 +118,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                   <span className="text-xs text-verde/40 ml-2">{p.role_in_book}</span>
                 )}
               </div>
+              <EntrySourceBadge source={getEntrySource(p as Record<string, unknown>)} />
               <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-areia/15 text-verde/50">
                 {p.type ?? "named"}
               </span>

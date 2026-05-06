@@ -11,6 +11,13 @@ import {
 } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
 import { ConfirmDialog } from "../../../common/ConfirmDialog";
+import {
+  EntrySourceBadge,
+  PROVENANCE_KEY,
+  getEntrySource,
+  markAsEdited,
+  markAsHuman,
+} from "./EntryProvenance";
 
 type VerseRef = { chapter?: number; verse?: number };
 type EpisodeStatus = { at?: VerseRef; status?: string };
@@ -27,6 +34,7 @@ type Thread = {
 const KNOWN_THREAD_KEYS = new Set([
   "label", "opened_at", "resolved_at", "question", "status_by_episode",
   "is_resolved_at_entry",
+  PROVENANCE_KEY,
 ]);
 
 interface ThreadEditorProps {
@@ -41,7 +49,9 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
   const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    const updated = items.map((item, i) =>
+      i === index ? markAsEdited({ ...item, [field]: value }) : item,
+    );
     setData(updated);
   };
 
@@ -53,7 +63,7 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
   };
 
   const addItem = () => {
-    setData([...items, { label: "", opened_at: { chapter: 1, verse: 1 }, question: "", status_by_episode: [] }]);
+    setData([...items, markAsHuman({ label: "", opened_at: { chapter: 1, verse: 1 }, question: "", status_by_episode: [] })]);
     setOpenIdx(items.length);
   };
 
@@ -92,6 +102,7 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                   <span className="text-xs text-verde/40 ml-2 truncate">{th.question}</span>
                 )}
               </div>
+              <EntrySourceBadge source={getEntrySource(th as Record<string, unknown>)} />
               {th.resolved_at && (
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-verde-claro/15 text-verde-claro">
                   {t("editors.resolved")}
