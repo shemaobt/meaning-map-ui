@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "../../../ui/select";
 import { Button } from "../../../ui/button";
+import { ConfirmDialog } from "../../../common/ConfirmDialog";
 
 type VerseRef = { chapter?: number; verse?: number };
 type ArcEntry = { at?: VerseRef; state?: string };
@@ -52,6 +53,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
   const { t } = useTranslation();
   const items = Array.isArray(data) ? (data as Participant[]) : [];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
     const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
@@ -238,7 +240,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                 />
 
                 <div className="flex justify-end pt-2 border-t border-areia/10">
-                  <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+                  <Button type="button" size="sm" variant="outline" onClick={() => setPendingRemoveIdx(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removeParticipant")}
                   </Button>
                 </div>
@@ -251,6 +253,19 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
       <Button type="button" variant="outline" onClick={addItem} className="w-full gap-1.5 h-10 border-dashed border-areia/40 text-verde/50 hover:text-telha hover:border-telha/30">
         <Plus className="h-4 w-4" /> {t("editors.addParticipant")}
       </Button>
+
+      <ConfirmDialog
+        open={pendingRemoveIdx !== null}
+        onOpenChange={(open) => { if (!open) setPendingRemoveIdx(null); }}
+        title={t("editors.confirmRemoveParticipantTitle")}
+        description={t("editors.confirmRemoveDescription")}
+        variant="destructive"
+        confirmLabel={t("editors.removeParticipant")}
+        onConfirm={() => {
+          if (pendingRemoveIdx !== null) removeItem(pendingRemoveIdx);
+          setPendingRemoveIdx(null);
+        }}
+      />
     </div>
   );
 }
