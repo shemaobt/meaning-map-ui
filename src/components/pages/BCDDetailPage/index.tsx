@@ -267,8 +267,8 @@ export function BCDDetailPage() {
       <div className="flex-1 flex gap-6 items-start min-h-0">
         <div className="flex-1 min-w-0">
           {!activeSection && showEditHint && (
-            <div className="mb-4 flex items-center gap-2 rounded-lg bg-azul/10 border border-azul/25 px-4 py-2.5 text-sm text-azul/90">
-              <Pencil className="h-3.5 w-3.5 flex-shrink-0" />
+            <div className="mb-3 flex items-center gap-2 rounded-md bg-azul/10 border border-azul/20 px-3 py-2 text-xs text-azul/80">
+              <Pencil className="h-3 w-3 flex-shrink-0" />
               <span>{t("bcdDetail.editHint")}</span>
             </div>
           )}
