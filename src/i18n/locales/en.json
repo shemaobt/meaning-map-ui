@@ -465,7 +465,10 @@
     "noAdditionalDetails": "No additional details.",
     "markAsResolved": "Mark as resolved",
     "named": "Named",
+    "unnamed": "Unnamed",
     "group": "Group",
+    "divine": "Divine",
+    "role": "Role",
     "placeholders": {
       "bookArc": "Describe the overall narrative arc of the book...",
       "chapterTitle": "Chapter title",

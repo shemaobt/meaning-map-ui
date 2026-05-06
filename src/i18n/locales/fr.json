@@ -465,7 +465,10 @@
     "noNotes": "Pas encore de notes.",
     "resolved": "résolu",
     "named": "Nommé",
+    "unnamed": "Anonyme",
     "group": "Groupe",
+    "divine": "Divin",
+    "role": "Fonction",
     "placeholders": {
       "bookArc": "Décrivez l'arc narratif global du livre...",
       "chapterTitle": "Titre du chapitre",
