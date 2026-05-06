@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, GripVertical, Plus, Trash2 } from "lucide-react";
 import { FieldGroup, EditableInput, EditableTextarea, TagsInput, DynamicField } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
+import { ConfirmDialog } from "../../../common/ConfirmDialog";
 
 interface OutlineEditorProps {
   data: unknown;
@@ -99,6 +100,7 @@ function ChapterCard({
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
   const num = chapter.chapter ?? index + 1;
   const otherKeys = Object.keys(chapter).filter((k) => !KNOWN_CHAPTER_KEYS.has(k));
 
@@ -170,12 +172,22 @@ function ChapterCard({
           ))}
 
           <div className="flex justify-end pt-2 border-t border-areia/10">
-            <Button type="button" size="sm" variant="outline" onClick={onRemove} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+            <Button type="button" size="sm" variant="outline" onClick={() => setConfirmingRemove(true)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
               <Trash2 className="h-3 w-3" /> {t("editors.removeChapter")}
             </Button>
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmingRemove}
+        onOpenChange={setConfirmingRemove}
+        title={t("editors.confirmRemoveChapterTitle")}
+        description={t("editors.confirmRemoveDescription")}
+        variant="destructive"
+        confirmLabel={t("editors.removeChapter")}
+        onConfirm={onRemove}
+      />
     </div>
   );
 }
