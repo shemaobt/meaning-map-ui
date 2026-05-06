@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Sparkles, UserPlus } from "lucide-react";
 
-export const PROVENANCE_KEY = "_source";
+export const PROVENANCE_KEY = "provenance";
 
 export type EntrySource = "ai" | "ai_edited" | "human";
 

@@ -408,13 +408,6 @@ const SECTION_EDITORS: Record<string, React.ComponentType<{ data: unknown; setDa
   maintenance_notes: MaintenanceNotesEditor,
 };
 
-const BHSA_SECTIONS = new Set([
-  "participant_register",
-  "places",
-  "objects",
-  "institutions",
-]);
-
 function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: string }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
@@ -447,7 +440,6 @@ function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: str
 
   const Editor = SECTION_EDITORS[sectionKey];
   const isTextSection = TEXT_SECTIONS.has(sectionKey);
-  const hasBHSAFields = BHSA_SECTIONS.has(sectionKey);
 
   return (
     <SectionEditor
@@ -462,11 +454,6 @@ function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: str
           {needsHydration && (
             <div className="mb-3 rounded-md bg-azul/10 border border-azul/20 px-3 py-2 text-xs text-azul/80">
               {t("bcdDetail.loadingTranslation")}
-            </div>
-          )}
-          {hasBHSAFields && (
-            <div className="mb-3 rounded-md bg-areia/15 border border-areia/30 px-3 py-2 text-xs text-verde/70">
-              {t("bcdDetail.bhsaWarning")}
             </div>
           )}
           {isTextSection ? (
