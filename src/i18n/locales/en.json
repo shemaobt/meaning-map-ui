@@ -10,6 +10,12 @@
     "books": "Books",
     "book": "Book"
   },
+  "provenance": {
+    "added": "Added",
+    "edited": "Edited",
+    "humanTooltip": "Added by an analyst",
+    "editedTooltip": "AI-generated entry edited by an analyst"
+  },
   "common": {
     "save": "Save",
     "saving": "Saving...",

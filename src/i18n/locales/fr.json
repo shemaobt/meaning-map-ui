@@ -10,6 +10,12 @@
     "books": "Livres",
     "book": "Livre"
   },
+  "provenance": {
+    "added": "Ajouté",
+    "edited": "Modifié",
+    "humanTooltip": "Ajouté par un analyste",
+    "editedTooltip": "Entrée générée par l'IA modifiée par un analyste"
+  },
   "common": {
     "save": "Enregistrer",
     "saving": "Enregistrement...",
