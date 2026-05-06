@@ -272,6 +272,12 @@ export function BCDDetailPage() {
               <span>{t("bcdDetail.editHint")}</span>
             </div>
           )}
+          {!activeSection && isLockedByMe && (
+            <div className="mb-3 flex items-start gap-2 rounded-md bg-verde-claro/10 border border-verde-claro/20 px-3 py-2 text-xs text-verde-claro">
+              <Pencil className="h-3 w-3 flex-shrink-0 mt-0.5" />
+              <span>{t("bcdDetail.editingHint")}</span>
+            </div>
+          )}
           {!activeSection && (
             <TileGrid
               bcd={currentBCD}

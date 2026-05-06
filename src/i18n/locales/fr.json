@@ -612,6 +612,7 @@
     "finishEditingTooltip": "Déverrouille pour que d'autres puissent modifier",
     "saveAndFinishTooltip": "Enregistre les modifications et déverrouille",
     "editHint": "Cliquez sur \"Modifier\" ci-dessus pour modifier ce Contexte du Livre",
+    "editingHint": "Vous modifiez ce Contexte du Livre. Apportez vos changements dans les sections souhaitées et, quand vous avez fini, cliquez sur \"Enregistrer et terminer\" ci-dessus.",
     "lockSuccess": "Document verrouillé pour modification.",
     "lockFailed": "Impossible de verrouiller le document.",
     "unlockSuccess": "Document déverrouillé.",

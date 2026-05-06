@@ -612,6 +612,7 @@
     "finishEditingTooltip": "Unlock so others can edit",
     "saveAndFinishTooltip": "Save changes and unlock",
     "editHint": "Click \"Edit\" above to modify this Book Context",
+    "editingHint": "You are editing this Book Context. Make changes in any section, then click \"Save & finish\" above when you're done.",
     "lockSuccess": "Document locked for editing.",
     "lockFailed": "Could not lock document.",
     "unlockSuccess": "Document unlocked.",

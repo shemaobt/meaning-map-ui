@@ -612,6 +612,7 @@
     "finishEditingTooltip": "Desbloqueia para que outros possam editar",
     "saveAndFinishTooltip": "Salva alterações e desbloqueia",
     "editHint": "Clique em \"Editar\" acima para modificar este Contexto do Livro",
+    "editingHint": "Você está editando este Contexto do Livro. Faça as alterações em qualquer seção e, quando terminar, clique em \"Salvar e concluir\" acima.",
     "lockSuccess": "Documento bloqueado para edição.",
     "lockFailed": "Não foi possível bloquear o documento.",
     "unlockSuccess": "Documento desbloqueado.",
