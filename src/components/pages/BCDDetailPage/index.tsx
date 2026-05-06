@@ -277,7 +277,6 @@ export function BCDDetailPage() {
               bcd={currentBCD}
               disabled={currentBCD.status === "generating"}
               canEdit={canEdit}
-              editAvailable={showEditHint}
               onSelect={requestSectionChange}
             />
           )}
@@ -326,7 +325,7 @@ export function BCDDetailPage() {
   );
 }
 
-function TileGrid({ bcd, disabled, canEdit, editAvailable, onSelect }: { bcd: BCD; disabled?: boolean; canEdit?: boolean; editAvailable?: boolean; onSelect: (key: string) => void }) {
+function TileGrid({ bcd, disabled, canEdit, onSelect }: { bcd: BCD; disabled?: boolean; canEdit?: boolean; onSelect: (key: string) => void }) {
   const { t } = useTranslation();
 
   return (
@@ -336,7 +335,6 @@ function TileGrid({ bcd, disabled, canEdit, editAvailable, onSelect }: { bcd: BC
         const hasContent = data !== null && data !== undefined;
         const count = Array.isArray(data) ? data.length : null;
         const preview = getPreview(data, section.key);
-        const showEditIcon = (canEdit || editAvailable) && !disabled;
 
         return (
           <button
@@ -355,12 +353,7 @@ function TileGrid({ bcd, disabled, canEdit, editAvailable, onSelect }: { bcd: BC
           >
             <div className="flex items-start justify-between">
               <section.icon className="h-6 w-6 mb-3 opacity-70" />
-              {showEditIcon && (
-                <Pencil
-                  className={cn("h-3.5 w-3.5", canEdit ? "opacity-80" : "opacity-40")}
-                  aria-label={t(canEdit ? "bcdDetail.lockAndEdit" : "bcdDetail.tileEditableHint")}
-                />
-              )}
+              {canEdit && !disabled && <Pencil className="h-3.5 w-3.5 opacity-40" />}
             </div>
             <div>
               <p className="text-xs font-bold leading-tight">{t(section.labelKey)}</p>

@@ -125,7 +125,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, isAdmin, h
             onClick={onLock}
             disabled={loading !== null}
             className="gap-1"
-            title={t("bcdDetail.reviewTooltip")}
+            title={t("bcdDetail.editTooltip")}
           >
             <Pencil className="h-3.5 w-3.5" />
             {t("bcdDetail.lockAndReview")}
