@@ -11,6 +11,7 @@ import {
   VerseRefListField,
 } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
+import { ConfirmDialog } from "../../../common/ConfirmDialog";
 
 type VerseRef = { chapter?: number; verse?: number };
 
@@ -33,6 +34,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
   const { t } = useTranslation();
   const items = Array.isArray(data) ? (data as Place[]) : [];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
     const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
@@ -122,7 +124,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
                   onUpdate={(key, val) => updateItem(i, key, val)}
                 />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
-                  <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+                  <Button type="button" size="sm" variant="outline" onClick={() => setPendingRemoveIdx(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removePlace")}
                   </Button>
                 </div>
@@ -134,6 +136,19 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
       <Button type="button" variant="outline" onClick={addItem} className="w-full gap-1.5 h-10 border-dashed border-areia/40 text-verde/50 hover:text-telha hover:border-telha/30">
         <Plus className="h-4 w-4" /> {t("editors.addPlace")}
       </Button>
+
+      <ConfirmDialog
+        open={pendingRemoveIdx !== null}
+        onOpenChange={(open) => { if (!open) setPendingRemoveIdx(null); }}
+        title={t("editors.confirmRemovePlaceTitle")}
+        description={t("editors.confirmRemoveDescription")}
+        variant="destructive"
+        confirmLabel={t("editors.removePlace")}
+        onConfirm={() => {
+          if (pendingRemoveIdx !== null) removeItem(pendingRemoveIdx);
+          setPendingRemoveIdx(null);
+        }}
+      />
     </div>
   );
 }
@@ -158,6 +173,7 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
   const { t } = useTranslation();
   const items = Array.isArray(data) ? (data as Obj[]) : [];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
     const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
@@ -256,7 +272,7 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
                   onUpdate={(key, val) => updateItem(i, key, val)}
                 />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
-                  <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+                  <Button type="button" size="sm" variant="outline" onClick={() => setPendingRemoveIdx(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removeObject")}
                   </Button>
                 </div>
@@ -268,6 +284,19 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
       <Button type="button" variant="outline" onClick={addItem} className="w-full gap-1.5 h-10 border-dashed border-areia/40 text-verde/50 hover:text-telha hover:border-telha/30">
         <Plus className="h-4 w-4" /> {t("editors.addObject")}
       </Button>
+
+      <ConfirmDialog
+        open={pendingRemoveIdx !== null}
+        onOpenChange={(open) => { if (!open) setPendingRemoveIdx(null); }}
+        title={t("editors.confirmRemoveObjectTitle")}
+        description={t("editors.confirmRemoveDescription")}
+        variant="destructive"
+        confirmLabel={t("editors.removeObject")}
+        onConfirm={() => {
+          if (pendingRemoveIdx !== null) removeItem(pendingRemoveIdx);
+          setPendingRemoveIdx(null);
+        }}
+      />
     </div>
   );
 }
@@ -292,6 +321,7 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
   const { t } = useTranslation();
   const items = Array.isArray(data) ? (data as Institution[]) : [];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
     const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
@@ -389,7 +419,7 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
                   onUpdate={(key, val) => updateItem(i, key, val)}
                 />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
-                  <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+                  <Button type="button" size="sm" variant="outline" onClick={() => setPendingRemoveIdx(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removeInstitution")}
                   </Button>
                 </div>
@@ -401,6 +431,19 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
       <Button type="button" variant="outline" onClick={addItem} className="w-full gap-1.5 h-10 border-dashed border-areia/40 text-verde/50 hover:text-telha hover:border-telha/30">
         <Plus className="h-4 w-4" /> {t("editors.addInstitution")}
       </Button>
+
+      <ConfirmDialog
+        open={pendingRemoveIdx !== null}
+        onOpenChange={(open) => { if (!open) setPendingRemoveIdx(null); }}
+        title={t("editors.confirmRemoveInstitutionTitle")}
+        description={t("editors.confirmRemoveDescription")}
+        variant="destructive"
+        confirmLabel={t("editors.removeInstitution")}
+        onConfirm={() => {
+          if (pendingRemoveIdx !== null) removeItem(pendingRemoveIdx);
+          setPendingRemoveIdx(null);
+        }}
+      />
     </div>
   );
 }
