@@ -1,5 +1,20 @@
 export type BCDStatus = "generating" | "draft" | "review" | "approved";
 
+export type ParticipantNameType =
+  | "named"
+  | "unnamed"
+  | "group"
+  | "divine"
+  | "role";
+
+export const PARTICIPANT_NAME_TYPES: ParticipantNameType[] = [
+  "named",
+  "unnamed",
+  "group",
+  "divine",
+  "role",
+];
+
 export interface BCDListItem {
   id: string;
   book_id: string;
