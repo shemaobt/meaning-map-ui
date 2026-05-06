@@ -28,6 +28,7 @@ import { LockBadge } from "../../common/LockBadge";
 import { UnsavedChangesDialog } from "../../common/UnsavedChangesDialog";
 import { BCDStatusBadge } from "../BookContextPage/BCDStatusBadge";
 import { BCDActionBar } from "./BCDActionBar";
+import { EditingFlowDialog } from "./EditingFlowDialog";
 import { GenerationPanel } from "./GenerationPanel";
 import { SectionDetail } from "./SectionDetail";
 import { SectionEditor, TextSection } from "./SectionEditor";
@@ -41,6 +42,8 @@ import { BCDInfoTooltip } from "./BCDInfoTooltip";
 import { ApprovalProgress } from "./ApprovalProgress";
 import { BCDBHSASidebar, BCDBHSASidebarToggle } from "./BCDBHSASidebar";
 import { cn } from "../../../utils/cn";
+
+const EDITING_FLOW_FLAG = "bcdEditingFlowAcknowledged";
 
 type SectionDef = {
   key: string;
@@ -90,6 +93,19 @@ export function BCDDetailPage() {
   const canEdit = canEditWhenLocked && isLockedByMe;
   const showEditHint =
     canEditWhenLocked && !currentBCD?.locked_by && currentBCD?.status !== "generating";
+  const [showEditingFlow, setShowEditingFlow] = useState(false);
+
+  useEffect(() => {
+    if (!isLockedByMe) return;
+    if (typeof window === "undefined") return;
+    const acknowledged = window.localStorage.getItem(EDITING_FLOW_FLAG) === "true";
+    if (!acknowledged) setShowEditingFlow(true);
+  }, [isLockedByMe]);
+
+  const acknowledgeEditingFlow = useCallback(() => {
+    window.localStorage.setItem(EDITING_FLOW_FLAG, "true");
+    setShowEditingFlow(false);
+  }, []);
 
   const handleLock = useCallback(async () => {
     if (!currentBCD) return;
@@ -272,12 +288,6 @@ export function BCDDetailPage() {
               <span>{t("bcdDetail.editHint")}</span>
             </div>
           )}
-          {!activeSection && isLockedByMe && (
-            <div className="mb-3 flex items-start gap-2 rounded-md bg-verde-claro/10 border border-verde-claro/20 px-3 py-2 text-xs text-verde-claro">
-              <Pencil className="h-3 w-3 flex-shrink-0 mt-0.5" />
-              <span>{t("bcdDetail.editingHint")}</span>
-            </div>
-          )}
           {!activeSection && (
             <TileGrid
               bcd={currentBCD}
@@ -326,6 +336,11 @@ export function BCDDetailPage() {
         onSave={handleDialogSave}
         onDiscard={handleDialogDiscard}
         saving={dialogSaving}
+      />
+
+      <EditingFlowDialog
+        open={showEditingFlow}
+        onAcknowledge={acknowledgeEditingFlow}
       />
     </div>
   );
