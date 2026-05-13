@@ -8,14 +8,15 @@ import { bookContextAPI } from "../../../services/api";
 import { useBCDStore } from "../../../stores/bcdStore";
 import { cn } from "../../../utils/cn";
 import { formatBibleRef, isVerseRefShape } from "../../../utils/bibleRef";
-import { humanizeEntityType } from "../../../utils/entityType";
+import { humanizeEntityType, humanizeParticipantType } from "../../../utils/entityType";
 import { Button } from "../../ui/button";
 
 function formatPreviewValue(key: string, value: unknown, t: TFunction): string {
   if (value === null || value === undefined) return "—";
   if (isVerseRefShape(value)) return formatBibleRef(value);
-  if (key === "entity_type" && typeof value === "string") {
-    return humanizeEntityType(value, t);
+  if (typeof value === "string") {
+    if (key === "entity_type") return humanizeEntityType(value, t);
+    if (key === "type") return humanizeParticipantType(value, t);
   }
   if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
     return String(value);
@@ -369,9 +370,7 @@ function ItemDetailView({ item, nameKey }: { item: Record<string, unknown>; name
             {key.replace(/_/g, " ")}
           </p>
           {typeof val === "string" ? (
-            <p className="text-xs text-preto leading-relaxed">
-              {key === "entity_type" ? humanizeEntityType(val, t) : val}
-            </p>
+            <p className="text-xs text-preto leading-relaxed">{formatPreviewValue(key, val, t)}</p>
           ) : Array.isArray(val) ? (
             <div className="flex flex-wrap gap-1">
               {val.map((v, i) => (
@@ -426,9 +425,7 @@ function KeyValueView({ data }: { data: unknown }) {
               {key.replace(/_/g, " ")}
             </p>
             {typeof val === "string" ? (
-              <p className="text-sm text-preto leading-relaxed">
-                {key === "entity_type" ? humanizeEntityType(val, t) : val}
-              </p>
+              <p className="text-sm text-preto leading-relaxed">{formatPreviewValue(key, val, t)}</p>
             ) : isVerseRefShape(val) ? (
               <p className="text-sm font-mono text-preto">{formatBibleRef(val)}</p>
             ) : Array.isArray(val) ? (

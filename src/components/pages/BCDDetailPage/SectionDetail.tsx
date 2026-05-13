@@ -4,11 +4,12 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import type { TFunction } from "i18next";
 import type { BCD } from "../../../types/bookContext";
 import { formatBibleRef, isVerseRefShape } from "../../../utils/bibleRef";
-import { humanizeEntityType } from "../../../utils/entityType";
+import { humanizeEntityType, humanizeParticipantType } from "../../../utils/entityType";
 
 function formatScalar(label: string, value: unknown, t: TFunction): string {
-  if (label === "entity_type" && typeof value === "string") {
-    return humanizeEntityType(value, t);
+  if (typeof value === "string") {
+    if (label === "entity_type") return humanizeEntityType(value, t);
+    if (label === "type") return humanizeParticipantType(value, t);
   }
   if (isVerseRefShape(value)) return formatBibleRef(value);
   return String(value);
@@ -17,8 +18,9 @@ function formatScalar(label: string, value: unknown, t: TFunction): string {
 function renderMiniValue(key: string, value: unknown, t: TFunction): string {
   if (value === null || value === undefined) return "—";
   if (isVerseRefShape(value)) return formatBibleRef(value);
-  if (key === "entity_type" && typeof value === "string") {
-    return humanizeEntityType(value, t);
+  if (typeof value === "string") {
+    if (key === "entity_type") return humanizeEntityType(value, t);
+    if (key === "type") return humanizeParticipantType(value, t);
   }
   if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
     return String(value);
