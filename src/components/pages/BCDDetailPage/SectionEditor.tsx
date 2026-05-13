@@ -3,10 +3,25 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, Save, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import type { TFunction } from "i18next";
 import { bookContextAPI } from "../../../services/api";
 import { useBCDStore } from "../../../stores/bcdStore";
 import { cn } from "../../../utils/cn";
+import { formatBibleRef, isVerseRefShape } from "../../../utils/bibleRef";
+import { humanizeEntityType } from "../../../utils/entityType";
 import { Button } from "../../ui/button";
+
+function formatPreviewValue(key: string, value: unknown, t: TFunction): string {
+  if (value === null || value === undefined) return "—";
+  if (isVerseRefShape(value)) return formatBibleRef(value);
+  if (key === "entity_type" && typeof value === "string") {
+    return humanizeEntityType(value, t);
+  }
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return "—";
+}
 
 interface SectionEditorProps {
   bcdId: string;
@@ -354,23 +369,19 @@ function ItemDetailView({ item, nameKey }: { item: Record<string, unknown>; name
             {key.replace(/_/g, " ")}
           </p>
           {typeof val === "string" ? (
-            <p className="text-xs text-preto leading-relaxed">{val}</p>
+            <p className="text-xs text-preto leading-relaxed">
+              {key === "entity_type" ? humanizeEntityType(val, t) : val}
+            </p>
           ) : Array.isArray(val) ? (
             <div className="flex flex-wrap gap-1">
-              {val.map((v, i) =>
-                typeof v === "string" ? (
-                  <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-full bg-areia/15 text-verde">
-                    {v}
-                  </span>
-                ) : (
-                  <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-full bg-areia/15 text-verde">
-                    {JSON.stringify(v)}
-                  </span>
-                ),
-              )}
+              {val.map((v, i) => (
+                <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-full bg-areia/15 text-verde">
+                  {typeof v === "string" ? v : formatPreviewValue(key, v, t)}
+                </span>
+              ))}
             </div>
           ) : (
-            <p className="text-xs text-preto">{JSON.stringify(val)}</p>
+            <p className="text-xs text-preto">{formatPreviewValue(key, val, t)}</p>
           )}
         </div>
       ))}
@@ -379,8 +390,12 @@ function ItemDetailView({ item, nameKey }: { item: Record<string, unknown>; name
 }
 
 function KeyValueView({ data }: { data: unknown }) {
+  const { t } = useTranslation();
   if (typeof data === "string") {
     return <p className="text-sm text-preto leading-relaxed">{data}</p>;
+  }
+  if (isVerseRefShape(data)) {
+    return <p className="text-sm font-mono text-preto">{formatBibleRef(data)}</p>;
   }
   if (Array.isArray(data)) {
     return (
@@ -389,10 +404,12 @@ function KeyValueView({ data }: { data: unknown }) {
           <div key={i} className="rounded-md bg-surface-alt p-2.5">
             {typeof item === "string" ? (
               <p className="text-xs text-preto">{item}</p>
+            ) : isVerseRefShape(item) ? (
+              <p className="text-xs font-mono text-preto">{formatBibleRef(item)}</p>
             ) : typeof item === "object" && item !== null ? (
               <ItemDetailView item={item as Record<string, unknown>} nameKey="" />
             ) : (
-              <p className="text-xs text-preto">{JSON.stringify(item)}</p>
+              <p className="text-xs text-preto">{formatPreviewValue("", item, t)}</p>
             )}
           </div>
         ))}
@@ -409,12 +426,16 @@ function KeyValueView({ data }: { data: unknown }) {
               {key.replace(/_/g, " ")}
             </p>
             {typeof val === "string" ? (
-              <p className="text-sm text-preto leading-relaxed">{val}</p>
+              <p className="text-sm text-preto leading-relaxed">
+                {key === "entity_type" ? humanizeEntityType(val, t) : val}
+              </p>
+            ) : isVerseRefShape(val) ? (
+              <p className="text-sm font-mono text-preto">{formatBibleRef(val)}</p>
             ) : Array.isArray(val) ? (
               <div className="flex flex-wrap gap-1">
                 {val.map((v, i) => (
                   <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-full bg-areia/15 text-verde">
-                    {typeof v === "string" ? v : JSON.stringify(v)}
+                    {typeof v === "string" ? v : formatPreviewValue(key, v, t)}
                   </span>
                 ))}
               </div>
