@@ -1,7 +1,32 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import type { TFunction } from "i18next";
 import type { BCD } from "../../../types/bookContext";
+import { formatBibleRef, isVerseRefShape } from "../../../utils/bibleRef";
+import { humanizeEntityType, humanizeParticipantType } from "../../../utils/entityType";
+
+function formatScalar(label: string, value: unknown, t: TFunction): string {
+  if (typeof value === "string") {
+    if (label === "entity_type") return humanizeEntityType(value, t);
+    if (label === "type") return humanizeParticipantType(value, t);
+  }
+  if (isVerseRefShape(value)) return formatBibleRef(value);
+  return String(value);
+}
+
+function renderMiniValue(key: string, value: unknown, t: TFunction): string {
+  if (value === null || value === undefined) return "—";
+  if (isVerseRefShape(value)) return formatBibleRef(value);
+  if (typeof value === "string") {
+    if (key === "entity_type") return humanizeEntityType(value, t);
+    if (key === "type") return humanizeParticipantType(value, t);
+  }
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return "—";
+}
 
 interface SectionDetailProps {
   bcd: BCD;
@@ -196,6 +221,7 @@ function TextView({ data }: { data: unknown }) {
 }
 
 function FieldBlock({ label, value }: { label: string; value: unknown }) {
+  const { t } = useTranslation();
   const displayLabel = label.replace(/_/g, " ");
 
   if (value === null || value === undefined) return null;
@@ -204,7 +230,7 @@ function FieldBlock({ label, value }: { label: string; value: unknown }) {
     return (
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40 mb-0.5">{displayLabel}</p>
-        <p className="text-xs text-preto leading-relaxed">{value}</p>
+        <p className="text-xs text-preto leading-relaxed">{formatScalar(label, value, t)}</p>
       </div>
     );
   }
@@ -218,8 +244,18 @@ function FieldBlock({ label, value }: { label: string; value: unknown }) {
     );
   }
 
+  if (isVerseRefShape(value)) {
+    return (
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40 mb-0.5">{displayLabel}</p>
+        <p className="text-xs font-mono text-preto">{formatBibleRef(value)}</p>
+      </div>
+    );
+  }
+
   if (Array.isArray(value)) {
     const allStrings = value.every((v) => typeof v === "string");
+    const allRefs = value.length > 0 && value.every(isVerseRefShape);
     return (
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-wide text-verde/40 mb-1">{displayLabel}</p>
@@ -227,6 +263,12 @@ function FieldBlock({ label, value }: { label: string; value: unknown }) {
           <div className="flex flex-wrap gap-1">
             {value.map((v, i) => (
               <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-areia/15 text-verde">{v}</span>
+            ))}
+          </div>
+        ) : allRefs ? (
+          <div className="flex flex-wrap gap-1">
+            {value.map((v, i) => (
+              <span key={i} className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-areia/15 text-verde/70">{formatBibleRef(v)}</span>
             ))}
           </div>
         ) : (
@@ -266,6 +308,7 @@ function FieldBlock({ label, value }: { label: string; value: unknown }) {
 }
 
 function MiniObject({ data }: { data: Record<string, unknown> }) {
+  const { t } = useTranslation();
   const name = typeof data.name === "string" ? data.name : null;
   const gloss = typeof data.english_gloss === "string" && data.english_gloss ? data.english_gloss : null;
   const skipKeys = new Set(name && gloss ? ["name", "english_gloss"] : []);
@@ -283,7 +326,7 @@ function MiniObject({ data }: { data: Record<string, unknown> }) {
         .map(([k, v]) => (
           <div key={k} className="flex gap-2 text-xs">
             <span className="text-verde/40 flex-shrink-0">{k.replace(/_/g, " ")}:</span>
-            <span className="text-preto">{typeof v === "string" || typeof v === "number" ? String(v) : JSON.stringify(v)}</span>
+            <span className="text-preto">{renderMiniValue(k, v, t)}</span>
           </div>
         ))}
     </div>

@@ -5,6 +5,7 @@ import { Input } from "../../../ui/input";
 import { Textarea } from "../../../ui/textarea";
 import { Button } from "../../../ui/button";
 import { cn } from "../../../../utils/cn";
+import { formatBibleRef, isVerseRefShape, type VerseRef } from "../../../../utils/bibleRef";
 
 interface FieldGroupProps {
   label: string;
@@ -37,11 +38,11 @@ export function ReadOnlyValue({ value }: { value: string }) {
   );
 }
 
-export function VerseRefBadge({ verse }: { verse: { chapter?: number; verse?: number } | null | undefined }) {
+export function VerseRefBadge({ verse }: { verse: VerseRef | null | undefined }) {
   if (!verse) return <span className="text-verde/30 italic text-xs">none</span>;
   return (
     <span className="inline-flex items-center text-xs font-mono px-2 py-0.5 rounded-md bg-areia/15 text-verde/60 border border-areia/20">
-      {verse.chapter ?? "?"}:{verse.verse ?? "?"}
+      {formatBibleRef(verse)}
     </span>
   );
 }
@@ -269,6 +270,27 @@ export function CheckboxField({ label, checked, onChange, description }: Checkbo
 
 export function ReadOnlyJsonValue({ value }: { value: unknown }) {
   const { t } = useTranslation();
+
+  if (isVerseRefShape(value)) {
+    return (
+      <p className="text-sm font-mono text-preto bg-areia/10 rounded-md px-3 py-2 border border-areia/15">
+        {formatBibleRef(value)}
+      </p>
+    );
+  }
+
+  if (Array.isArray(value) && value.length > 0 && value.every(isVerseRefShape)) {
+    return (
+      <div className="flex flex-wrap gap-1 bg-areia/10 rounded-md px-3 py-2 border border-areia/15">
+        {value.map((v, i) => (
+          <span key={i} className="text-xs font-mono px-2 py-0.5 rounded-md bg-areia/15 text-verde/70 border border-areia/20">
+            {formatBibleRef(v)}
+          </span>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-md border border-areia/30 bg-areia/5 px-3 py-2">
       <div className="flex items-center gap-2 mb-1 text-[9px] font-medium uppercase tracking-wide text-verde/40">
