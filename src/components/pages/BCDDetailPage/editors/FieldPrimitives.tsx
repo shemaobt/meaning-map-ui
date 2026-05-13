@@ -5,6 +5,7 @@ import { Input } from "../../../ui/input";
 import { Textarea } from "../../../ui/textarea";
 import { Button } from "../../../ui/button";
 import { cn } from "../../../../utils/cn";
+import { formatBibleRef, type VerseRef } from "../../../../utils/bibleRef";
 
 interface FieldGroupProps {
   label: string;
@@ -37,11 +38,11 @@ export function ReadOnlyValue({ value }: { value: string }) {
   );
 }
 
-export function VerseRefBadge({ verse }: { verse: { chapter?: number; verse?: number } | null | undefined }) {
+export function VerseRefBadge({ verse }: { verse: VerseRef | null | undefined }) {
   if (!verse) return <span className="text-verde/30 italic text-xs">none</span>;
   return (
     <span className="inline-flex items-center text-xs font-mono px-2 py-0.5 rounded-md bg-areia/15 text-verde/60 border border-areia/20">
-      {verse.chapter ?? "?"}:{verse.verse ?? "?"}
+      {formatBibleRef(verse)}
     </span>
   );
 }
