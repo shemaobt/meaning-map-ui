@@ -541,6 +541,13 @@
     "createSuccess": "Document de Contexte du Livre créé.",
     "createFailed": "Échec de la création."
   },
+  "entityTypes": {
+    "person": "Personne",
+    "place": "Lieu",
+    "personCommon": "Personne commune",
+    "placeCommon": "Lieu commun",
+    "ambiguous": "Ambigu"
+  },
   "bcdDetail": {
     "contextVersion": "Contexte v{{version}}",
     "title": "Contexte du Livre",

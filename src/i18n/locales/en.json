@@ -541,6 +541,13 @@
     "createSuccess": "Book Context Document created.",
     "createFailed": "Failed to create."
   },
+  "entityTypes": {
+    "person": "Person",
+    "place": "Place",
+    "personCommon": "Common person",
+    "placeCommon": "Common place",
+    "ambiguous": "Ambiguous"
+  },
   "bcdDetail": {
     "contextVersion": "Context v{{version}}",
     "title": "Book Context",
