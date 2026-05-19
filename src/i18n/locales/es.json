@@ -465,7 +465,10 @@
     "noNotes": "Sin notas aún.",
     "resolved": "resuelto",
     "named": "Nombrado",
+    "unnamed": "Sin nombre",
     "group": "Grupo",
+    "divine": "Divino",
+    "role": "Cargo/Función",
     "placeholders": {
       "bookArc": "Describe el arco narrativo general del libro...",
       "chapterTitle": "Título del capítulo",

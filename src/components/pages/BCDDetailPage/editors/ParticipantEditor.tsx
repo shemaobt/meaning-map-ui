@@ -18,13 +18,17 @@ import {
   SelectValue,
 } from "../../../ui/select";
 import { Button } from "../../../ui/button";
+import {
+  PARTICIPANT_NAME_TYPES,
+  type ParticipantNameType,
+} from "../../../../types/bookContext";
 
 type VerseRef = { chapter?: number; verse?: number };
 type ArcEntry = { at?: VerseRef; state?: string };
 type Participant = {
   name?: string;
   english_gloss?: string;
-  type?: string;
+  type?: ParticipantNameType;
   entry_verse?: VerseRef;
   exit_verse?: VerseRef | null;
   role_in_book?: string;
@@ -42,6 +46,14 @@ const KNOWN_PARTICIPANT_KEYS = new Set([
   "arc", "status_at_end",
   "entity_type", "appears_in", "appearance_count",
 ]);
+
+const NAME_TYPE_LABEL_KEYS: Record<ParticipantNameType, string> = {
+  named: "editors.named",
+  unnamed: "editors.unnamed",
+  group: "editors.group",
+  divine: "editors.divine",
+  role: "editors.role",
+};
 
 interface ParticipantEditorProps {
   data: unknown;
@@ -107,7 +119,7 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                 )}
               </div>
               <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-areia/15 text-verde/50">
-                {p.type ?? "named"}
+                {t(NAME_TYPE_LABEL_KEYS[(p.type ?? "named") as ParticipantNameType] ?? "editors.named")}
               </span>
               {isOpen ? (
                 <ChevronDown className="h-3.5 w-3.5 text-verde/30" />
@@ -145,8 +157,11 @@ export function ParticipantEditor({ data, setData }: ParticipantEditorProps) {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="named">{t("editors.named")}</SelectItem>
-                        <SelectItem value="group">{t("editors.group")}</SelectItem>
+                        {PARTICIPANT_NAME_TYPES.map((nt) => (
+                          <SelectItem key={nt} value={nt}>
+                            {t(NAME_TYPE_LABEL_KEYS[nt])}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FieldGroup>
