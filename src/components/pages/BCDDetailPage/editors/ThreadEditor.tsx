@@ -10,6 +10,14 @@ import {
   CheckboxField,
 } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
+import { ConfirmDialog } from "../../../common/ConfirmDialog";
+import {
+  EntrySourceBadge,
+  PROVENANCE_KEY,
+  getEntrySource,
+  markAsEdited,
+  markAsHuman,
+} from "./EntryProvenance";
 
 type VerseRef = { chapter?: number; verse?: number };
 type EpisodeStatus = { at?: VerseRef; status?: string };
@@ -26,6 +34,7 @@ type Thread = {
 const KNOWN_THREAD_KEYS = new Set([
   "label", "opened_at", "resolved_at", "question", "status_by_episode",
   "is_resolved_at_entry",
+  PROVENANCE_KEY,
 ]);
 
 interface ThreadEditorProps {
@@ -37,9 +46,12 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
   const { t } = useTranslation();
   const items = Array.isArray(data) ? (data as Thread[]) : [];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    const updated = items.map((item, i) =>
+      i === index ? markAsEdited({ ...item, [field]: value }) : item,
+    );
     setData(updated);
   };
 
@@ -51,7 +63,7 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
   };
 
   const addItem = () => {
-    setData([...items, { label: "", opened_at: { chapter: 1, verse: 1 }, question: "", status_by_episode: [] }]);
+    setData([...items, markAsHuman({ label: "", opened_at: { chapter: 1, verse: 1 }, question: "", status_by_episode: [] })]);
     setOpenIdx(items.length);
   };
 
@@ -90,6 +102,7 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                   <span className="text-xs text-verde/40 ml-2 truncate">{th.question}</span>
                 )}
               </div>
+              <EntrySourceBadge source={getEntrySource(th as Record<string, unknown>)} />
               {th.resolved_at && (
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-verde-claro/15 text-verde-claro">
                   {t("editors.resolved")}
@@ -175,7 +188,7 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
                 />
 
                 <div className="flex justify-end pt-2 border-t border-areia/10">
-                  <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+                  <Button type="button" size="sm" variant="outline" onClick={() => setPendingRemoveIdx(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removeThread")}
                   </Button>
                 </div>
@@ -188,6 +201,19 @@ export function ThreadEditor({ data, setData }: ThreadEditorProps) {
       <Button type="button" variant="outline" onClick={addItem} className="w-full gap-1.5 h-10 border-dashed border-areia/40 text-verde/50 hover:text-telha hover:border-telha/30">
         <Plus className="h-4 w-4" /> {t("editors.addThread")}
       </Button>
+
+      <ConfirmDialog
+        open={pendingRemoveIdx !== null}
+        onOpenChange={(open) => { if (!open) setPendingRemoveIdx(null); }}
+        title={t("editors.confirmRemoveThreadTitle")}
+        description={t("editors.confirmRemoveDescription")}
+        variant="destructive"
+        confirmLabel={t("editors.removeThread")}
+        onConfirm={() => {
+          if (pendingRemoveIdx !== null) removeItem(pendingRemoveIdx);
+          setPendingRemoveIdx(null);
+        }}
+      />
     </div>
   );
 }

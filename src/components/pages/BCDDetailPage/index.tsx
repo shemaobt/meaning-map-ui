@@ -28,6 +28,7 @@ import { LockBadge } from "../../common/LockBadge";
 import { UnsavedChangesDialog } from "../../common/UnsavedChangesDialog";
 import { BCDStatusBadge } from "../BookContextPage/BCDStatusBadge";
 import { BCDActionBar } from "./BCDActionBar";
+import { EditingFlowDialog } from "./EditingFlowDialog";
 import { GenerationPanel } from "./GenerationPanel";
 import { SectionDetail } from "./SectionDetail";
 import { SectionEditor, TextSection } from "./SectionEditor";
@@ -41,6 +42,8 @@ import { BCDInfoTooltip } from "./BCDInfoTooltip";
 import { ApprovalProgress } from "./ApprovalProgress";
 import { BCDBHSASidebar, BCDBHSASidebarToggle } from "./BCDBHSASidebar";
 import { cn } from "../../../utils/cn";
+
+const EDITING_FLOW_FLAG = "bcdEditingFlowAcknowledged";
 
 type SectionDef = {
   key: string;
@@ -84,9 +87,25 @@ export function BCDDetailPage() {
   );
 
   const isLockedByMe = currentBCD?.locked_by === user?.id;
-  const canEditDraft = (isAdmin || isAnalyst) && isLockedByMe && currentBCD?.status === "draft";
-  const canEditReview = canApproveBCD && isLockedByMe && currentBCD?.status === "review";
-  const canEdit = canEditDraft || canEditReview;
+  const canEditWhenLocked =
+    ((isAdmin || isAnalyst) && currentBCD?.status === "draft") ||
+    (canApproveBCD && currentBCD?.status === "review");
+  const canEdit = canEditWhenLocked && isLockedByMe;
+  const showEditHint =
+    canEditWhenLocked && !currentBCD?.locked_by && currentBCD?.status !== "generating";
+  const [showEditingFlow, setShowEditingFlow] = useState(false);
+
+  useEffect(() => {
+    if (!isLockedByMe) return;
+    if (typeof window === "undefined") return;
+    const acknowledged = window.localStorage.getItem(EDITING_FLOW_FLAG) === "true";
+    if (!acknowledged) setShowEditingFlow(true);
+  }, [isLockedByMe]);
+
+  const acknowledgeEditingFlow = useCallback(() => {
+    window.localStorage.setItem(EDITING_FLOW_FLAG, "true");
+    setShowEditingFlow(false);
+  }, []);
 
   const handleLock = useCallback(async () => {
     if (!currentBCD) return;
@@ -263,6 +282,12 @@ export function BCDDetailPage() {
 
       <div className="flex-1 flex gap-6 items-start min-h-0">
         <div className="flex-1 min-w-0">
+          {!activeSection && showEditHint && (
+            <div className="mb-3 flex items-center gap-2 rounded-md bg-azul/10 border border-azul/20 px-3 py-2 text-xs text-azul/80">
+              <Pencil className="h-3 w-3 flex-shrink-0" />
+              <span>{t("bcdDetail.editHint")}</span>
+            </div>
+          )}
           {!activeSection && (
             <TileGrid
               bcd={currentBCD}
@@ -311,6 +336,11 @@ export function BCDDetailPage() {
         onSave={handleDialogSave}
         onDiscard={handleDialogDiscard}
         saving={dialogSaving}
+      />
+
+      <EditingFlowDialog
+        open={showEditingFlow}
+        onAcknowledge={acknowledgeEditingFlow}
       />
     </div>
   );
@@ -378,13 +408,6 @@ const SECTION_EDITORS: Record<string, React.ComponentType<{ data: unknown; setDa
   maintenance_notes: MaintenanceNotesEditor,
 };
 
-const BHSA_SECTIONS = new Set([
-  "participant_register",
-  "places",
-  "objects",
-  "institutions",
-]);
-
 function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: string }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
@@ -417,7 +440,6 @@ function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: str
 
   const Editor = SECTION_EDITORS[sectionKey];
   const isTextSection = TEXT_SECTIONS.has(sectionKey);
-  const hasBHSAFields = BHSA_SECTIONS.has(sectionKey);
 
   return (
     <SectionEditor
@@ -432,11 +454,6 @@ function EditableSection({ bcdId, sectionKey }: { bcdId: string; sectionKey: str
           {needsHydration && (
             <div className="mb-3 rounded-md bg-azul/10 border border-azul/20 px-3 py-2 text-xs text-azul/80">
               {t("bcdDetail.loadingTranslation")}
-            </div>
-          )}
-          {hasBHSAFields && (
-            <div className="mb-3 rounded-md bg-areia/15 border border-areia/30 px-3 py-2 text-xs text-verde/70">
-              {t("bcdDetail.bhsaWarning")}
             </div>
           )}
           {isTextSection ? (

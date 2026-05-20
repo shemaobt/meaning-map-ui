@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, Lock, RotateCcw, Sparkles, Unlock, X } from "lucide-react";
+import { Check, Pencil, RotateCcw, Sparkles, Unlock, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
@@ -107,12 +107,13 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, isAdmin, h
         {canEdit && status === "draft" && !lockedBy && (
           <Button
             size="sm"
-            variant="outline"
+            variant="default"
             onClick={onLock}
             disabled={loading !== null}
             className="gap-1"
+            title={t("bcdDetail.editTooltip")}
           >
-            <Lock className="h-3.5 w-3.5" />
+            <Pencil className="h-3.5 w-3.5" />
             {t("bcdDetail.lockAndEdit")}
           </Button>
         )}
@@ -120,12 +121,13 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, isAdmin, h
         {canApproveBCD && status === "review" && !lockedBy && (
           <Button
             size="sm"
-            variant="outline"
+            variant="default"
             onClick={onLock}
             disabled={loading !== null}
             className="gap-1"
+            title={t("bcdDetail.editTooltip")}
           >
-            <Lock className="h-3.5 w-3.5" />
+            <Pencil className="h-3.5 w-3.5" />
             {t("bcdDetail.lockAndReview")}
           </Button>
         )}
@@ -137,6 +139,7 @@ export function BCDActionBar({ bcdId, status, canEdit, canApproveBCD, isAdmin, h
             onClick={onUnlock}
             disabled={loading !== null}
             className="gap-1"
+            title={dirtyCount > 0 ? t("bcdDetail.saveAndFinishTooltip") : t("bcdDetail.finishEditingTooltip")}
           >
             <Unlock className="h-3.5 w-3.5" />
             {dirtyCount > 0 ? t("bcdDetail.saveAndUnlock") : t("bcdDetail.unlock")}

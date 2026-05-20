@@ -11,6 +11,14 @@ import {
   VerseRefListField,
 } from "./FieldPrimitives";
 import { Button } from "../../../ui/button";
+import { ConfirmDialog } from "../../../common/ConfirmDialog";
+import {
+  EntrySourceBadge,
+  PROVENANCE_KEY,
+  getEntrySource,
+  markAsEdited,
+  markAsHuman,
+} from "./EntryProvenance";
 
 type VerseRef = { chapter?: number; verse?: number };
 
@@ -27,20 +35,24 @@ type Place = {
 const KNOWN_PLACE_KEYS = new Set([
   "name", "english_gloss", "first_appears", "type", "meaning_and_function", "appears_in",
   "entity_type", "appearance_count",
+  PROVENANCE_KEY,
 ]);
 
 export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
   const { t } = useTranslation();
   const items = Array.isArray(data) ? (data as Place[]) : [];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    const updated = items.map((item, i) =>
+      i === index ? markAsEdited({ ...item, [field]: value }) : item,
+    );
     setData(updated);
   };
 
   const addItem = () => {
-    setData([...items, { name: "", first_appears: { chapter: 1, verse: 1 }, type: "", meaning_and_function: "" }]);
+    setData([...items, markAsHuman({ name: "", first_appears: { chapter: 1, verse: 1 }, type: "", meaning_and_function: "" })]);
     setOpenIdx(items.length);
   };
 
@@ -66,6 +78,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
                 {pl.english_gloss && <span className="text-sm text-verde/70 ml-2">{pl.english_gloss}</span>}
                 {pl.type && <span className="text-xs text-verde/40 ml-2">{pl.type}</span>}
               </div>
+              <EntrySourceBadge source={getEntrySource(pl as Record<string, unknown>)} />
               <VerseRefBadge verse={pl.first_appears} />
               {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-verde/30" /> : <ChevronRight className="h-3.5 w-3.5 text-verde/30" />}
             </button>
@@ -122,7 +135,7 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
                   onUpdate={(key, val) => updateItem(i, key, val)}
                 />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
-                  <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+                  <Button type="button" size="sm" variant="outline" onClick={() => setPendingRemoveIdx(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removePlace")}
                   </Button>
                 </div>
@@ -134,6 +147,19 @@ export function PlaceEditor({ data, setData }: { data: unknown; setData: (val: u
       <Button type="button" variant="outline" onClick={addItem} className="w-full gap-1.5 h-10 border-dashed border-areia/40 text-verde/50 hover:text-telha hover:border-telha/30">
         <Plus className="h-4 w-4" /> {t("editors.addPlace")}
       </Button>
+
+      <ConfirmDialog
+        open={pendingRemoveIdx !== null}
+        onOpenChange={(open) => { if (!open) setPendingRemoveIdx(null); }}
+        title={t("editors.confirmRemovePlaceTitle")}
+        description={t("editors.confirmRemoveDescription")}
+        variant="destructive"
+        confirmLabel={t("editors.removePlace")}
+        onConfirm={() => {
+          if (pendingRemoveIdx !== null) removeItem(pendingRemoveIdx);
+          setPendingRemoveIdx(null);
+        }}
+      />
     </div>
   );
 }
@@ -152,20 +178,24 @@ type Obj = {
 const KNOWN_OBJECT_KEYS = new Set([
   "name", "display_name", "english_gloss", "first_appears", "what_it_is", "meaning_across_scenes", "appears_in",
   "entity_type", "appearance_count",
+  PROVENANCE_KEY,
 ]);
 
 export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
   const { t } = useTranslation();
   const items = Array.isArray(data) ? (data as Obj[]) : [];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    const updated = items.map((item, i) =>
+      i === index ? markAsEdited({ ...item, [field]: value }) : item,
+    );
     setData(updated);
   };
 
   const addItem = () => {
-    setData([...items, { name: "", first_appears: { chapter: 1, verse: 1 }, what_it_is: "", meaning_across_scenes: "" }]);
+    setData([...items, markAsHuman({ name: "", first_appears: { chapter: 1, verse: 1 }, what_it_is: "", meaning_across_scenes: "" })]);
     setOpenIdx(items.length);
   };
 
@@ -195,6 +225,7 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
                   <span className="text-xs text-verde/40 ml-2 truncate">{obj.what_it_is}</span>
                 )}
               </div>
+              <EntrySourceBadge source={getEntrySource(obj as Record<string, unknown>)} />
               <VerseRefBadge verse={obj.first_appears} />
               {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-verde/30" /> : <ChevronRight className="h-3.5 w-3.5 text-verde/30" />}
             </button>
@@ -256,7 +287,7 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
                   onUpdate={(key, val) => updateItem(i, key, val)}
                 />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
-                  <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+                  <Button type="button" size="sm" variant="outline" onClick={() => setPendingRemoveIdx(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removeObject")}
                   </Button>
                 </div>
@@ -268,6 +299,19 @@ export function ObjectEditor({ data, setData }: { data: unknown; setData: (val: 
       <Button type="button" variant="outline" onClick={addItem} className="w-full gap-1.5 h-10 border-dashed border-areia/40 text-verde/50 hover:text-telha hover:border-telha/30">
         <Plus className="h-4 w-4" /> {t("editors.addObject")}
       </Button>
+
+      <ConfirmDialog
+        open={pendingRemoveIdx !== null}
+        onOpenChange={(open) => { if (!open) setPendingRemoveIdx(null); }}
+        title={t("editors.confirmRemoveObjectTitle")}
+        description={t("editors.confirmRemoveDescription")}
+        variant="destructive"
+        confirmLabel={t("editors.removeObject")}
+        onConfirm={() => {
+          if (pendingRemoveIdx !== null) removeItem(pendingRemoveIdx);
+          setPendingRemoveIdx(null);
+        }}
+      />
     </div>
   );
 }
@@ -286,20 +330,24 @@ type Institution = {
 const KNOWN_INSTITUTION_KEYS = new Set([
   "name", "display_name", "english_gloss", "first_invoked", "what_it_is", "role_in_book", "appears_in",
   "entity_type", "appearance_count",
+  PROVENANCE_KEY,
 ]);
 
 export function InstitutionEditor({ data, setData }: { data: unknown; setData: (val: unknown) => void }) {
   const { t } = useTranslation();
   const items = Array.isArray(data) ? (data as Institution[]) : [];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [pendingRemoveIdx, setPendingRemoveIdx] = useState<number | null>(null);
 
   const updateItem = (index: number, field: string, value: unknown) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    const updated = items.map((item, i) =>
+      i === index ? markAsEdited({ ...item, [field]: value }) : item,
+    );
     setData(updated);
   };
 
   const addItem = () => {
-    setData([...items, { name: "", first_invoked: { chapter: 1, verse: 1 }, what_it_is: "", role_in_book: "" }]);
+    setData([...items, markAsHuman({ name: "", first_invoked: { chapter: 1, verse: 1 }, what_it_is: "", role_in_book: "" })]);
     setOpenIdx(items.length);
   };
 
@@ -329,6 +377,7 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
                   <span className="text-xs text-verde/40 ml-2 truncate">{inst.what_it_is}</span>
                 )}
               </div>
+              <EntrySourceBadge source={getEntrySource(inst as Record<string, unknown>)} />
               <VerseRefBadge verse={inst.first_invoked} />
               {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-verde/30" /> : <ChevronRight className="h-3.5 w-3.5 text-verde/30" />}
             </button>
@@ -389,7 +438,7 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
                   onUpdate={(key, val) => updateItem(i, key, val)}
                 />
                 <div className="flex justify-end pt-2 border-t border-areia/10">
-                  <Button type="button" size="sm" variant="outline" onClick={() => removeItem(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
+                  <Button type="button" size="sm" variant="outline" onClick={() => setPendingRemoveIdx(i)} className="gap-1 h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
                     <Trash2 className="h-3 w-3" /> {t("editors.removeInstitution")}
                   </Button>
                 </div>
@@ -401,6 +450,19 @@ export function InstitutionEditor({ data, setData }: { data: unknown; setData: (
       <Button type="button" variant="outline" onClick={addItem} className="w-full gap-1.5 h-10 border-dashed border-areia/40 text-verde/50 hover:text-telha hover:border-telha/30">
         <Plus className="h-4 w-4" /> {t("editors.addInstitution")}
       </Button>
+
+      <ConfirmDialog
+        open={pendingRemoveIdx !== null}
+        onOpenChange={(open) => { if (!open) setPendingRemoveIdx(null); }}
+        title={t("editors.confirmRemoveInstitutionTitle")}
+        description={t("editors.confirmRemoveDescription")}
+        variant="destructive"
+        confirmLabel={t("editors.removeInstitution")}
+        onConfirm={() => {
+          if (pendingRemoveIdx !== null) removeItem(pendingRemoveIdx);
+          setPendingRemoveIdx(null);
+        }}
+      />
     </div>
   );
 }
