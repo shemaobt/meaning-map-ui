@@ -261,3 +261,23 @@ Use `gh` CLI for all GitHub operations (push, PR creation). Never force-push or 
 - [ ] **State**: Zustand for passage/app state; Context for auth and UI state; local state for component-only state.
 - [ ] **API**: Single `api.ts` client; add new methods to the existing namespaces.
 - [ ] No raw HTML/CSS for app layout; no new state or styling libraries.
+
+---
+
+## 11. Quality Gates
+
+Static quality gates run in CI (on every PR) and locally via `make quality` (or `npm run quality`).
+Run it before opening a PR and treat any violation as blocking.
+
+- **Architecture / dependencies** (`dependency-cruiser`, config in `.dependency-cruiser.cjs`): no
+  circular dependencies; the layering discovered from the code is enforced — `components/ui`
+  (primitives), `services`/`stores`, and the leaf folders (`utils/types/constants/styles/i18n`) must
+  not import higher layers; `components/layout` must not import `components/pages`. The one current
+  exception (`AppShell` -> `AccessDeniedPage`, an auth guard) is baselined in
+  `.dependency-cruiser-known-violations.json`; any new violation fails the PR (`npm run deps`).
+- **Complexity / size** (core ESLint rules in `eslint.config.js`): `complexity`, `max-depth`,
+  `max-params`, `max-lines-per-function`, `max-lines`. Phase 0 is calibrated to the current worst
+  value (green now) and ratchets down over time.
+
+There are no unit tests yet, so coverage and mutation gates are intentionally not configured here —
+that is documented debt. The ratchet schedule is in `obt/.claude/quality-gates-plan.md`.
