@@ -1,0 +1,16 @@
+[
+  {
+    "type": "dependency",
+    "from": "src/components/layout/AppShell.tsx",
+    "to": "src/components/pages/AccessDeniedPage.tsx",
+    "unresolvedTo": "../pages/AccessDeniedPage",
+    "dependencyTypes": [
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "layout-not-import-pages"
+    }
+  }
+]
